@@ -64,7 +64,6 @@ header{position:sticky;top:env(safe-area-inset-top,0px);z-index:20;background:va
 .it .dot{position:absolute;left:-22px;top:14px;width:17px;height:17px;border-radius:50%;background:var(--surface);border:3px solid var(--day)}
 .it.done .dot{background:var(--done);border-color:var(--done)}
 .it.done .dot:after{content:"";position:absolute;left:4px;top:1px;width:4px;height:8px;border:solid #fff;border-width:0 2px 2px 0;transform:rotate(45deg)}
-.it.now .dot{box-shadow:0 0 0 5px color-mix(in srgb,var(--day) 35%,transparent)}
 .card{background:var(--surface);border:1px solid var(--rule);border-radius:14px;padding:11px 13px}
 .it.now .card{border-color:var(--day);border-width:2px}
 .row1{display:flex;gap:10px;align-items:baseline}
@@ -221,7 +220,15 @@ nav.tabs button[aria-selected=true]{color:var(--ink);font-weight:700}
 .ov .close{position:absolute;bottom:calc(20px + var(--safe-b));left:50%;transform:translateX(-50%);border:2px solid #111;border-radius:999px;padding:10px 26px;font-size:16px;color:#111}
 .hide{display:none}
 .foot{font-size:12px;color:var(--muted);margin:24px 0 8px}
-@media (prefers-reduced-motion:no-preference){.it.now .dot{animation:pulse 2s ease-in-out infinite}@keyframes pulse{50%{box-shadow:0 0 0 9px transparent}}}
+/* current activity: filled dot that blinks, plus a ring rippling outwards (static halo if Reduce Motion is on) */
+.it.now .dot{background:var(--day);border-color:var(--day);box-shadow:0 0 0 4px color-mix(in srgb,var(--day) 35%,transparent)}
+.it.now .dot::before{content:"";position:absolute;inset:-3px;border-radius:50%;border:3px solid var(--day);opacity:0;pointer-events:none}
+@media (prefers-reduced-motion:no-preference){
+ .it.now .dot{box-shadow:none;animation:nowBlink 1.4s ease-in-out infinite}
+ .it.now .dot::before{animation:nowRing 1.4s ease-out infinite}
+ @keyframes nowBlink{0%,100%{background:var(--day)}50%{background:var(--surface)}}
+ @keyframes nowRing{0%{transform:scale(1);opacity:.9}100%{transform:scale(2.6);opacity:0}}
+}
 </style>
 </head>
 <body>
@@ -992,8 +999,9 @@ function renderDay(){
   h+=`<div class="next show" aria-live="polite"><small>${c?I("now"):I("firstUp")}</small><strong>${esc(itTitle(c||d.items[0]))}</strong>${nextIt?`<small style="margin-top:4px">${I("nextAt")} ${nextIt.t}: ${esc(itTitle(nextIt))}</small>`:""}</div>`;
  }
  h+=`<div class="tl">`;
+ const last=d.items.length-1, lastEnd=toMin(d.items[last].t)+(d.items[last].mins||60);
  d.items.forEach((it,i)=>{
-  const key=d.id+":"+i, isDone=!!done[key], isNow=i===ni;
+  const key=d.id+":"+i, isDone=!!done[key], isNow=i===ni&&!(i===last&&now.min>lastEnd);
   const cls=["it",it.k==="eat"?"eat":"",isDone?"done":"",isNow?"now":""].join(" ");
   const dotBtn=`<button class="dot" data-done="${key}" aria-label="${I("markDone")}"></button>`;
   if(it.k==="journey"){
@@ -1302,7 +1310,9 @@ document.addEventListener("keydown",e=>{if(e.key==="Escape")$("#ov").classList.r
 function tick(){now=jstNow();$("#clock").textContent=(lang==="zh"?"东京 ":"Tokyo ")+now.hm;}
 if(LIVE_OK)applyLive(store.get("wx",null));applyStatic();tick();renderAll();liveWeather();setInterval(liveWeather,3*3600*1000);
 if(todayId){const n=document.querySelector(".it.now");if(n)setTimeout(()=>n.scrollIntoView({block:"center"}),150)}
-setInterval(()=>{const before=now.min;tick();renderAlerts();if(todayId&&cur===todayId&&Math.floor(now.min/5)!==Math.floor(before/5))renderDay()},30000);
+let shownNi=todayId?nowIndex(DAYS.find(x=>x.id===cur)):-1;
+setInterval(()=>{const before=now.min;tick();renderAlerts();
+ if(todayId&&cur===todayId){const ni=nowIndex(DAYS.find(x=>x.id===cur));if(ni!==shownNi||Math.floor(now.min/5)!==Math.floor(before/5)){shownNi=ni;renderDay()}}},30000);
 })();
 </script>
 </body>
