@@ -959,7 +959,6 @@ function renderStrip(){
 
 function plate(st,lc){const long=st[0].length>6;return `<button class="plate${long?" long":""}" style="--lc:${lc}" data-show="${esc(st[0])}" data-sub="${esc(st[1])}" data-col="${lc}" aria-label="${I("showLarge")}: ${esc(st[1])}"><span class="j">${esc(st[0])}</span><span class="r">${esc(st[1])}</span></button>`}
 
-const DEMO_NOW=true; /* TEMP DEMO: first activity of every day pulses. Remove to revert. */
 function nowIndex(d){
  if(d.id!==todayId) return -1;
  let idx=-1; d.items.forEach((it,i)=>{const m=toMin(it.t); if(m!==null&&m<=now.min) idx=i}); return idx;
@@ -1002,7 +1001,7 @@ function renderDay(){
  h+=`<div class="tl">`;
  const last=d.items.length-1, lastEnd=toMin(d.items[last].t)+(d.items[last].mins||60);
  d.items.forEach((it,i)=>{
-  const key=d.id+":"+i, isDone=!!done[key], isNow=DEMO_NOW?i===0:(i===ni&&!(i===last&&now.min>lastEnd));
+  const key=d.id+":"+i, isDone=!!done[key], isNow=i===ni&&!(i===last&&now.min>lastEnd);
   const cls=["it",it.k==="eat"?"eat":"",isDone?"done":"",isNow?"now":""].join(" ");
   const dotBtn=`<button class="dot" data-done="${key}" aria-label="${I("markDone")}"></button>`;
   if(it.k==="journey"){
