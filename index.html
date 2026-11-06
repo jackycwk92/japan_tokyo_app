@@ -1086,18 +1086,13 @@ function hourlyHtml(d){
   return `<div class="hwl">${esc(lab)}</div><div class="hw" data-hw>${cells.join("")}</div>`;}).join("");
  if(!body) return "";
  const src=HWX_T?`${I("liveUpd")} ${new Date(HWX_T).toLocaleString(ZH()?"zh-CN":"en-GB",{timeZone:"Asia/Tokyo",day:"numeric",month:"short",hour:"2-digit",minute:"2-digit"})} (Open-Meteo)`:I("hwSnap");
- return body+`<p class="fcn">${esc(src)}</p>`;
+ return body+`<p class="fcn">${esc(src)} <a href="https://www.google.com/search?q=${encodeURIComponent(d.id==="wed"?"Yamanakako weather":"Shin-Koiwa weather")}" target="_blank" rel="noopener">${I("liveFc")}</a></p>`;
 }
-function fcHtml(id){const f=FC[id];if(!f)return "";const fz=ZH()?FC_ZH[id]:null;
- const cards=`<div class="fc">${f.c.map(([p,h,l,pp],i)=>`<div class="fcc"><div class="pl">${esc(fz?fz.p[i]:p)}</div><div class="tp">${h===null?I("notYet"):`${h}° <small>/ ${l}°C</small>`}</div>${pp!=null?`<div class="tx">☂ ${pp}%</div>`:""}</div>`).join("")}</div>`;
- if(f.live){const dt=new Date(f.live).toLocaleString(ZH()?"zh-CN":"en-GB",{timeZone:"Asia/Tokyo",day:"numeric",month:"short",hour:"2-digit",minute:"2-digit"});return cards+`<p class="note" style="margin:6px 0 0">${esc(fz?fz.t:f.t)}</p><p class="fcn">${I("liveUpd")} ${dt} (Open-Meteo)</p>`;}
- return cards+`<p class="note" style="margin:6px 0 0">${esc(fz?fz.t:f.t)}</p><p class="fcn">${I("fcNote")} <a href="https://www.google.com/search?q=${encodeURIComponent(id==="wed"?"Yamanakako weather":"Shin-Koiwa weather")}" target="_blank" rel="noopener">${I("liveFc")}</a></p>`}
-
 function renderDay(){
  const d=DAYS.find(x=>x.id===cur); setDayVars(d); const dz=dayZ(d);
  const ni=nowIndex(d);
  const nextIt=ni>=0?d.items[ni+1]:null;
- let h=`<div class="hero"><div class="d">${dz.full}</div><h2>${esc(dz.title)}</h2><div class="wx">${esc(dz.wx)}</div>${fcHtml(d.id)}${hourlyHtml(d)}</div>`+extrasHtml(d);
+ let h=`<div class="hero"><div class="d">${dz.full}</div><h2>${esc(dz.title)}</h2><div class="wx">${esc(dz.wx)}</div>${hourlyHtml(d)}</div>`+extrasHtml(d);
  if(todayId===d.id){
   const c=d.items[ni];
   h+=`<div class="next show" aria-live="polite"><small>${c?I("now"):I("firstUp")}</small><strong>${esc(itTitle(c||d.items[0]))}</strong>${nextIt?`<small style="margin-top:4px">${I("nextAt")} ${hm(effMin(d,ni+1))}: ${esc(itTitle(nextIt))}</small>`:""}</div>`;
@@ -1306,11 +1301,11 @@ function renderInfoZh(){
 function renderInfo(){ if(ZH()) renderInfoZh(); else renderInfoEn(); }
 
 /* ===== Added: leave-by / last-train alerts, night-before checklists, rain plans, live weather when self-hosted ===== */
-Object.assign(I18N.en,{hwTokyo:"Hourly, Tokyo",hwYama:"Hourly, Lake Yamanaka",hwSnap:"Hourly forecast as of 6 Nov 2026 (Open-Meteo model, can differ from the Japan Meteorological Agency figures above).",w_clear:"Clear",w_mclear:"Mostly clear",w_pcloudy:"Partly cloudy",w_cloudy:"Cloudy",w_fog:"Fog",w_drizzle:"Drizzle",w_rain:"Rain",w_hrain:"Heavy rain",w_snow:"Snow",w_showers:"Showers",w_thunder:"Thunderstorm",nextTrain:"Next train",thenT:"then",scheduled:"Scheduled",waitN:"About {n} wait on the platform",noMore:"No more trains on the timetable tonight: take a taxi",noTT:"Timetable not built in for this line: check the platform board",atStation:"I’m at {s} now",arriveAt:"Arrive {s}",hereNow:"I’m here now",fixedT:"Fixed time",reset:"Reset",lateBy:"Running {n} late from {x}",aheadBy:"Running {n} ahead from {x}",onTime:"Back on schedule from {x}",
+Object.assign(I18N.en,{hwTokyo:"Hourly, Tokyo",hwYama:"Hourly, Lake Yamanaka",hwSnap:"Hourly forecast as of 6 Nov 2026 (Open-Meteo). Recheck 48 hours before.",w_clear:"Clear",w_mclear:"Mostly clear",w_pcloudy:"Partly cloudy",w_cloudy:"Cloudy",w_fog:"Fog",w_drizzle:"Drizzle",w_rain:"Rain",w_hrain:"Heavy rain",w_snow:"Snow",w_showers:"Showers",w_thunder:"Thunderstorm",nextTrain:"Next train",thenT:"then",scheduled:"Scheduled",waitN:"About {n} wait on the platform",noMore:"No more trains on the timetable tonight: take a taxi",noTT:"Timetable not built in for this line: check the platform board",atStation:"I’m at {s} now",arriveAt:"Arrive {s}",hereNow:"I’m here now",fixedT:"Fixed time",reset:"Reset",lateBy:"Running {n} late from {x}",aheadBy:"Running {n} ahead from {x}",onTime:"Back on schedule from {x}",
 shiftNote:"Later times have moved to match. Fixed times (buses, KABA, parades, flight) stay put.",
 wClosed:"Closed by then ({t}): skip it or move it to another day",wClosesIn:"Closes {t}: only {n} left",wLoGone:"Last orders {t}: too late, pick another place",wLoIn:"Last orders {t}: {n} left",
 wEntGone:"Last entry {t}: too late, skip it",wEntIn:"Last entry {t}: {n} to get in",wClash:"Runs into the fixed {t}: cut it short or skip it"});
-Object.assign(I18N.zh,{hwTokyo:"逐小时，东京",hwYama:"逐小时，山中湖",hwSnap:"逐小时预报截至2026年11月6日（Open-Meteo 模型，可能与上方日本气象厅数据不同）。",w_clear:"晴",w_mclear:"大致晴",w_pcloudy:"多云",w_cloudy:"阴",w_fog:"雾",w_drizzle:"毛毛雨",w_rain:"雨",w_hrain:"大雨",w_snow:"雪",w_showers:"阵雨",w_thunder:"雷雨",nextTrain:"下一班",thenT:"之后",scheduled:"时刻表",waitN:"站台约等{n}",noMore:"今晚时刻表上已没有车：请搭出租车",noTT:"此线路未内置时刻表：请看站台显示屏",atStation:"我到{s}了",arriveAt:"预计到达{s}",hereNow:"我到了",fixedT:"固定时间",reset:"重置",lateBy:"从「{x}」起比计划晚{n}",aheadBy:"从「{x}」起比计划早{n}",onTime:"从「{x}」起回到原定时间",
+Object.assign(I18N.zh,{hwTokyo:"逐小时，东京",hwYama:"逐小时，山中湖",hwSnap:"逐小时预报截至2026年11月6日（Open-Meteo）。出发前48小时再确认。",w_clear:"晴",w_mclear:"大致晴",w_pcloudy:"多云",w_cloudy:"阴",w_fog:"雾",w_drizzle:"毛毛雨",w_rain:"雨",w_hrain:"大雨",w_snow:"雪",w_showers:"阵雨",w_thunder:"雷雨",nextTrain:"下一班",thenT:"之后",scheduled:"时刻表",waitN:"站台约等{n}",noMore:"今晚时刻表上已没有车：请搭出租车",noTT:"此线路未内置时刻表：请看站台显示屏",atStation:"我到{s}了",arriveAt:"预计到达{s}",hereNow:"我到了",fixedT:"固定时间",reset:"重置",lateBy:"从「{x}」起比计划晚{n}",aheadBy:"从「{x}」起比计划早{n}",onTime:"从「{x}」起回到原定时间",
 shiftNote:"之后的时间已跟着调整。固定时间（巴士、KABA、游行、航班）不变。",
 wClosed:"那时已关门（{t}）：跳过或改到其他日子",wClosesIn:"{t}关门：只剩{n}",wLoGone:"最后点餐{t}：来不及了，换一家",wLoIn:"最后点餐{t}：还剩{n}",
 wEntGone:"最后入场{t}：来不及了，跳过吧",wEntIn:"最后入场{t}：还有{n}可以进场",wClash:"会撞到固定的{t}：缩短或跳过"});
