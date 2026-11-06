@@ -167,7 +167,6 @@ details.cl .chk{font-size:14px}
 .alert small{font-size:12px;opacity:.85}
 .alert strong{font-size:20px;font-variant-numeric:tabular-nums}
 .alert span{font-size:14px}
-.alert.go{background:var(--day);color:var(--dayInk)}
 .alert.last{background:#16202A;color:#fff}
 .alert.urgent{background:#C62828;color:#fff}
 .fcc .tx{font-size:13px;color:var(--muted);margin-top:2px}
@@ -1292,8 +1291,8 @@ Object.assign(I18N.zh,{nextTrain:"下一班",thenT:"之后",scheduled:"时刻表
 shiftNote:"之后的时间已跟着调整。固定时间（巴士、KABA、游行、航班）不变。",
 wClosed:"那时已关门（{t}）：跳过或改到其他日子",wClosesIn:"{t}关门：只剩{n}",wLoGone:"最后点餐{t}：来不及了，换一家",wLoIn:"最后点餐{t}：还剩{n}",
 wEntGone:"最后入场{t}：来不及了，跳过吧",wEntIn:"最后入场{t}：还有{n}可以进场",wClash:"会撞到固定的{t}：缩短或跳过"});
-Object.assign(I18N.en,{nextDep:"Next departure",leaveNow:"Leave now",inT:"in ",lastHome:"Last train home from",lastGone:"The last train home has left. Take a taxi: show the hotel card in the Info tab.",cl:"Night-before checklist",clMon:"Before you fly",rainPlan:"If it rains",liveUpd:"Live forecast, updated"});
-Object.assign(I18N.zh,{nextDep:"下一班出发",leaveNow:"现在出发",inT:"还有 ",lastHome:"回酒店末班车：",lastGone:"回酒店的末班车已开走。请搭出租车：在「资讯」页出示酒店卡片。",cl:"前一晚检查清单",clMon:"出发前清单",rainPlan:"下雨怎么办",liveUpd:"实时预报，更新于"});
+Object.assign(I18N.en,{inT:"in ",lastHome:"Last train home from",lastGone:"The last train home has left. Take a taxi: show the hotel card in the Info tab.",cl:"Night-before checklist",clMon:"Before you fly",rainPlan:"If it rains",liveUpd:"Live forecast, updated"});
+Object.assign(I18N.zh,{inT:"还有 ",lastHome:"回酒店末班车：",lastGone:"回酒店的末班车已开走。请搭出租车：在「资讯」页出示酒店卡片。",cl:"前一晚检查清单",clMon:"出发前清单",rainPlan:"下雨怎么办",liveUpd:"实时预报，更新于"});
 
 const LASTHOME={mon:{st:["秋葉原","Akihabara"],t:"00:28"},tue:{st:["東京","Tokyo Station"],t:"00:01"},wed:{st:["東京","Tokyo Station"],t:"00:01"},thu:{st:["舞浜","Maihama"],t:"23:49",approx:true},fri:{st:["新宿","Shinjuku"],t:"00:08"}};
 
@@ -1344,11 +1343,6 @@ function renderAlerts(){
  const el=document.getElementById("alerts"); if(!el) return;
  const ids=DAYS.map(x=>x.id);
  let h="";
- if(todayId&&cur===todayId){
-  const d=DAYS.find(x=>x.id===cur);
-  const xi=d.items.findIndex((it,i)=>it.k==="journey"&&effMin(d,i)>now.min), nx=d.items[xi];
-  if(nx){const nt=legPlan(d,xi)[0].dep, diff=nt-now.min; if(diff<=120) h+=`<div class="alert go"><small>${I("nextDep")}</small><strong>${diff<=2?I("leaveNow"):I("inT")+fmtIn(diff)}</strong><span>${hm(nt)}  ${esc(jTitle(nx))}</span></div>`;}
- }
  /* last train: evening of today, or after midnight for the previous day */
  let lhId=null, nm=now.min;
  if(todayId&&now.min>=21*60+30) lhId=todayId;
