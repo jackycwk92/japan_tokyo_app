@@ -76,6 +76,7 @@ header{position:sticky;top:env(safe-area-inset-top,0px);z-index:20;background:va
 .eattag{font-size:12px;font-weight:700;color:var(--warn)}
 .time s.was,.mhead s.was{display:block;font-size:12px;font-weight:600;color:var(--muted)}
 .mhead s.was{display:inline;margin-left:6px}
+.tline{font-size:13px;padding:2px 12px 4px;font-variant-numeric:tabular-nums}.tline b{font-size:15px}.tline span{color:var(--muted)}.tline small{display:block;font-size:12px;color:var(--muted)}.tline .hrs{margin:0}
 .arrline{font-size:13px;color:var(--muted);padding:0 12px 4px}.arrline b,.lh b.arr{color:var(--ink);font-variant-numeric:tabular-nums}
 .fxtag{display:inline-block;font-size:11px;font-weight:700;color:var(--muted);border:1px solid var(--rule);border-radius:4px;padding:0 5px;margin-left:6px;vertical-align:2px}
 .shiftbar{display:flex;gap:10px;align-items:center;justify-content:space-between;margin:12px 0 0;padding:10px 12px;border-radius:14px;background:color-mix(in srgb,var(--warn) 14%,var(--surface));border:1px solid color-mix(in srgb,var(--warn) 40%,var(--rule))}
@@ -487,7 +488,7 @@ en:{title:"Tokyo, 9 to 14 Nov",plan:"Plan",eat:"Eat",info:"Info",close:"Close",t
 firstTrain:"First train",lastTrain:"Last train",firstBus:"First bus",lastBus:"Last bus",howRide:"How to ride",howRideX:"How to ride + transfer",inTotal:"In total",
 liveRoute:"Live route in Google Maps",transferAt:"Transfer at",walk:"walk ≈",min:"min",direct:"Direct",totalFare:"Total fare",meal:"Meal",hours:"Hours",
 todo:"Things to do here",map:"Map",eatNearby:"Eat nearby",dayTransport:"Day transport",eatToday:"Eat nearby today",eatSub:"Local-recommended and budget-first. Prices per person.",
-footDay:"Arrival times are ≈: ride time plus the transfer time, not counting the wait for the next train. First and last trains use the weekday timetable unless noted, from the departure station in the direction shown. ≈ means approximate: check Google Maps on the day. Map and route links need data.",
+footDay:"Next-train times come from JR East’s official timetables (weekday, or Saturday on 14 Nov); Keikyu, Toei and Tokyo Metro show ≈ times only. Arrival ≈ = train time plus ride time. First and last trains use the weekday timetable unless noted, from the departure station in the direction shown. ≈ means approximate: check Google Maps on the day. Map and route links need data.",
 showName:"Show name",via:"via",noPicks:"No sit-down picks needed today.",eatTitle:"Where to eat",
 eatIntro:"Picked from Japanese review sites (Tabelog, Retty) and local media, favouring set-meal shops, standing bars and old diners over tourist strips. Tap the star to save.",
 all:"All",saved:"Saved",nothingSaved:"Nothing saved yet. Tap ☆ on a place to keep it here.",
@@ -497,7 +498,7 @@ zh:{title:"东京之旅 11月9日至14日",plan:"行程",eat:"美食",info:"资�
 firstTrain:"首班车",lastTrain:"末班车",firstBus:"首班巴士",lastBus:"末班巴士",howRide:"乘车方法",howRideX:"乘车方法 + 换乘",inTotal:"见总价",
 liveRoute:"在 Google Maps 查看实时路线",transferAt:"换乘站",walk:"步行≈",min:"分钟",direct:"直达",totalFare:"总车费",meal:"用餐",hours:"营业时间",
 todo:"这里可以做什么",map:"地图",eatNearby:"附近美食",dayTransport:"当天交通费",eatToday:"今日附近美食",eatSub:"本地人推荐，价格实惠。价格以每人计。",
-footDay:"到达时间为约数：乘车时间加换乘时间，不含等车时间。首末班车以平日时刻表为准（另有注明除外），指出发站往所示方向。≈ 表示约数，当天请用 Google Maps 确认。地图和路线链接需要网络。",
+footDay:"下一班车时间来自 JR 东日本官方时刻表（平日，11月14日用周六时刻表）；京急、都营和东京地铁只显示约数。到达时间≈为发车时间加乘车时间。首末班车以平日时刻表为准（另有注明除外），指出发站往所示方向。≈ 表示约数，当天请用 Google Maps 确认。地图和路线链接需要网络。",
 showName:"出示店名",via:"来源",noPicks:"今天不需要另外找餐厅。",eatTitle:"吃什么",
 eatIntro:"选自日本本地点评网站（Tabelog、Retty）和本地媒体，优先定食店、立饮店和老食堂，避开游客区。点星星收藏。",
 all:"全部",saved:"已收藏",nothingSaved:"还没有收藏。点店家的 ☆ 就会出现在这里。",
@@ -818,31 +819,36 @@ const EATHRS={
 "Jonathan Shin-Koiwa Ekimae":"Breakfast buffet ≈6:00 to 10:00, reported at weekends too; restaurant open to 23:30",
 "Kitchen Dai":"11:00 to 20:00, Mon to Sat. Closed Sundays"
 };
+/* Next-train departures from JR East official timetables (2611 edition, checked 6 Nov 2026), weekday tables Mon to Fri and the Saturday table on Sat.
+   Minutes after midnight (over 1440 = after midnight). Filtered to trains that stop at the destination; limited expresses and 7 Nov-only trains removed.
+   Key: day|fromJP|toJP. Non-JR lines (Keikyu, Toei, Tokyo Metro) are not included. */
+const TT_L=[[361,386,401,415,428,435,445,456,467,473,480,487,491,496,503,506,510,516,522,525,534,541,546,549,565,569,573,579,585,596,603,628,637,645,664,676,692,706,724,736,752,766,784,796,812,826,844,856,872,886,904,916,933,946,963,976,988,1004,1020,1028,1036,1050,1058,1065,1079,1087,1091,1096,1108,1113,1125,1139,1149,1157,1171,1178,1186,1200,1208,1218,1242,1252,1263,1275,1281,1288,1298,1307,1317,1326,1338,1349,1360,1375,1388,1409,1432],[288,308,324,334,345,353,363,370,375,381,385,389,394,399,404,409,414,419,423,427,430,433,436,439,442,445,448,450,453,455,458,461,463,466,469,471,474,477,479,482,485,487,490,493,496,498,501,504,507,511,515,519,522,526,530,534,537,541,545,549,553,556,560,564,569,573,578,583,588,593,599,605,611,616,622,627,632,638,643,649,654,660,665,671,676,682,687,692,698,703,709,714,720,725,731,736,742,747,753,758,764,769,775,780,786,791,796,802,807,813,818,824,829,835,840,846,851,857,862,868,873,879,884,889,895,900,906,911,917,922,928,933,939,944,949,955,960,965,971,976,982,987,992,997,1002,1007,1012,1017,1022,1027,1032,1037,1042,1046,1051,1055,1059,1064,1068,1073,1077,1081,1085,1090,1094,1098,1103,1107,1112,1116,1121,1125,1129,1133,1137,1141,1145,1149,1153,1157,1162,1166,1171,1175,1180,1185,1190,1195,1200,1205,1210,1215,1219,1224,1229,1234,1239,1244,1250,1255,1261,1266,1272,1278,1284,1290,1296,1302,1308,1315,1321,1328,1334,1341,1348,1354,1361,1368,1375,1383,1390,1398,1405,1412,1418,1426,1434,1441,1450,1460],[271,294,321,330,339,345,355,367,377,385,393,400,406,411,419,424,429,433,437,441,445,449,452,456,460,465,469,473,478,482,486,491,495,499,503,507,510,514,518,522,525,528,532,535,538,541,545,548,552,555,559,562,566,570,574,578,583,588,594,600,605,611,616,622,627,633,638,643,648,654,660,665,671,676,682,687,693,698,704,709,715,720,726,731,737,742,748,753,759,764,770,775,781,786,792,798,804,808,813,819,824,830,835,841,846,852,857,862,868,873,879,884,890,895,901,907,913,918,923,928,933,939,944,950,955,961,965,970,975,980,985,990,995,1000,1005,1009,1014,1019,1023,1028,1032,1036,1041,1045,1050,1054,1057,1061,1064,1068,1071,1074,1078,1081,1084,1087,1090,1094,1097,1100,1104,1107,1110,1113,1116,1120,1123,1127,1130,1134,1138,1142,1146,1150,1154,1159,1163,1168,1172,1177,1181,1186,1191,1196,1202,1207,1212,1218,1225,1228,1232,1236,1240,1244,1249,1253,1258,1262,1267,1271,1276,1281,1286,1291,1297,1302,1308,1313,1319,1324,1330,1337,1343,1350,1356,1363,1370,1376,1383,1390,1398,1406,1413,1420,1428,1434,1441,1449,1455,1462,1468],[294,310,323,333,343,352,360,368,374,379,384,390,393,399,405,409,415,418,423,427,430,435,440,443,446,450,453,456,459,462,464,467,470,473,476,479,482,485,488,491,494,498,501,504,507,511,514,517,520,523,526,529,532,535,539,542,545,548,550,553,556,559,562,566,569,572,576,579,583,587,591,595,599,603,607,609,613,617,621,626,631,636,641,646,651,656,661,666,671,676,681,687,692,697,702,707,712,717,722,727,732,737,742,747,752,757,762,767,772,777,782,787,792,797,802,807,812,817,822,827,832,837,842,847,852,857,862,867,872,877,882,887,892,897,902,907,912,917,922,927,932,937,942,947,952,957,962,967,972,977,982,986,990,994,998,1003,1008,1013,1018,1023,1028,1033,1038,1041,1045,1049,1053,1058,1062,1067,1071,1076,1080,1085,1089,1092,1097,1101,1105,1109,1113,1117,1121,1125,1130,1134,1138,1143,1147,1152,1156,1160,1165,1169,1174,1179,1184,1189,1194,1199,1205,1211,1216,1221,1225,1230,1235,1241,1246,1252,1257,1263,1268,1273,1279,1285,1291,1297,1303,1310,1316,1322,1328,1334,1340,1346,1353,1359,1366,1372,1379,1386,1393,1400,1407,1414,1420,1428,1435,1441,1447,1454,1460,1467,1476,1486],[272,299,318,337,349,357,365,371,377,383,389,394,399,404,410,415,419,423,427,431,435,440,444,448,452,456,460,464,468,472,476,480,483,487,490,494,497,501,505,508,512,516,519,524,528,532,536,540,544,548,552,555,559,563,567,571,576,581,586,591,596,601,606,611,616,621,626,631,636,641,646,651,656,661,666,671,676,681,686,691,696,701,706,711,716,721,726,731,736,741,746,751,756,761,766,771,776,781,786,791,796,801,806,811,816,821,826,831,836,841,846,851,856,861,866,871,876,881,886,891,896,901,906,911,916,921,926,931,936,941,946,951,956,961,966,971,976,981,986,990,995,998,1001,1004,1009,1013,1018,1022,1027,1031,1035,1039,1043,1046,1050,1053,1057,1060,1064,1067,1071,1074,1077,1081,1084,1087,1091,1094,1097,1100,1104,1107,1110,1113,1116,1119,1123,1126,1129,1132,1135,1138,1141,1144,1147,1151,1154,1157,1161,1164,1167,1171,1174,1177,1181,1184,1188,1191,1195,1199,1203,1207,1211,1214,1218,1222,1226,1230,1235,1240,1244,1248,1253,1257,1262,1266,1271,1276,1281,1285,1290,1294,1299,1303,1308,1312,1315,1320,1324,1329,1334,1339,1344,1349,1353,1357,1362,1367,1372,1377,1382,1387,1391,1396,1401,1406,1412,1417,1421,1424,1429,1435,1441,1445,1450,1454,1458,1463,1467],[304,321,342,355,370,394,412,423,429,434,437,444,454,460,463,466,473,478,482,489,492,497,500,505,513,515,519,524,527,531,535,545,550,554,559,564,574,579,583,589,594,605,615,625,636,646,654,665,675,685,701,714,725,735,745,761,774,785,795,805,821,834,845,855,865,881,894,905,915,925,937,945,954,966,975,985,997,1005,1014,1025,1029,1033,1040,1045,1055,1058,1063,1070,1075,1085,1088,1092,1096,1101,1106,1115,1118,1121,1129,1135,1145,1149,1155,1160,1166,1173,1179,1187,1191,1197,1205,1213,1221,1226,1234,1241,1251,1260,1267,1272,1278,1284,1290,1296,1307,1317,1327,1335,1341,1349,1358,1368,1377,1386,1396,1405,1417,1430,1441],[310,331,361,378,400,407,414,418,430,435,440,445,451,455,458,462,468,471,474,477,480,484,488,491,495,498,502,505,508,511,515,521,524,528,534,540,543,552,557,566,575,589,597,601,611,620,628,640,651,669,678,688,699,711,729,738,748,759,771,789,798,808,820,831,849,858,868,880,891,909,918,928,940,952,969,977,982,987,1000,1004,1009,1013,1018,1023,1032,1040,1047,1059,1064,1068,1076,1080,1092,1097,1104,1107,1122,1127,1131,1136,1141,1144,1153,1162,1166,1170,1180,1185,1191,1197,1207,1212,1216,1224,1233,1242,1250,1258,1269,1276,1283,1294,1301,1309,1314,1324,1334,1342,1353,1367,1378,1388,1400,1408,1416,1432,1455],[285,308,334,344,353,359,369,381,391,399,407,414,419,424,433,438,443,447,451,455,459,463,466,470,474,479,483,487,492,496,500,505,509,513,517,520,524,528,532,536,539,542,546,549,552,555,559,562,566,569,573,576,580,584,588,592,597,603,609,614,620,625,631,636,641,647,652,658,663,669,674,680,685,691,696,702,707,713,718,724,729,735,740,746,751,757,762,768,773,779,784,790,795,801,806,812,818,822,828,833,838,844,850,855,860,866,871,876,882,887,893,898,904,910,915,921,927,932,938,943,948,953,959,964,970,975,979,984,989,994,1000,1005,1010,1015,1020,1024,1029,1034,1038,1043,1047,1051,1056,1060,1065,1069,1073,1076,1079,1083,1086,1089,1093,1096,1099,1103,1106,1110,1113,1116,1120,1123,1125,1128,1131,1135,1138,1142,1145,1149,1153,1157,1161,1165,1170,1174,1179,1183,1188,1192,1197,1202,1206,1211,1217,1223,1228,1234,1240,1243,1247,1251,1255,1259,1264,1268,1273,1277,1282,1287,1292,1297,1302,1307,1312,1318,1323,1329,1334,1340,1346,1352,1359,1365,1372,1378,1385,1391,1398,1405,1413,1421,1428,1435,1443,1449,1456,1463,1469,1476,1481],[345,379,395,415,433,441,446,454,463,471,476,481,486,497,509,523,540,561,582,606,623,641,661,681,700,721,741,761,781,801,821,841,861,881,901,921,941,960,982,1008,1018,1036,1046,1075,1093,1111,1126,1131,1148,1155,1172,1180,1194,1210,1217,1230,1256,1274,1294,1311,1323,1347,1372,1407],[378,402,412,425,444,460,468,484,499,505,513,519,528,537,547,561,574,602,624,642,662,682,702,722,742,762,782,802,822,842,862,882,902,922,942,961,982,1001,1017,1036,1055,1068,1084,1101,1114,1122,1131,1147,1159,1177,1192,1202,1220,1236,1246,1260,1283,1307,1325,1343,1360,1373,1394,1429],[274,294,310,320,331,339,349,355,361,366,370,374,379,384,389,394,399,403,407,410,414,417,420,423,426,429,432,435,438,440,443,445,448,451,453,456,458,461,464,467,470,472,475,478,481,483,486,489,492,496,500,504,507,511,515,519,523,526,530,534,538,541,546,550,554,559,563,568,573,579,584,590,596,602,608,613,619,624,630,635,641,646,652,657,663,668,674,679,684,690,695,701,706,712,717,723,728,734,739,744,750,756,761,767,772,778,783,788,794,799,805,810,816,821,827,832,838,843,849,854,860,865,871,876,881,887,892,898,903,908,914,919,925,930,936,941,946,952,957,963,968,974,979,984,988,993,998,1003,1008,1013,1018,1023,1028,1033,1037,1041,1046,1050,1055,1059,1063,1067,1071,1076,1080,1085,1089,1093,1098,1102,1106,1110,1114,1118,1122,1126,1130,1134,1139,1143,1148,1153,1157,1161,1166,1171,1176,1181,1186,1191,1196,1201,1206,1211,1216,1221,1226,1231,1236,1241,1247,1252,1258,1264,1270,1276,1282,1288,1294,1300,1307,1314,1321,1327,1334,1340,1347,1354,1361,1369,1376,1384,1391,1398,1404,1412,1420,1428,1436,1446],[284,304,321,339,351,361,370,379,388,392,396,401,407,411,414,417,420,423,426,430,433,437,440,443,446,449,452,455,458,462,465,468,471,474,478,481,484,487,490,492,495,498,501,504,507,510,513,516,519,522,526,529,532,535,539,542,546,549,552,555,558,561,564,567,570,573,576,579,581,585,588,591,595,599,602,605,609,612,616,620,624,628,633,637,642,645,649,654,659,664,669,674,679,684,689,694,699,704,709,714,719,724,729,734,739,744,749,754,759,764,769,774,779,784,789,794,799,804,809,814,819,824,829,834,839,844,849,854,859,864,869,874,879,884,889,894,899,904,909,914,919,924,929,934,939,944,949,954,959,964,969,974,979,984,989,994,999,1004,1009,1014,1018,1022,1026,1031,1036,1041,1046,1051,1056,1061,1066,1070,1073,1077,1081,1086,1090,1095,1099,1104,1108,1113,1117,1120,1125,1129,1134,1138,1142,1145,1150,1155,1159,1163,1167,1171,1176,1180,1184,1189,1195,1199,1203,1207,1212,1217,1222,1228,1233,1239,1245,1250,1253,1258,1263,1268,1274,1280,1287,1293,1297,1301,1307,1313,1319,1325,1332,1338,1345,1352,1358,1363,1368,1374,1380,1387,1394,1401,1407,1414,1421,1428,1435,1442,1447,1456,1462,1468,1474,1483],[277,296,315,327,334,343,349,355,361,366,371,376,382,387,393,397,401,404,408,413,417,422,426,430,433,438,442,446,449,453,457,460,464,468,471,474,478,482,486,490,493,497,502,506,510,514,518,522,525,529,532,535,539,542,546,550,554,559,564,569,574,579,584,589,594,599,604,609,614,619,624,629,634,639,644,649,654,659,664,669,674,679,684,689,694,699,704,709,714,719,724,729,734,739,744,749,754,759,764,769,774,779,784,789,794,799,804,809,814,819,824,829,834,839,844,849,854,859,864,869,874,879,884,889,894,899,904,909,914,919,924,929,934,939,944,949,954,959,964,968,971,975,980,985,990,995,999,1003,1006,1011,1015,1020,1023,1026,1030,1034,1037,1040,1044,1048,1051,1054,1058,1061,1064,1068,1071,1074,1078,1080,1084,1087,1090,1093,1096,1099,1102,1105,1109,1112,1115,1118,1121,1124,1128,1131,1134,1138,1141,1144,1148,1151,1154,1158,1161,1165,1168,1172,1176,1179,1183,1187,1191,1194,1198,1202,1206,1209,1212,1217,1221,1225,1230,1234,1239,1243,1248,1253,1257,1262,1266,1271,1275,1280,1284,1289,1292,1297,1302,1306,1311,1316,1321,1326,1330,1334,1339,1344,1349,1354,1359,1364,1368,1373,1378,1383,1389,1393,1397,1401,1407,1412,1418,1422,1426,1431,1435,1440,1445,1453,1461,1467,1473],[271,301,312,320,327,337,349,359,367,375,382,387,392,401,406,410,415,419,423,427,430,434,438,442,445,449,454,459,463,467,471,476,479,483,487,491,495,498,502,505,508,512,516,519,522,525,528,532,536,539,543,547,551,555,559,564,569,575,581,587,592,598,603,609,614,620,625,630,635,641,647,652,658,663,669,674,680,685,691,696,702,707,713,718,724,729,735,740,745,751,757,762,768,773,778,784,789,795,800,806,811,817,822,828,833,838,844,849,855,860,866,871,877,882,888,893,898,904,909,915,920,926,931,937,942,947,952,957,962,967,972,977,982,986,990,995,999,1004,1009,1013,1017,1021,1026,1030,1035,1038,1041,1044,1048,1052,1055,1058,1062,1065,1068,1071,1074,1077,1080,1084,1088,1091,1094,1097,1101,1104,1107,1111,1115,1119,1122,1126,1130,1134,1139,1144,1148,1152,1157,1162,1167,1171,1176,1182,1187,1192,1198,1203,1207,1211,1215,1220,1224,1229,1233,1238,1242,1247,1251,1256,1261,1266,1271,1277,1282,1288,1293,1298,1304,1310,1316,1323,1330,1336,1343,1349,1356,1363,1370,1378,1386,1394,1401,1408,1415,1422,1430,1437,1443,1448],[310,331,362,378,399,418,428,442,453,460,464,475,481,488,492,497,509,523,541,553,566,574,589,594,611,620,640,653,669,682,699,711,729,738,759,771,789,798,820,831,849,858,880,891,910,918,940,951,969,977,988,1000,1008,1019,1043,1059,1069,1072,1082,1092,1107,1122,1142,1153,1162,1169,1180,1198,1215,1231,1242,1251,1262,1279,1286,1301,1311,1322,1336,1352,1367,1385,1399,1416]];
+const TT={"mon|品川|新小岩":TT_L[0],"mon|新小岩|秋葉原":TT_L[1],"mon|秋葉原|新小岩":TT_L[2],"tue|新小岩|浅草橋":TT_L[1],"tue|上野|駒込":TT_L[3],"tue|駒込|東京":TT_L[4],"tue|東京|新小岩":TT_L[5],"wed|新小岩|東京":TT_L[6],"wed|東京|新小岩":TT_L[5],"thu|新小岩|西船橋":TT_L[7],"thu|西船橋|舞浜":TT_L[8],"thu|舞浜|西船橋":TT_L[9],"thu|西船橋|新小岩":TT_L[10],"fri|新小岩|代々木":TT_L[1],"fri|代々木|渋谷":TT_L[11],"fri|渋谷|新宿":TT_L[12],"fri|新宿|新小岩":TT_L[13],"sat|新小岩|品川":TT_L[14]};
 /* key: day|from|to  ->  [first, last, note]  (weekday timetable unless noted) */
 const TRAINS={
 "mon|羽田空港第3ターミナル|品川":["≈05:25","≈00:00",""],
-"mon|品川|新小岩":["≈05:30","≈23:50","Rapid trains only; limited expresses (NEX) do not stop"],
+"mon|品川|新小岩":["06:01","23:52","Rapid trains only; limited expresses (NEX) do not stop"],
 "mon|新小岩|秋葉原":["04:48","00:20",""],
 "mon|秋葉原|新小岩":["04:31","00:28",""],
 "tue|新小岩|浅草橋":["04:48","00:20",""],
 "tue|浅草橋|浅草":["≈05:15","≈00:20",""],
 "tue|浅草|上野":["≈05:00","≈00:00",""],
-"tue|上野|駒込":["≈04:40","≈00:45",""],
-"tue|駒込|東京":["≈04:30","≈00:30",""],
+"tue|上野|駒込":["04:54","00:46",""],
+"tue|駒込|東京":["04:32","00:27",""],
 "tue|東京|新小岩":["05:04","00:01","Rapid trains only; NEX and Shiosai expresses do not stop"],
 "wed|新小岩|東京":["05:10","00:15",""],
 "wed|東京駅|山中湖旭日丘":["Check","18:10","Other departures to the lake include 14:10 and 18:10"],
 "wed|山中湖旭日丘|東京駅":["07:50","18:50","Your bus 15:20; backup 18:50 arrives 21:27"],
 "wed|東京|新小岩":["05:04","00:01","Rapid trains only; NEX and Shiosai expresses do not stop"],
 "thu|新小岩|西船橋":["04:45","00:41",""],
-"thu|西船橋|舞浜":["≈05:30","≈23:00","Through trains to Maihama are less frequent than other lines"],
-"thu|舞浜|西船橋":["≈05:30","≈23:00","If none soon, take any Keiyo train to Shin-Kiba/Tokyo and change"],
-"thu|西船橋|新小岩":["≈04:40","≈00:10",""],
+"thu|西船橋|舞浜":["05:45","23:27","Through trains to Maihama are less frequent than other lines"],
+"thu|舞浜|西船橋":["06:18","23:49","If none soon, take any Keiyo train to Shin-Kiba/Tokyo and change"],
+"thu|西船橋|新小岩":["04:34","00:06",""],
 "fri|新小岩|代々木":["04:48","00:20",""],
-"fri|代々木|渋谷":["≈04:40","≈00:50",""],
-"fri|渋谷|新宿":["≈04:45","≈00:50",""],
+"fri|代々木|渋谷":["04:44","00:43",""],
+"fri|渋谷|新宿":["04:37","00:33",""],
 "fri|新宿|新小岩":["04:31","00:08","Board trains for Chiba or Tsudanuma; the 00:12 only goes to Ochanomizu"],
-"sat|新小岩|品川":["≈05:10","≈00:00","Saturday timetable"],
+"sat|新小岩|品川":["05:10","23:36","Saturday timetable"],
 "sat|品川|羽田空港第3ターミナル":["≈05:20","≈00:00","Saturday timetable"]
 };
 DAYS.forEach(d=>d.items.forEach(it=>{
@@ -974,18 +980,44 @@ let shifts=store.get("shifts",{}); // {dayId:[{i,delta}]}
 const isFixed=it=>!!(it.fix||(it.k==="journey"&&it.legs.some(l=>l.line==="bus")));
 const hm=m=>{m=((m%1440)+1440)%1440;return String(Math.floor(m/60)).padStart(2,"0")+":"+String(m%60).padStart(2,"0")};
 const apos=a=>a.i*10+(a.k||0);
-/* minutes that leg k of item i (k=0 for the item itself) has moved */
-function legDelta(d,i,k){
- const it=d.items[i], pos=i*10+k;
- const an=(shifts[d.id]||[]).filter(a=>apos(a)<=pos).sort((a,b)=>apos(b)-apos(a))[0]; if(!an) return 0;
- if(an.i===i) return an.delta;
- if(isFixed(it)) return 0;
- for(let m=an.i+1;m<i;m++) if(isFixed(d.items[m])) return 0;
- return an.delta;
+/* Effective start of each item, worked out in order. Before any tap the plan is shown as is.
+   After a tap: an item moves by the current delay ("carry"); the item after a journey starts no earlier than that journey's
+   expected arrival (from the next timetabled train); fixed items reset the delay. */
+function sched(d){
+ const L=shifts[d.id]||[], P0=d.items.map(it=>toMin(it.t));
+ if(!L.length) return P0;
+ let carry=null; const out=[];
+ d.items.forEach((it,i)=>{
+  const tap=L.find(a=>a.i===i&&!a.k);
+  if(isFixed(it)) carry=null; else if(tap) carry=tap.delta;
+  if(out[i]===undefined) out[i]=P0[i]+(isFixed(it)||carry===null?0:carry);
+  const nx=d.items[i+1];
+  if(it.k==="journey"&&nx&&!isFixed(nx)&&!L.some(a=>a.i===i+1&&!a.k)){
+   const legTap=L.some(a=>a.i===i&&a.k>0);
+   if(carry!==null||legTap){const P=legPlanAt(d,i,out[i]), arr=P[P.length-1].arr;
+    out[i+1]=Math.max(arr,P0[i+1]+(legTap?0:(carry||0))); carry=out[i+1]-P0[i+1];}
+  }
+ });
+ return out;
 }
-function effMin(d,i){return toMin(d.items[i].t)+legDelta(d,i,0)}
-/* expected departure and arrival of each leg, from the (possibly shifted) leg times */
-const legTimes=(d,i,l,k)=>{const dep=toMin(l.t)+legDelta(d,i,k);return [dep,dep+minsOf(l.dur)]};
+function effMin(d,i){return sched(d)[i]}
+/* Expected times for each leg of journey i: you reach the platform ("ready"), the next timetabled train leaves ("dep"), you arrive ("arr").
+   Leg 0 is ready at the journey's (shifted) time; later legs at the previous arrival plus the transfer walk, or at the time you tapped "I'm at <station> now". */
+function legPlan(d,i){return legPlanAt(d,i,effMin(d,i))}
+function legPlanAt(d,i,ready){
+ const it=d.items[i], P=[];
+ it.legs.forEach((l,k)=>{
+  if(k>0){const an=(shifts[d.id]||[]).find(a=>a.i===i&&(a.k||0)===k); ready=an?toMin(l.t)+an.delta:P[k-1].arr+((it.xfer[k-1]&&it.xfer[k-1].w)||3);}
+  const ride=minsOf(l.dur);
+  if(l.line==="bus"){const dep=toMin(l.t);P.push({ready,dep,arr:dep+ride,kind:"bus",next:[]});return;}
+  const T=TT[d.id+"|"+l.from[0]+"|"+l.to[0]];
+  if(T){const j=T.findIndex(x=>x>=ready);
+   if(j>=0){P.push({ready,dep:T[j],arr:T[j]+ride,kind:"tt",next:T.slice(j+1,j+3)});return;}
+   P.push({ready,dep:ready,arr:ready+ride,kind:"end",next:[]});return;}
+  P.push({ready,dep:ready,arr:ready+ride,kind:"none",next:[]});
+ });
+ return P;
+}
 /* closing, last order or last entry for stops that can run out of time; keyed by English title */
 const CLOSE={"Mandarake Complex":["20:00","c"],"Super Potato":["20:00","c"],"Dinner":["21:00","lo"],"Nakamise Shopping Street":["19:00","c"],"Komagome Myōgi Shrine (妙義神社)":["17:00","c"],"Rikugien Garden (六義園), optional":["16:30","e"],"First Avenue Tokyo Station":["20:30","c"],"Shibuya 109":["21:00","c"],"Pokémon Center Shibuya":["21:00","c"],"Square Enix Cafe & Shop":["22:00","c"]};
 function shiftWarn(d,i){
@@ -997,6 +1029,12 @@ function shiftWarn(d,i){
   if(left<60) return I(c[1]==="lo"?"wLoIn":c[1]==="e"?"wEntIn":"wClosesIn").replace("{t}",t).replace("{n}",fmtIn(left));}
  for(let k=i+1;k<d.items.length;k++) if(isFixed(d.items[k])){ if(e>=toMin(d.items[k].t)) return I("wClash").replace("{t}",d.items[k].t); break; }
  return "";
+}
+function tlineHtml(p){
+ if(p.kind==="bus") return `<div class="tline">${I("scheduled")} <b>${hm(p.dep)}</b> → ≈${hm(p.arr)}</div>`;
+ if(p.kind==="tt") return `<div class="tline">${I("nextTrain")} <b>${hm(p.dep)}</b>${p.next.length?` <span>${I("thenT")} ${p.next.map(hm).join(", ")}</span>`:""} → ≈${hm(p.arr)}${p.dep-p.ready>0?`<small>${esc(I("waitN").replace("{n}",fmtIn(p.dep-p.ready)))}</small>`:""}</div>`;
+ if(p.kind==="end") return `<div class="tline"><div class="hrs warn"><span>⚠</span>${esc(I("noMore"))}</div></div>`;
+ return `<div class="tline">≈${hm(p.dep)} → ≈${hm(p.arr)}<small>${esc(I("noTT"))}</small></div>`;
 }
 function shiftBar(d){
  const a=(shifts[d.id]||[]).slice().sort((x,y)=>apos(y)-apos(x))[0]; if(!a) return "";
@@ -1058,12 +1096,13 @@ function renderDay(){
   if(it.k==="journey"){
    const multi=it.legs.length>1, n=it.legs.length-1;
    const fm=m=>ZH()?(m>=60?`${Math.floor(m/60)}小时${m%60}分钟`:`${m}分钟`):(m>=60?`${Math.floor(m/60)} h ${m%60} min`:`${m} min`);
-   const legHtml=(l,k,xf)=>{const L=LINES[l.line]; const [ld,la]=legTimes(d,i,l,k);
+   const plan=legPlan(d,i);
+   const legHtml=(l,k,xf)=>{const L=LINES[l.line]; const p=plan[k];
      const tn=ZH()?(TRAINS_ZH[d.id+"|"+l.from[0]+"|"+l.to[0]]||l.tnote):l.tnote;
      const fst=l.first==="Check"?I("check"):l.first;
      const steps=(ZH()&&l.zh&&l.zh.s)||l.steps;
      return `<div class="leg2">
-     ${multi?`<div class="lh"><span><span class="badge" style="background:${L.c};color:${L.f}">${lineN(l.line)}</span></span><span>${hm(ld)} → <b class="arr">≈${hm(la)}</b>, ${esc(durT(l.dur))}</span></div>`:""}${k>0&&todayId===d.id?`<div class="acts" style="padding:0 12px;margin-top:4px"><button data-here="${i}" data-leg="${k}">${esc(I("atStation").replace("{s}",ZH()?l.from[0]:l.from[1]))}</button></div>`:""}
+     ${multi?`<div class="lh"><span><span class="badge" style="background:${L.c};color:${L.f}">${lineN(l.line)}</span></span><span>${esc(durT(l.dur))}</span></div>`:""}${tlineHtml(p)}${k>0&&todayId===d.id?`<div class="acts" style="padding:0 12px;margin-top:4px"><button data-here="${i}" data-leg="${k}">${esc(I("atStation").replace("{s}",ZH()?l.from[0]:l.from[1]))}</button></div>`:""}
      <div class="signs">${plate(l.from,L.c)}<span class="arrow" aria-hidden="true">▶</span>${plate(l.to,L.c)}</div>
      ${l.first?`<div class="ft"><div><small>${l.line==="bus"?I("firstBus"):I("firstTrain")}</small><b>${esc(fst)}</b></div><div><small>${l.line==="bus"?I("lastBus"):I("lastTrain")}</small><b>${esc(l.last)}</b></div></div>${tn?`<div class="tnote">${esc(tn)}</div>`:""}`:""}
      <details class="steps"><summary class="mfoot"><span>${xf?I("howRideX"):I("howRide")}</span><span class="fare">${l.fare?yen(l.fare):(multi?I("inTotal"):"")}</span></summary><ol>${steps.map(x=>`<li>${esc(x)}</li>`).join("")}<li><a href="${dir(l.from[1],l.to[1])}">${I("liveRoute")}</a></li></ol>${xf||""}</details></div>`};
@@ -1071,7 +1110,7 @@ function renderDay(){
    h+=`<div class="${cls}">${dotBtn}<div class="move jny">
     <div class="mhead"><span><b style="color:var(--ink);font-variant-numeric:tabular-nums">${tHtml}</b>${fxTag}&nbsp; ${it.legs.map(l=>`<span class="badge" style="background:${LINES[l.line].c};color:${LINES[l.line].f}">${lineN(l.line)}</span>`).join(" ")}</span><span>≈${fm(it.mins)}</span></div>
     <div class="jt">${esc(jTitle(it))}<span>${multi?(ZH()?`${n} 次换乘`:`${n} transfer${n>1?"s":""}`):I("direct")}</span></div>
-    <div class="arrline">${esc(I("arriveAt").replace("{s}",ZH()?it.legs[n].to[0]:it.legs[n].to[1]))} <b>≈${hm(legTimes(d,i,it.legs[n],n)[1])}</b></div>
+    <div class="arrline">${esc(I("arriveAt").replace("{s}",ZH()?it.legs[n].to[0]:it.legs[n].to[1]))} <b>≈${hm(plan[n].arr)}</b></div>
     ${wHtml?`<div style="padding:0 12px">${wHtml}</div>`:""}${hereBtn?`<div class="acts" style="padding:0 12px 6px;margin-top:2px">${hereBtn}</div>`:""}
     ${it.legs.map((l,k)=>legHtml(l,k,k<n?xHtml(it.xfer[k],l.to,d.id+"|"+l.to[0]+"|"+it.legs[k+1].to[0],k+1):"")).join("")}
     ${multi?`<div class="mfoot jfoot"><span>${I("totalFare")}</span><span class="fare">${it.fare?yen(it.fare):""}</span></div>`:""}
@@ -1180,7 +1219,7 @@ function renderInfoEn(){
  <h3 class="sec">Train colours</h3>
  <div class="blk">${Object.values(LINES).map(L=>`<div class="legend"><span class="badge" style="background:${L.c};color:${L.f};min-width:118px;text-align:center">${L.n}</span><span>${L.jp}</span></div>`).join("")}</div>
  <h3 class="sec">Last trains home</h3><p class="sub">Last train that still reaches Shin-Koiwa, weekday timetable.</p>
- <div class="blk"><div class="li"><span>Akihabara, yellow line</span><span class="v">00:28</span></div><div class="li"><span>Shinjuku, yellow line</span><span class="v">00:08</span></div><div class="li"><span>Tokyo Station, Sobu Rapid</span><span class="v">00:01</span></div><div class="li"><span>Maihama via Nishi-Funabashi</span><span class="v">≈23:00</span></div><div class="li"><span>Last Fuji bus back (Asahigaoka)</span><span class="v">18:50</span></div></div>
+ <div class="blk"><div class="li"><span>Akihabara, yellow line</span><span class="v">00:28</span></div><div class="li"><span>Shinjuku, yellow line</span><span class="v">00:08</span></div><div class="li"><span>Tokyo Station, Sobu Rapid</span><span class="v">00:01</span></div><div class="li"><span>Maihama via Nishi-Funabashi</span><span class="v">≈23:49</span></div><div class="li"><span>Last Fuji bus back (Asahigaoka)</span><span class="v">18:50</span></div></div>
  <h3 class="sec">Show to staff</h3><p class="sub">Tap a phrase to show it full screen.</p>
  <div class="blk">${PHRASES.map(([e,j])=>`<button class="phr" data-show="${esc(j)}" data-sub="${esc(e)}"><div class="e">${esc(e)}</div><div class="jj">${esc(j)}</div></button>`).join("")}</div>
  <h3 class="sec">Budget</h3>
@@ -1229,7 +1268,7 @@ function renderInfoZh(){
  <h3 class="sec">电车颜色</h3>
  <div class="blk">${Object.keys(LINES).map(k=>{const L=LINES[k];return `<div class="legend"><span class="badge" style="background:${L.c};color:${L.f};min-width:118px;text-align:center">${LINES_ZH[k]}</span><span>${L.jp}</span></div>`}).join("")}</div>
  <h3 class="sec">回酒店末班车</h3><p class="sub">还能到新小岩的末班车，平日时刻表。</p>
- <div class="blk"><div class="li"><span>秋叶原，黄色线路</span><span class="v">00:28</span></div><div class="li"><span>新宿，黄色线路</span><span class="v">00:08</span></div><div class="li"><span>东京站，总武快速线</span><span class="v">00:01</span></div><div class="li"><span>舞滨经西船桥</span><span class="v">≈23:00</span></div><div class="li"><span>富士山末班回程巴士（旭日丘）</span><span class="v">18:50</span></div></div>
+ <div class="blk"><div class="li"><span>秋叶原，黄色线路</span><span class="v">00:28</span></div><div class="li"><span>新宿，黄色线路</span><span class="v">00:08</span></div><div class="li"><span>东京站，总武快速线</span><span class="v">00:01</span></div><div class="li"><span>舞滨经西船桥</span><span class="v">≈23:49</span></div><div class="li"><span>富士山末班回程巴士（旭日丘）</span><span class="v">18:50</span></div></div>
  <h3 class="sec">出示给工作人员</h3><p class="sub">点一下句子即可全屏显示日文。</p>
  <div class="blk">${PHRASES.map(([e,j],i)=>`<button class="phr" data-show="${esc(j)}" data-sub="${esc(PHRASES_ZH[i]||e)}"><div class="e">${esc(PHRASES_ZH[i]||e)}</div><div class="jj">${esc(j)}</div></button>`).join("")}</div>
  <h3 class="sec">预算</h3>
@@ -1245,18 +1284,18 @@ function renderInfoZh(){
 function renderInfo(){ if(ZH()) renderInfoZh(); else renderInfoEn(); }
 
 /* ===== Added: leave-by / last-train alerts, night-before checklists, rain plans, live weather when self-hosted ===== */
-Object.assign(I18N.en,{atStation:"I’m at {s} now",arriveAt:"Arrive {s}",hereNow:"I’m here now",fixedT:"Fixed time",reset:"Reset",lateBy:"Running {n} late from {x}",aheadBy:"Running {n} ahead from {x}",onTime:"Back on schedule from {x}",
+Object.assign(I18N.en,{nextTrain:"Next train",thenT:"then",scheduled:"Scheduled",waitN:"About {n} wait on the platform",noMore:"No more trains on the timetable tonight: take a taxi",noTT:"Timetable not built in for this line: check the platform board",atStation:"I’m at {s} now",arriveAt:"Arrive {s}",hereNow:"I’m here now",fixedT:"Fixed time",reset:"Reset",lateBy:"Running {n} late from {x}",aheadBy:"Running {n} ahead from {x}",onTime:"Back on schedule from {x}",
 shiftNote:"Later times have moved to match. Fixed times (buses, KABA, parades, flight) stay put.",
 wClosed:"Closed by then ({t}): skip it or move it to another day",wClosesIn:"Closes {t}: only {n} left",wLoGone:"Last orders {t}: too late, pick another place",wLoIn:"Last orders {t}: {n} left",
 wEntGone:"Last entry {t}: too late, skip it",wEntIn:"Last entry {t}: {n} to get in",wClash:"Runs into the fixed {t}: cut it short or skip it"});
-Object.assign(I18N.zh,{atStation:"我到{s}了",arriveAt:"预计到达{s}",hereNow:"我到了",fixedT:"固定时间",reset:"重置",lateBy:"从「{x}」起比计划晚{n}",aheadBy:"从「{x}」起比计划早{n}",onTime:"从「{x}」起回到原定时间",
+Object.assign(I18N.zh,{nextTrain:"下一班",thenT:"之后",scheduled:"时刻表",waitN:"站台约等{n}",noMore:"今晚时刻表上已没有车：请搭出租车",noTT:"此线路未内置时刻表：请看站台显示屏",atStation:"我到{s}了",arriveAt:"预计到达{s}",hereNow:"我到了",fixedT:"固定时间",reset:"重置",lateBy:"从「{x}」起比计划晚{n}",aheadBy:"从「{x}」起比计划早{n}",onTime:"从「{x}」起回到原定时间",
 shiftNote:"之后的时间已跟着调整。固定时间（巴士、KABA、游行、航班）不变。",
 wClosed:"那时已关门（{t}）：跳过或改到其他日子",wClosesIn:"{t}关门：只剩{n}",wLoGone:"最后点餐{t}：来不及了，换一家",wLoIn:"最后点餐{t}：还剩{n}",
 wEntGone:"最后入场{t}：来不及了，跳过吧",wEntIn:"最后入场{t}：还有{n}可以进场",wClash:"会撞到固定的{t}：缩短或跳过"});
 Object.assign(I18N.en,{nextDep:"Next departure",leaveNow:"Leave now",inT:"in ",lastHome:"Last train home from",lastGone:"The last train home has left. Take a taxi: show the hotel card in the Info tab.",cl:"Night-before checklist",clMon:"Before you fly",rainPlan:"If it rains",liveUpd:"Live forecast, updated"});
 Object.assign(I18N.zh,{nextDep:"下一班出发",leaveNow:"现在出发",inT:"还有 ",lastHome:"回酒店末班车：",lastGone:"回酒店的末班车已开走。请搭出租车：在「资讯」页出示酒店卡片。",cl:"前一晚检查清单",clMon:"出发前清单",rainPlan:"下雨怎么办",liveUpd:"实时预报，更新于"});
 
-const LASTHOME={mon:{st:["秋葉原","Akihabara"],t:"00:28"},tue:{st:["東京","Tokyo Station"],t:"00:01"},wed:{st:["東京","Tokyo Station"],t:"00:01"},thu:{st:["舞浜","Maihama"],t:"23:00",approx:true},fri:{st:["新宿","Shinjuku"],t:"00:08"}};
+const LASTHOME={mon:{st:["秋葉原","Akihabara"],t:"00:28"},tue:{st:["東京","Tokyo Station"],t:"00:01"},wed:{st:["東京","Tokyo Station"],t:"00:01"},thu:{st:["舞浜","Maihama"],t:"23:49",approx:true},fri:{st:["新宿","Shinjuku"],t:"00:08"}};
 
 const CHECK={
 mon:{en:["Passport, plus Visit Japan Web QR codes saved on your phone","Be at KLIA T1 by about 23:20 on Sunday","Phone and power bank charged","Light jacket and a compact umbrella in your carry-on: rain is forecast for Monday"],
@@ -1308,7 +1347,7 @@ function renderAlerts(){
  if(todayId&&cur===todayId){
   const d=DAYS.find(x=>x.id===cur);
   const xi=d.items.findIndex((it,i)=>it.k==="journey"&&effMin(d,i)>now.min), nx=d.items[xi];
-  if(nx){const nt=effMin(d,xi), diff=nt-now.min; if(diff<=120) h+=`<div class="alert go"><small>${I("nextDep")}</small><strong>${diff<=2?I("leaveNow"):I("inT")+fmtIn(diff)}</strong><span>${hm(nt)}  ${esc(jTitle(nx))}</span></div>`;}
+  if(nx){const nt=legPlan(d,xi)[0].dep, diff=nt-now.min; if(diff<=120) h+=`<div class="alert go"><small>${I("nextDep")}</small><strong>${diff<=2?I("leaveNow"):I("inT")+fmtIn(diff)}</strong><span>${hm(nt)}  ${esc(jTitle(nx))}</span></div>`;}
  }
  /* last train: evening of today, or after midnight for the previous day */
  let lhId=null, nm=now.min;
