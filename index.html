@@ -124,6 +124,7 @@ details.todo li:last-child{border-bottom:0}
 .fcc .tp{font-size:24px;font-weight:800;font-variant-numeric:tabular-nums;line-height:1.2}
 .fcc .tp small{font-size:15px;font-weight:600;color:var(--muted)}
 .fcc .tx{font-size:13px;margin-top:3px}
+.wxr{font-size:12px;font-weight:700;border:1px solid var(--rule);border-radius:999px;padding:2px 10px;margin-left:4px;color:var(--ink);background:var(--surface)}
 .hwl{font-size:12px;font-weight:700;color:var(--muted);margin:10px 0 4px}
 .hw{display:flex;gap:4px;overflow-x:auto;scrollbar-width:none;scroll-snap-type:x proximity;padding-bottom:2px}
 .hw::-webkit-scrollbar{display:none}
@@ -1086,7 +1087,7 @@ function hourlyHtml(d){
   return `<div class="hwl">${esc(lab)}</div><div class="hw" data-hw>${cells.join("")}</div>`;}).join("");
  if(!body) return "";
  const src=HWX_T?`${I("liveUpd")} ${new Date(HWX_T).toLocaleString(ZH()?"zh-CN":"en-GB",{timeZone:"Asia/Tokyo",day:"numeric",month:"short",hour:"2-digit",minute:"2-digit"})} (Open-Meteo)`:I("hwSnap");
- return body+`<p class="fcn">${esc(src)} <a href="https://www.google.com/search?q=${encodeURIComponent(d.id==="wed"?"Yamanakako weather":"Shin-Koiwa weather")}" target="_blank" rel="noopener">${I("liveFc")}</a></p>`;
+ return body+`<p class="fcn">${esc(src)}${LIVE_OK?` <button class="wxr" data-wxr="1">${I("wxRefresh")}</button>`:""}</p>`;
 }
 function renderDay(){
  const d=DAYS.find(x=>x.id===cur); setDayVars(d); const dz=dayZ(d);
@@ -1301,11 +1302,11 @@ function renderInfoZh(){
 function renderInfo(){ if(ZH()) renderInfoZh(); else renderInfoEn(); }
 
 /* ===== Added: leave-by / last-train alerts, night-before checklists, rain plans, live weather when self-hosted ===== */
-Object.assign(I18N.en,{hwTokyo:"Hourly, Tokyo",hwYama:"Hourly, Lake Yamanaka",hwSnap:"Hourly forecast as of 6 Nov 2026 (Open-Meteo). Recheck 48 hours before.",w_clear:"Clear",w_mclear:"Mostly clear",w_pcloudy:"Partly cloudy",w_cloudy:"Cloudy",w_fog:"Fog",w_drizzle:"Drizzle",w_rain:"Rain",w_hrain:"Heavy rain",w_snow:"Snow",w_showers:"Showers",w_thunder:"Thunderstorm",nextTrain:"Next train",thenT:"then",scheduled:"Scheduled",waitN:"About {n} wait on the platform",noMore:"No more trains on the timetable tonight: take a taxi",noTT:"Timetable not built in for this line: check the platform board",atStation:"I’m at {s} now",arriveAt:"Arrive {s}",hereNow:"I’m here now",fixedT:"Fixed time",reset:"Reset",lateBy:"Running {n} late from {x}",aheadBy:"Running {n} ahead from {x}",onTime:"Back on schedule from {x}",
+Object.assign(I18N.en,{wxRefresh:"Refresh",wxUpdating:"Updating…",wxFailed:"No connection, try again",hwTokyo:"Hourly, Tokyo",hwYama:"Hourly, Lake Yamanaka",hwSnap:"Hourly forecast as of 6 Nov 2026 (Open-Meteo). Recheck 48 hours before.",w_clear:"Clear",w_mclear:"Mostly clear",w_pcloudy:"Partly cloudy",w_cloudy:"Cloudy",w_fog:"Fog",w_drizzle:"Drizzle",w_rain:"Rain",w_hrain:"Heavy rain",w_snow:"Snow",w_showers:"Showers",w_thunder:"Thunderstorm",nextTrain:"Next train",thenT:"then",scheduled:"Scheduled",waitN:"About {n} wait on the platform",noMore:"No more trains on the timetable tonight: take a taxi",noTT:"Timetable not built in for this line: check the platform board",atStation:"I’m at {s} now",arriveAt:"Arrive {s}",hereNow:"I’m here now",fixedT:"Fixed time",reset:"Reset",lateBy:"Running {n} late from {x}",aheadBy:"Running {n} ahead from {x}",onTime:"Back on schedule from {x}",
 shiftNote:"Later times have moved to match. Fixed times (buses, KABA, parades, flight) stay put.",
 wClosed:"Closed by then ({t}): skip it or move it to another day",wClosesIn:"Closes {t}: only {n} left",wLoGone:"Last orders {t}: too late, pick another place",wLoIn:"Last orders {t}: {n} left",
 wEntGone:"Last entry {t}: too late, skip it",wEntIn:"Last entry {t}: {n} to get in",wClash:"Runs into the fixed {t}: cut it short or skip it"});
-Object.assign(I18N.zh,{hwTokyo:"逐小时，东京",hwYama:"逐小时，山中湖",hwSnap:"逐小时预报截至2026年11月6日（Open-Meteo）。出发前48小时再确认。",w_clear:"晴",w_mclear:"大致晴",w_pcloudy:"多云",w_cloudy:"阴",w_fog:"雾",w_drizzle:"毛毛雨",w_rain:"雨",w_hrain:"大雨",w_snow:"雪",w_showers:"阵雨",w_thunder:"雷雨",nextTrain:"下一班",thenT:"之后",scheduled:"时刻表",waitN:"站台约等{n}",noMore:"今晚时刻表上已没有车：请搭出租车",noTT:"此线路未内置时刻表：请看站台显示屏",atStation:"我到{s}了",arriveAt:"预计到达{s}",hereNow:"我到了",fixedT:"固定时间",reset:"重置",lateBy:"从「{x}」起比计划晚{n}",aheadBy:"从「{x}」起比计划早{n}",onTime:"从「{x}」起回到原定时间",
+Object.assign(I18N.zh,{wxRefresh:"刷新",wxUpdating:"更新中…",wxFailed:"没有网络，请再试",hwTokyo:"逐小时，东京",hwYama:"逐小时，山中湖",hwSnap:"逐小时预报截至2026年11月6日（Open-Meteo）。出发前48小时再确认。",w_clear:"晴",w_mclear:"大致晴",w_pcloudy:"多云",w_cloudy:"阴",w_fog:"雾",w_drizzle:"毛毛雨",w_rain:"雨",w_hrain:"大雨",w_snow:"雪",w_showers:"阵雨",w_thunder:"雷雨",nextTrain:"下一班",thenT:"之后",scheduled:"时刻表",waitN:"站台约等{n}",noMore:"今晚时刻表上已没有车：请搭出租车",noTT:"此线路未内置时刻表：请看站台显示屏",atStation:"我到{s}了",arriveAt:"预计到达{s}",hereNow:"我到了",fixedT:"固定时间",reset:"重置",lateBy:"从「{x}」起比计划晚{n}",aheadBy:"从「{x}」起比计划早{n}",onTime:"从「{x}」起回到原定时间",
 shiftNote:"之后的时间已跟着调整。固定时间（巴士、KABA、游行、航班）不变。",
 wClosed:"那时已关门（{t}）：跳过或改到其他日子",wClosesIn:"{t}关门：只剩{n}",wLoGone:"最后点餐{t}：来不及了，换一家",wLoIn:"最后点餐{t}：还剩{n}",
 wEntGone:"最后入场{t}：来不及了，跳过吧",wEntIn:"最后入场{t}：还有{n}可以进场",wClash:"会撞到固定的{t}：缩短或跳过"});
@@ -1373,7 +1374,7 @@ function renderAlerts(){
 }
 
 /* Live weather: only where the host allows outside requests (GitHub Pages, Netlify, Cloudflare Pages, Vercel, or the file opened directly). On claude.ai the saved snapshot is used. */
-const LIVE_OK=location.protocol==="file:"||/(github\.io|netlify\.app|pages\.dev|vercel\.app)$/.test(location.hostname);
+const LIVE_OK=location.protocol==="file:"||/(github\.io|githack\.com|netlify\.app|pages\.dev|vercel\.app)$/.test(location.hostname);
 function applyLive(w){
  if(!w||!w.d) return;
  if(w.h&&w.h.t){HWX=w.h;HWX_T=w.t;}
@@ -1382,11 +1383,11 @@ function applyLive(w){
   if(got) f.live=w.t; });
 }
 async function liveWeather(){
- if(!LIVE_OK||!navigator.onLine) return;
+ if(!LIVE_OK||!navigator.onLine) return false;
  const q=(lat,lon)=>`https://api.open-meteo.com/v1/forecast?latitude=${lat}&longitude=${lon}&daily=temperature_2m_max,temperature_2m_min,precipitation_probability_max&hourly=temperature_2m,weather_code,precipitation_probability,is_day&timezone=Asia%2FTokyo&start_date=2026-11-09&end_date=2026-11-14`;
  try{
   const [a,b]=await Promise.all([fetch(q(35.7167,139.8584)).then(r=>r.json()),fetch(q(35.4106,138.8652)).then(r=>r.json())]);
-  if(!a.daily) return;
+  if(!a.daily) return false;
   const ids=["mon","tue","wed","thu","fri","sat"], out={t:Date.now(),d:{}};
   ids.forEach((id,i)=>{const row=k=>a.daily[k][i];out.d[id]=[[row("temperature_2m_max"),row("temperature_2m_min"),row("precipitation_probability_max")]];
    if(id==="wed"&&b.daily) out.d[id].push([b.daily.temperature_2m_max[i],b.daily.temperature_2m_min[i],b.daily.precipitation_probability_max[i]]);});
@@ -1394,7 +1395,8 @@ async function liveWeather(){
   const ht=hp(a,null), hy=hp(b,["wed"]); if(ht) out.h={t:ht,y:hy||HWX.y};
   store.set("wx",out); applyLive(out);
   if(!$("#v-day").classList.contains("hide")) renderDay();
- }catch(e){}
+  return true;
+ }catch(e){return false}
 }
 
 
@@ -1414,6 +1416,7 @@ document.addEventListener("click",e=>{
  if(t.dataset.here!==undefined){const d=DAYS.find(x=>x.id===cur), i=+t.dataset.here, k=+(t.dataset.leg||0), it=d.items[i];
   const delta=now.min-toMin(k?it.legs[k].t:it.t), pos=i*10+k;
   const L=(shifts[d.id]||[]).filter(a=>apos(a)<pos); L.push({i,k,delta:Math.abs(delta)<3?0:delta}); shifts[d.id]=L; store.set("shifts",shifts); shownNi=nowIndex(d); renderDay(); renderAlerts(); return}
+ if(t.dataset.wxr){t.disabled=true;t.textContent=I("wxUpdating");liveWeather().then(ok=>{if(!ok){t.disabled=false;t.textContent=I("wxFailed")}});return}
  if(t.dataset.reset){delete shifts[t.dataset.reset]; store.set("shifts",shifts); renderDay(); renderAlerts(); return}
  if(t.dataset.done){done[t.dataset.done]=!done[t.dataset.done];store.set("done",done);renderDay();return}
  if(t.dataset.fav){favs[t.dataset.fav]=!favs[t.dataset.fav];store.set("favs",favs);renderDay();renderEat();renderNear();return}
