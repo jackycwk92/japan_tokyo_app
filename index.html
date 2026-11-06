@@ -76,6 +76,7 @@ header{position:sticky;top:env(safe-area-inset-top,0px);z-index:20;background:va
 .eattag{font-size:12px;font-weight:700;color:var(--warn)}
 .time s.was,.mhead s.was{display:block;font-size:12px;font-weight:600;color:var(--muted)}
 .mhead s.was{display:inline;margin-left:6px}
+.arrline{font-size:13px;color:var(--muted);padding:0 12px 4px}.arrline b,.lh b.arr{color:var(--ink);font-variant-numeric:tabular-nums}
 .fxtag{display:inline-block;font-size:11px;font-weight:700;color:var(--muted);border:1px solid var(--rule);border-radius:4px;padding:0 5px;margin-left:6px;vertical-align:2px}
 .shiftbar{display:flex;gap:10px;align-items:center;justify-content:space-between;margin:12px 0 0;padding:10px 12px;border-radius:14px;background:color-mix(in srgb,var(--warn) 14%,var(--surface));border:1px solid color-mix(in srgb,var(--warn) 40%,var(--rule))}
 .shiftbar span{font-size:14px}.shiftbar small{display:block;font-size:12px;color:var(--muted);margin-top:2px}
@@ -486,7 +487,7 @@ en:{title:"Tokyo, 9 to 14 Nov",plan:"Plan",eat:"Eat",info:"Info",close:"Close",t
 firstTrain:"First train",lastTrain:"Last train",firstBus:"First bus",lastBus:"Last bus",howRide:"How to ride",howRideX:"How to ride + transfer",inTotal:"In total",
 liveRoute:"Live route in Google Maps",transferAt:"Transfer at",walk:"walk ≈",min:"min",direct:"Direct",totalFare:"Total fare",meal:"Meal",hours:"Hours",
 todo:"Things to do here",map:"Map",eatNearby:"Eat nearby",dayTransport:"Day transport",eatToday:"Eat nearby today",eatSub:"Local-recommended and budget-first. Prices per person.",
-footDay:"First and last trains use the weekday timetable unless noted, from the departure station in the direction shown. ≈ means approximate: check Google Maps on the day. Map and route links need data.",
+footDay:"Arrival times are ≈: ride time plus the transfer time, not counting the wait for the next train. First and last trains use the weekday timetable unless noted, from the departure station in the direction shown. ≈ means approximate: check Google Maps on the day. Map and route links need data.",
 showName:"Show name",via:"via",noPicks:"No sit-down picks needed today.",eatTitle:"Where to eat",
 eatIntro:"Picked from Japanese review sites (Tabelog, Retty) and local media, favouring set-meal shops, standing bars and old diners over tourist strips. Tap the star to save.",
 all:"All",saved:"Saved",nothingSaved:"Nothing saved yet. Tap ☆ on a place to keep it here.",
@@ -496,7 +497,7 @@ zh:{title:"东京之旅 11月9日至14日",plan:"行程",eat:"美食",info:"资�
 firstTrain:"首班车",lastTrain:"末班车",firstBus:"首班巴士",lastBus:"末班巴士",howRide:"乘车方法",howRideX:"乘车方法 + 换乘",inTotal:"见总价",
 liveRoute:"在 Google Maps 查看实时路线",transferAt:"换乘站",walk:"步行≈",min:"分钟",direct:"直达",totalFare:"总车费",meal:"用餐",hours:"营业时间",
 todo:"这里可以做什么",map:"地图",eatNearby:"附近美食",dayTransport:"当天交通费",eatToday:"今日附近美食",eatSub:"本地人推荐，价格实惠。价格以每人计。",
-footDay:"首末班车以平日时刻表为准（另有注明除外），指出发站往所示方向。≈ 表示约数，当天请用 Google Maps 确认。地图和路线链接需要网络。",
+footDay:"到达时间为约数：乘车时间加换乘时间，不含等车时间。首末班车以平日时刻表为准（另有注明除外），指出发站往所示方向。≈ 表示约数，当天请用 Google Maps 确认。地图和路线链接需要网络。",
 showName:"出示店名",via:"来源",noPicks:"今天不需要另外找餐厅。",eatTitle:"吃什么",
 eatIntro:"选自日本本地点评网站（Tabelog、Retty）和本地媒体，优先定食店、立饮店和老食堂，避开游客区。点星星收藏。",
 all:"全部",saved:"已收藏",nothingSaved:"还没有收藏。点店家的 ☆ 就会出现在这里。",
@@ -972,12 +973,19 @@ function plate(st,lc){const long=st[0].length>6;return `<button class="plate${lo
 let shifts=store.get("shifts",{}); // {dayId:[{i,delta}]}
 const isFixed=it=>!!(it.fix||(it.k==="journey"&&it.legs.some(l=>l.line==="bus")));
 const hm=m=>{m=((m%1440)+1440)%1440;return String(Math.floor(m/60)).padStart(2,"0")+":"+String(m%60).padStart(2,"0")};
-function effMin(d,i){
- const it=d.items[i], o=toMin(it.t); if(isFixed(it)) return o;
- const an=(shifts[d.id]||[]).filter(a=>a.i<=i).sort((a,b)=>b.i-a.i)[0]; if(!an) return o;
- for(let k=an.i+1;k<=i;k++) if(isFixed(d.items[k])) return o;
- return o+an.delta;
+const apos=a=>a.i*10+(a.k||0);
+/* minutes that leg k of item i (k=0 for the item itself) has moved */
+function legDelta(d,i,k){
+ const it=d.items[i], pos=i*10+k;
+ const an=(shifts[d.id]||[]).filter(a=>apos(a)<=pos).sort((a,b)=>apos(b)-apos(a))[0]; if(!an) return 0;
+ if(an.i===i) return an.delta;
+ if(isFixed(it)) return 0;
+ for(let m=an.i+1;m<i;m++) if(isFixed(d.items[m])) return 0;
+ return an.delta;
 }
+function effMin(d,i){return toMin(d.items[i].t)+legDelta(d,i,0)}
+/* expected departure and arrival of each leg, from the (possibly shifted) leg times */
+const legTimes=(d,i,l,k)=>{const dep=toMin(l.t)+legDelta(d,i,k);return [dep,dep+minsOf(l.dur)]};
 /* closing, last order or last entry for stops that can run out of time; keyed by English title */
 const CLOSE={"Mandarake Complex":["20:00","c"],"Super Potato":["20:00","c"],"Dinner":["21:00","lo"],"Nakamise Shopping Street":["19:00","c"],"Komagome Myōgi Shrine (妙義神社)":["17:00","c"],"Rikugien Garden (六義園), optional":["16:30","e"],"First Avenue Tokyo Station":["20:30","c"],"Shibuya 109":["21:00","c"],"Pokémon Center Shibuya":["21:00","c"],"Square Enix Cafe & Shop":["22:00","c"]};
 function shiftWarn(d,i){
@@ -991,9 +999,9 @@ function shiftWarn(d,i){
  return "";
 }
 function shiftBar(d){
- const a=(shifts[d.id]||[]).slice().sort((x,y)=>y.i-x.i)[0]; if(!a) return "";
- const it=d.items[a.i], n=Math.abs(a.delta);
- const head=(a.delta===0?I("onTime"):a.delta>0?I("lateBy"):I("aheadBy")).replace("{n}",fmtIn(n)).replace("{x}",itTitle(it));
+ const a=(shifts[d.id]||[]).slice().sort((x,y)=>apos(y)-apos(x))[0]; if(!a) return "";
+ const it=d.items[a.i], n=Math.abs(a.delta), x=a.k?(ZH()?it.legs[a.k].from[0]:it.legs[a.k].from[1]):itTitle(it);
+ const head=(a.delta===0?I("onTime"):a.delta>0?I("lateBy"):I("aheadBy")).replace("{n}",fmtIn(n)).replace("{x}",x);
  return `<div class="shiftbar"><div><b>${esc(head)}</b><small>${esc(I("shiftNote"))}</small></div><button data-reset="${d.id}">${I("reset")}</button></div>`;
 }
 function nowIndex(d){
@@ -1047,25 +1055,25 @@ function renderDay(){
   const fxTag=fx&&sh?`<span class="fxtag">${I("fixedT")}</span>`:"";
   const hereBtn=todayId===d.id&&!fx?`<button data-here="${i}">${I("hereNow")}</button>`:"";
   const wn=shiftWarn(d,i), wHtml=wn?`<div class="hrs warn"><span>⚠</span>${esc(wn)}</div>`:"";
-  const dl=em-toMin(it.t);
   if(it.k==="journey"){
    const multi=it.legs.length>1, n=it.legs.length-1;
    const fm=m=>ZH()?(m>=60?`${Math.floor(m/60)}小时${m%60}分钟`:`${m}分钟`):(m>=60?`${Math.floor(m/60)} h ${m%60} min`:`${m} min`);
-   const legHtml=(l,xf)=>{const L=LINES[l.line];
+   const legHtml=(l,k,xf)=>{const L=LINES[l.line]; const [ld,la]=legTimes(d,i,l,k);
      const tn=ZH()?(TRAINS_ZH[d.id+"|"+l.from[0]+"|"+l.to[0]]||l.tnote):l.tnote;
      const fst=l.first==="Check"?I("check"):l.first;
      const steps=(ZH()&&l.zh&&l.zh.s)||l.steps;
      return `<div class="leg2">
-     ${multi?`<div class="lh"><span><span class="badge" style="background:${L.c};color:${L.f}">${lineN(l.line)}</span></span><span>${esc(dl?hm(toMin(l.t)+dl):l.t)}, ${esc(durT(l.dur))}</span></div>`:""}
+     ${multi?`<div class="lh"><span><span class="badge" style="background:${L.c};color:${L.f}">${lineN(l.line)}</span></span><span>${hm(ld)} → <b class="arr">≈${hm(la)}</b>, ${esc(durT(l.dur))}</span></div>`:""}${k>0&&todayId===d.id?`<div class="acts" style="padding:0 12px;margin-top:4px"><button data-here="${i}" data-leg="${k}">${esc(I("atStation").replace("{s}",ZH()?l.from[0]:l.from[1]))}</button></div>`:""}
      <div class="signs">${plate(l.from,L.c)}<span class="arrow" aria-hidden="true">▶</span>${plate(l.to,L.c)}</div>
      ${l.first?`<div class="ft"><div><small>${l.line==="bus"?I("firstBus"):I("firstTrain")}</small><b>${esc(fst)}</b></div><div><small>${l.line==="bus"?I("lastBus"):I("lastTrain")}</small><b>${esc(l.last)}</b></div></div>${tn?`<div class="tnote">${esc(tn)}</div>`:""}`:""}
      <details class="steps"><summary class="mfoot"><span>${xf?I("howRideX"):I("howRide")}</span><span class="fare">${l.fare?yen(l.fare):(multi?I("inTotal"):"")}</span></summary><ol>${steps.map(x=>`<li>${esc(x)}</li>`).join("")}<li><a href="${dir(l.from[1],l.to[1])}">${I("liveRoute")}</a></li></ol>${xf||""}</details></div>`};
-   const xHtml=(x,st,k)=>{const ss=(ZH()&&XFER_ZH[k])||(x&&x.s);return `<div class="xf"><div class="xh"><b>${I("transferAt")} ${esc(ZH()?st[0]:st[1])}</b><span class="xj">${esc(ZH()?st[1]:st[0])}</span>${x?`<span class="xw">${I("walk")}${x.w} ${I("min")}</span>`:""}</div>${ss?`<ol>${ss.map(y=>`<li>${esc(y)}</li>`).join("")}</ol>`:""}</div>`};
+   const xHtml=(x,st,k,nk)=>{const ss=(ZH()&&XFER_ZH[k])||(x&&x.s);return `<div class="xf"><div class="xh"><b>${I("transferAt")} ${esc(ZH()?st[0]:st[1])}</b><span class="xj">${esc(ZH()?st[1]:st[0])}</span>${x?`<span class="xw">${I("walk")}${x.w} ${I("min")}</span>`:""}</div>${ss?`<ol>${ss.map(y=>`<li>${esc(y)}</li>`).join("")}</ol>`:""}</div>`};
    h+=`<div class="${cls}">${dotBtn}<div class="move jny">
     <div class="mhead"><span><b style="color:var(--ink);font-variant-numeric:tabular-nums">${tHtml}</b>${fxTag}&nbsp; ${it.legs.map(l=>`<span class="badge" style="background:${LINES[l.line].c};color:${LINES[l.line].f}">${lineN(l.line)}</span>`).join(" ")}</span><span>≈${fm(it.mins)}</span></div>
     <div class="jt">${esc(jTitle(it))}<span>${multi?(ZH()?`${n} 次换乘`:`${n} transfer${n>1?"s":""}`):I("direct")}</span></div>
+    <div class="arrline">${esc(I("arriveAt").replace("{s}",ZH()?it.legs[n].to[0]:it.legs[n].to[1]))} <b>≈${hm(legTimes(d,i,it.legs[n],n)[1])}</b></div>
     ${wHtml?`<div style="padding:0 12px">${wHtml}</div>`:""}${hereBtn?`<div class="acts" style="padding:0 12px 6px;margin-top:2px">${hereBtn}</div>`:""}
-    ${it.legs.map((l,i)=>legHtml(l,i<n?xHtml(it.xfer[i],l.to,d.id+"|"+l.to[0]+"|"+it.legs[i+1].to[0]):"")).join("")}
+    ${it.legs.map((l,k)=>legHtml(l,k,k<n?xHtml(it.xfer[k],l.to,d.id+"|"+l.to[0]+"|"+it.legs[k+1].to[0],k+1):"")).join("")}
     ${multi?`<div class="mfoot jfoot"><span>${I("totalFare")}</span><span class="fare">${it.fare?yen(it.fare):""}</span></div>`:""}
    </div></div>`;
   } else {
@@ -1237,11 +1245,11 @@ function renderInfoZh(){
 function renderInfo(){ if(ZH()) renderInfoZh(); else renderInfoEn(); }
 
 /* ===== Added: leave-by / last-train alerts, night-before checklists, rain plans, live weather when self-hosted ===== */
-Object.assign(I18N.en,{hereNow:"I’m here now",fixedT:"Fixed time",reset:"Reset",lateBy:"Running {n} late from {x}",aheadBy:"Running {n} ahead from {x}",onTime:"Back on schedule from {x}",
+Object.assign(I18N.en,{atStation:"I’m at {s} now",arriveAt:"Arrive {s}",hereNow:"I’m here now",fixedT:"Fixed time",reset:"Reset",lateBy:"Running {n} late from {x}",aheadBy:"Running {n} ahead from {x}",onTime:"Back on schedule from {x}",
 shiftNote:"Later times have moved to match. Fixed times (buses, KABA, parades, flight) stay put.",
 wClosed:"Closed by then ({t}): skip it or move it to another day",wClosesIn:"Closes {t}: only {n} left",wLoGone:"Last orders {t}: too late, pick another place",wLoIn:"Last orders {t}: {n} left",
 wEntGone:"Last entry {t}: too late, skip it",wEntIn:"Last entry {t}: {n} to get in",wClash:"Runs into the fixed {t}: cut it short or skip it"});
-Object.assign(I18N.zh,{hereNow:"我到了",fixedT:"固定时间",reset:"重置",lateBy:"从「{x}」起比计划晚{n}",aheadBy:"从「{x}」起比计划早{n}",onTime:"从「{x}」起回到原定时间",
+Object.assign(I18N.zh,{atStation:"我到{s}了",arriveAt:"预计到达{s}",hereNow:"我到了",fixedT:"固定时间",reset:"重置",lateBy:"从「{x}」起比计划晚{n}",aheadBy:"从「{x}」起比计划早{n}",onTime:"从「{x}」起回到原定时间",
 shiftNote:"之后的时间已跟着调整。固定时间（巴士、KABA、游行、航班）不变。",
 wClosed:"那时已关门（{t}）：跳过或改到其他日子",wClosesIn:"{t}关门：只剩{n}",wLoGone:"最后点餐{t}：来不及了，换一家",wLoIn:"最后点餐{t}：还剩{n}",
 wEntGone:"最后入场{t}：来不及了，跳过吧",wEntIn:"最后入场{t}：还有{n}可以进场",wClash:"会撞到固定的{t}：缩短或跳过"});
@@ -1281,7 +1289,7 @@ sat:{en:["Allow 15 extra minutes; trains run normally but stations are slower in
 };
 
 let checks=store.get("checks",{});
-const fmtIn=m=>ZH()?(m>=60?`${Math.floor(m/60)}小时${m%60}分钟`:`${m}分钟`):(m>=60?`${Math.floor(m/60)} h ${m%60} min`:`${m} min`);
+const fmtIn=m=>ZH()?(m>=60?`${Math.floor(m/60)}小时${m%60?`${m%60}分钟`:""}`:`${m}分钟`):(m>=60?`${Math.floor(m/60)} h${m%60?` ${m%60} min`:""}`:`${m} min`);
 
 function extrasHtml(d){
  let h="";
@@ -1349,8 +1357,9 @@ document.addEventListener("click",e=>{
  if(t.dataset.cl){const k=t.dataset.cl;checks[k]=!checks[k];store.set("checks",checks);t.setAttribute("aria-checked",!!checks[k]);const id=k.split(":")[0];const c=CHECK[id];const L=c?c.en:[];const n=L.filter((_,i)=>checks[id+":"+i]).length;const el=document.getElementById("cln-"+id);if(el)el.textContent=n+"/"+L.length;return}
  if(t.dataset.lang){lang=t.dataset.lang;store.set("lang",lang);applyStatic();renderAll();tick();return}
  if(t.dataset.v){show(t.dataset.v);window.scrollTo({top:0});return}
- if(t.dataset.here!==undefined){const d=DAYS.find(x=>x.id===cur), i=+t.dataset.here, delta=now.min-toMin(d.items[i].t);
-  const L=(shifts[d.id]||[]).filter(a=>a.i<i); L.push({i,delta:Math.abs(delta)<3?0:delta}); shifts[d.id]=L; store.set("shifts",shifts); shownNi=nowIndex(d); renderDay(); renderAlerts(); return}
+ if(t.dataset.here!==undefined){const d=DAYS.find(x=>x.id===cur), i=+t.dataset.here, k=+(t.dataset.leg||0), it=d.items[i];
+  const delta=now.min-toMin(k?it.legs[k].t:it.t), pos=i*10+k;
+  const L=(shifts[d.id]||[]).filter(a=>apos(a)<pos); L.push({i,k,delta:Math.abs(delta)<3?0:delta}); shifts[d.id]=L; store.set("shifts",shifts); shownNi=nowIndex(d); renderDay(); renderAlerts(); return}
  if(t.dataset.reset){delete shifts[t.dataset.reset]; store.set("shifts",shifts); renderDay(); renderAlerts(); return}
  if(t.dataset.done){done[t.dataset.done]=!done[t.dataset.done];store.set("done",done);renderDay();return}
  if(t.dataset.fav){favs[t.dataset.fav]=!favs[t.dataset.fav];store.set("favs",favs);renderDay();renderEat();renderNear();return}

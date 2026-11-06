@@ -13,7 +13,7 @@ A single-file, mobile-first trip companion for Jacky's Tokyo holiday, served by 
 4. `HOURS`, `EATHRS`, `TRAINS` (first/last trains, key `day|fromJP|toJP`).
 5. `TODO` + `TAGS` (things to do, keyed by the **English** stop title).
 6. `XFER` (transfer walking guides) + the merge step that turns consecutive `move` items into one `journey`.
-7. App IIFE: live shift (`shifts` in localStorage, `effMin`, `CLOSE` closing / last-order / last-entry times keyed by English title, “I’m here now” buttons on today’s plan), render functions, `FC` weather snapshot, `CHECK` (night-before lists), `RAIN` (rain plans), `LASTHOME` (last train home), live weather from Open-Meteo (only runs on github.io and similar hosts).
+7. App IIFE: live shift (`shifts` in localStorage: anchors `{i,k,delta}` where `k` is the leg inside a journey; `legDelta`, `effMin`, `legTimes` for expected arrivals, `CLOSE` closing / last-order / last-entry times keyed by English title, “I’m here now” buttons on today’s plan), render functions, `FC` weather snapshot, `CHECK` (night-before lists), `RAIN` (rain plans), `LASTHOME` (last train home), live weather from Open-Meteo (only runs on github.io and similar hosts).
 
 ## Rules for edits
 - **Every visible text change goes in both English and Chinese (Simplified).** If you add or remove an item in `DAYS[day].items`, add or remove the matching entry in `ZH_DAYS[day].items` at the same index.
