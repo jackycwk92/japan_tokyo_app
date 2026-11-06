@@ -340,7 +340,7 @@ const DAYS = [
 {id:"sat",dow:"Sat",date:"14 Nov",full:"Saturday 14 November",title:"Departure",color:"#0067C0",ink:"#FFFFFF",
  wx:"PR 421 departs Haneda T3 at 15:25, connects in Manila to PR 529, lands KL 01:15 Sunday.",
  items:[
- {t:"09:00",k:"stop",title:"Breakfast + last shopping",note:"Shin-Koiwa’s covered shopping arcade by the station."},
+ {t:"09:00",k:"stop",title:"Breakfast + last shopping",note:"Breakfast at Tomato (赤茄子) at the far end of Shin-Koiwa’s covered arcade, then shop your way back. Backups in the Eat list."},
  {t:"10:30",k:"stop",title:"Check out",note:"Passport, phone, Suica in your carry-on."},
  {t:"10:45",k:"move",line:"rapid",from:["新小岩","Shin-Koiwa"],to:["品川","Shinagawa"],dur:"25 min",fare:341,steps:["Blue line towards Tokyo / Shinagawa (Yokosuka Line)."]},
  {t:"11:15",k:"move",line:"keikyu",from:["品川","Shinagawa"],to:["羽田空港第3ターミナル","Haneda T3"],dur:"20 min",fare:327,steps:["Keikyu train bound for Haneda Airport (羽田空港). Check the board."]},
@@ -391,6 +391,9 @@ const EAT = [
  {day:"fri",area:"Shinjuku",meal:"Dinner",name:"Tatsuya",jp:"たつ屋 新宿店",kind:"Donburi",price:"About ¥500",why:"Tiny Showa-era counter under the stairs by the JR south-east exit: beef, oyako and katsu bowls at about one coin. Cash only.",src:"Retty",q:"たつ屋 新宿"},
  {day:"fri",area:"Shinjuku",meal:"Dinner",name:"Tokyo Mentsudan",jp:"東京麺通団",kind:"Sanuki udon",price:"From ¥310",why:"Self-serve udon at Kagawa prices. Cheap and quick; popular with visitors too, so lunch hours are busy.",src:"aumo",q:"東京麺通団 新宿"},
  // Sat
+ {day:"sat",area:"Shin-Koiwa",meal:"Breakfast",name:"Tomato",jp:"赤茄子（とまと）",kind:"Showa kissaten",price:"Morning set ≈¥500",why:"Old neighbourhood coffee shop at the far end of the Lumiere arcade, 7 to 8 min from the south exit. Ties in with your last shopping. Smoking is allowed inside.",src:"Tabelog",q:"赤茄子 とまと 新小岩"},
+ {day:"sat",area:"Shin-Koiwa",meal:"Breakfast",name:"Renoir Shin-Koiwa",jp:"喫茶室ルノアール 新小岩店",kind:"Classic coffee house",price:"Not confirmed",why:"Roomy, quiet kissaten on 2F of the Kikuya Building, 1 min from the north exit. Opens earliest, and smoking is limited to a separate area.",src:"Tabelog",q:"ルノアール 新小岩店"},
+ {day:"sat",area:"Shin-Koiwa",meal:"Breakfast",name:"Jonathan Shin-Koiwa Ekimae",jp:"ジョナサン 新小岩駅前店",kind:"Breakfast buffet",price:"¥1,300",why:"Family restaurant by the station, one of only a few Jonathan branches with a Japanese and Western morning buffet. Fill up before the airport.",src:"Retty / Toyo Keizai",q:"ジョナサン 新小岩駅前店"},
  {day:"sat",area:"Shin-Koiwa",meal:"Any time",name:"Kitchen Dai",jp:"キッチン大",kind:"Pick-3 set meals",price:"¥1,000 to 1,500",why:"Choose 3 dishes, big rice, tonjiru included. Open 11:00 to 20:00 Mon to Sat. Good any day you eat near the hotel.",src:"Retty",q:"キッチン大 新小岩"}
 ];
 
@@ -596,7 +599,7 @@ fri:{dow:"周五",date:"11月13日",full:"11月13日 星期五",title:"白天涩
  {s:["黄色线路，往千叶方向（东行），直达无需换乘。","周五晚上列车很挤。"]}],
  tips:["白天逛涩谷购物，日落后看新宿霓虹。"]},
 sat:{dow:"周六",date:"11月14日",full:"11月14日 星期六",title:"回程",wx:"PR 421 15:25从羽田第3航站楼起飞，在马尼拉转乘 PR 529，周日01:15抵达吉隆坡。",
- items:[{title:"早餐 + 最后购物",note:"新小岩车站旁的有盖商店街。"},
+ items:[{title:"早餐 + 最后购物",note:"在新小岩有盖商店街尽头的赤茄子（とまと）吃早餐，再一路逛回车站。备选见美食列表。"},
  {title:"退房",note:"护照、手机、Suica 放随身行李。"},
  {s:["蓝色线路，往东京 / 品川方向（横须贺线）。"]},
  {s:["搭往羽田机场（羽田空港）的京急列车，看电子屏确认。"]},
@@ -636,6 +639,9 @@ const EAT_ZH={
 "Ban’nai Kabukicho":{k:"喜多方拉面",p:"约¥1,000",w:"粗而有嚼劲的面条，叉烧满满，藏在歌舞伎町小巷里。看完哥斯拉正好来一碗。"},
 "Tatsuya":{k:"盖饭",p:"约¥500",w:"JR 东南口楼梯下的昭和风小吧台：牛肉饭、亲子饭、猪排饭大约一个硬币的价格。只收现金。"},
 "Tokyo Mentsudan":{k:"赞岐乌冬",p:"¥310 起",w:"自助式乌冬，香川价格。便宜快捷，游客也多，午餐时段较忙。"},
+"Tomato":{k:"昭和老喫茶店",p:"早餐套餐≈¥500",w:"Lumiere 商店街尽头的老街坊咖啡馆，从南口步行7至8分钟，正好顺路最后购物。店内可吸烟。"},
+"Renoir Shin-Koiwa":{k:"老牌咖啡馆",p:"未确认",w:"喜久屋大楼2楼，宽敞安静的喫茶店，从北口步行1分钟。开门最早，吸烟只限独立区域。"},
+"Jonathan Shin-Koiwa Ekimae":{k:"早餐自助",p:"¥1,300",w:"车站旁的家庭餐厅，是少数提供和洋早餐自助的 Jonathan 分店之一。去机场前吃饱。"},
 "Kitchen Dai":{k:"自选三菜定食",p:"¥1,000 至 1,500",w:"自选3道菜，大碗白饭，附猪肉味噌汤。周一至周六11:00至20:00。住附近哪天都适合。"}
 };
 const NC="未确认，请查 Google Maps";
@@ -668,6 +674,9 @@ const EATHRS_ZH={
 "Ban’nai Kabukicho":"每天11:00至23:00（最后点餐22:45）",
 "Tatsuya":"平日10:00至21:00；周末至20:00",
 "Tokyo Mentsudan":"周五11:00至16:30、18:00至23:00（最后点餐22:30）。卖完提早关门",
+"Tomato":"8:30至19:00，周二至周日。周一休息",
+"Renoir Shin-Koiwa":"每天7:00至20:00",
+"Jonathan Shin-Koiwa Ekimae":"早餐自助≈6:00至10:00（周末也有，但未正式确认）",
 "Kitchen Dai":"11:00至20:00，周一至周六。周日休息"
 };
 /* Heads-up shown under the hours when a place does not fit its slot: [EN, ZH] */
@@ -799,6 +808,9 @@ const EATHRS={
 "Ban’nai Kabukicho":"11:00 to 23:00 (last order 22:45), daily",
 "Tatsuya":"Weekdays 10:00 to 21:00; weekends to 20:00",
 "Tokyo Mentsudan":"Fri 11:00 to 16:30 and 18:00 to 23:00 (last order 22:30). Closes early if sold out",
+"Tomato":"8:30 to 19:00, Tue to Sun. Closed Mondays",
+"Renoir Shin-Koiwa":"7:00 to 20:00, daily",
+"Jonathan Shin-Koiwa Ekimae":"Breakfast buffet ≈6:00 to 10:00 (reported at weekends too, not officially confirmed)",
 "Kitchen Dai":"11:00 to 20:00, Mon to Sat. Closed Sundays"
 };
 /* key: day|from|to  ->  [first, last, note]  (weekday timetable unless noted) */
