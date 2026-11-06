@@ -252,7 +252,7 @@ nav.tabs button[aria-selected=true]{color:var(--ink);font-weight:700}
 <script>
 const DAYS = [
 {id:"mon",dow:"Mon",date:"9 Nov",full:"Monday 9 November",title:"Arrival + Akihabara",color:"#E0B400",ink:"#1B1B1B",
- wx:"18°C / 10°C. Dark by 4:40 PM, so Akihabara will already be lit.",
+ wx:"15°C / 9°C, rain likely. Dark by 4:40 PM, so Akihabara will already be lit.",
  items:[
  {t:"14:10",k:"stop",title:"Land at Haneda Terminal 3",note:"PR 422 from Manila. Allow 45 to 60 min for immigration, bags and customs. Buy Welcome Suica in arrivals."},
  {t:"15:15",k:"move",line:"keikyu",from:["羽田空港第3ターミナル","Haneda T3"],to:["品川","Shinagawa"],dur:"20 min",fare:327,steps:["Follow signs to Keikyu Line (京急線).","Any train stopping at Shinagawa works; most do. Check the board."]},
@@ -268,7 +268,7 @@ const DAYS = [
  ],
  tips:["Red-eye arrival: Mandarake and Super Potato are the priorities. HEY and GiGO can move to another night.","If immigration is slow and you leave the hotel after 17:30, do Super Potato and HEY first, then Mandarake until 20:00."]},
 {id:"tue",dow:"Tue",date:"10 Nov",full:"Tuesday 10 November",title:"Asakusa, Komagome, Tokyo Station",color:"#F39700",ink:"#1B1B1B",
- wx:"18°C / 11°C. Early start beats the Asakusa crowds; Tokyo Station at sunset.",
+ wx:"14°C / 9°C, cloudy. Early start beats the Asakusa crowds; Tokyo Station at sunset, about 4:37 PM.",
  items:[
  {t:"07:45",k:"move",line:"local",from:["新小岩","Shin-Koiwa"],to:["浅草橋","Asakusabashi"],dur:"12 min",fare:null,steps:["Yellow line, westbound."]},
  {t:"08:00",k:"move",line:"toei",from:["浅草橋","Asakusabashi"],to:["浅草","Asakusa"],dur:"5 min",fare:387,steps:["Toei Asakusa Line towards Oshiage (押上).","Fare shown is the total from Shin-Koiwa."]},
@@ -289,7 +289,7 @@ const DAYS = [
  ],
  tips:["Asakusa is calm before 9:00 and packed by 11:00.","Tokyo Station looks best at dusk, so it closes the day."]},
 {id:"wed",dow:"Wed",date:"11 Nov",full:"Wednesday 11 November",title:"Mt. Fuji: Lake Yamanaka + KABA",color:"#2E86AB",ink:"#FFFFFF",
- wx:"Lake Yamanaka is at about 1,000 m and much colder than Tokyo. Fuji is usually clearest earlier in the day.",
+ wx:"Lake Yamanaka is at about 1,000 m: about 9°C / 3°C, much colder than Tokyo. Fuji is often clearest in the morning, but this forecast shows cloud clearing in the afternoon.",
  items:[
  {t:"08:10",k:"move",line:"rapid",from:["新小岩","Shin-Koiwa"],to:["東京","Tokyo"],dur:"15 min",fare:209,steps:["Blue line towards Tokyo.","Platforms are deep underground: allow 15 min to reach the bus stop."]},
  {t:"09:00",k:"stop",title:"Be at your bus stop",note:"Check your mobile ticket: Yaesu South Exit (八重洲南口) or Tekko Building, Yaesu North (鉄鋼ビル). Routes differ and cannot be swapped.",q:"Tokyo Station Yaesu South Exit bus terminal"},
@@ -305,7 +305,7 @@ const DAYS = [
  ],
  tips:["KABA was suspended Nov 2025 to Jun 2026 due to low lake levels. It runs daily now, but weather can cancel trips. Check your booking email the day before.","If heavy rain or thick cloud is forecast, consider swapping Wednesday and Friday (rebook KABA and the bus)."]},
 {id:"thu",dow:"Thu",date:"12 Nov",full:"Thursday 12 November",title:"Tokyo Disneyland",color:"#C9242F",ink:"#FFFFFF",
- wx:"Park open 9:00 to 21:00. Day 2 of Disney Christmas. Evenings get cool.",
+ wx:"18°C / 8°C, sunny spells. Park open 9:00 to 21:00, day 2 of Disney Christmas. Evenings get cold.",
  items:[
  {t:"07:30",k:"move",line:"local",from:["新小岩","Shin-Koiwa"],to:["西船橋","Nishi-Funabashi"],dur:"12 min",fare:null,steps:["Yellow line EASTBOUND towards Chiba / Tsudanuma. Not westbound."]},
  {t:"07:50",k:"move",line:"keiyo",from:["西船橋","Nishi-Funabashi"],to:["舞浜","Maihama"],dur:"10 min",fare:440,steps:["JR Musashino / Keiyo Line, train bound for Tokyo (東京) or Shin-Kiba (新木場).","Trains towards Minami-Funabashi do NOT pass Maihama.","Fallback: Sobu Rapid to Tokyo, then Keiyo Line (long underground walk)."]},
@@ -320,7 +320,7 @@ const DAYS = [
  ],
  tips:["Park ticket ¥10,900 (adult, 12 Nov), date-specific. Buy on the official site or app."]},
 {id:"fri",dow:"Fri",date:"13 Nov",full:"Friday 13 November",title:"Shibuya by day, Shinjuku by night",color:"#4E9A2A",ink:"#FFFFFF",
- wx:"18°C / 10°C. Kabukicho and the Godzilla Head look best after dark.",
+ wx:"20°C / 9°C, sunny spells. Kabukicho and the Godzilla Head look best after dark.",
  items:[
  {t:"09:30",k:"move",line:"local",from:["新小岩","Shin-Koiwa"],to:["代々木","Yoyogi"],dur:"32 min",fare:null,steps:["Yellow line westbound."]},
  {t:"10:02",k:"move",line:"yama",from:["代々木","Yoyogi"],to:["渋谷","Shibuya"],dur:"6 min",fare:341,steps:["Yamanote Line towards Shibuya / Shinagawa."]},
@@ -478,7 +478,7 @@ showName:"Show name",via:"via",noPicks:"No sit-down picks needed today.",eatTitl
 eatIntro:"Picked from Japanese review sites (Tabelog, Retty) and local media, favouring set-meal shops, standing bars and old diners over tourist strips. Tap the star to save.",
 all:"All",saved:"Saved",nothingSaved:"Nothing saved yet. Tap ☆ on a place to keep it here.",
 eatTips:"Tips: many small shops are cash only and use a ticket machine (食券機) by the door. Lunch sets are the cheapest way to eat well. Last orders are often 30 min before closing. Hours checked 6 Nov 2026; ≈ means listings differ, so confirm in Google Maps.",
-near:"Nearby",nearTitle:"Also nearby",nearIntro:"Famous and local-favourite places close to each day’s stops that are not already in your plan. Each card says how to fit it in. Tap the star to save.",fitIn:"Fit it in",nearFoot:"Hours checked 6 Nov 2026 against official and Japanese listings. ≈ means approximate or taken from an older listing; recheck in Google Maps on the day.",notYet:"Not yet",fcNote:"Forecast as of 4 Nov 2026; recheck 48 hours before.",liveFc:"Live forecast",check:"Check",showLarge:"Show in large text",markDone:"Mark done"},
+near:"Nearby",nearTitle:"Also nearby",nearIntro:"Famous and local-favourite places close to each day’s stops that are not already in your plan. Each card says how to fit it in. Tap the star to save.",fitIn:"Fit it in",nearFoot:"Hours checked 6 Nov 2026 against official and Japanese listings. ≈ means approximate or taken from an older listing; recheck in Google Maps on the day.",notYet:"Not yet",fcNote:"Forecast as of 6 Nov 2026: Japan Meteorological Agency weekly forecast; Lake Yamanaka and Saturday from Open-Meteo. Recheck 48 hours before.",liveFc:"Live forecast",check:"Check",showLarge:"Show in large text",markDone:"Mark done"},
 zh:{title:"东京之旅 11月9日至14日",plan:"行程",eat:"美食",info:"资讯",close:"关闭",today:"今天",now:"现在",firstUp:"首先",nextAt:"下一个",
 firstTrain:"首班车",lastTrain:"末班车",firstBus:"首班巴士",lastBus:"末班巴士",howRide:"乘车方法",howRideX:"乘车方法 + 换乘",inTotal:"见总价",
 liveRoute:"在 Google Maps 查看实时路线",transferAt:"换乘站",walk:"步行≈",min:"分钟",direct:"直达",totalFare:"总车费",meal:"用餐",hours:"营业时间",
@@ -488,7 +488,7 @@ showName:"出示店名",via:"来源",noPicks:"今天不需要另外找餐厅。"
 eatIntro:"选自日本本地点评网站（Tabelog、Retty）和本地媒体，优先定食店、立饮店和老食堂，避开游客区。点星星收藏。",
 all:"全部",saved:"已收藏",nothingSaved:"还没有收藏。点店家的 ☆ 就会出现在这里。",
 eatTips:"贴士：很多小店只收现金，门口用食券机（食券機）点餐。午餐套餐最划算。最后点餐通常在关门前30分钟。营业时间于2026年11月6日核实；≈ 表示各资料不一致，请用 Google Maps 确认。",
-near:"周边",nearTitle:"附近还能去",nearIntro:"每天行程附近、尚未排进计划的知名景点和本地人爱去的地方。每张卡片都写了怎么安排。点星星收藏。",fitIn:"怎么安排",nearFoot:"营业时间于2026年11月6日对照官方及日本资讯核实。≈ 表示约数或来自较旧的资料，当天请用 Google Maps 再确认。",notYet:"尚未发布",fcNote:"预报截至2026年11月4日；出发前48小时再确认。",liveFc:"实时天气",check:"待查",showLarge:"放大显示",markDone:"标记完成"}
+near:"周边",nearTitle:"附近还能去",nearIntro:"每天行程附近、尚未排进计划的知名景点和本地人爱去的地方。每张卡片都写了怎么安排。点星星收藏。",fitIn:"怎么安排",nearFoot:"营业时间于2026年11月6日对照官方及日本资讯核实。≈ 表示约数或来自较旧的资料，当天请用 Google Maps 再确认。",notYet:"尚未发布",fcNote:"预报截至2026年11月6日：日本气象厅一周预报；山中湖和周六来自 Open-Meteo。出发前48小时再确认。",liveFc:"实时天气",check:"待查",showLarge:"放大显示",markDone:"标记完成"}
 };
 const LINES_ZH={local:"中央・总武线各站停车",rapid:"总武快速线",yama:"山手线",keiyo:"京叶线 / 武藏野线",keikyu:"京急机场线",toei:"都营浅草线",ginza:"银座线",bus:"富士急高速巴士"};
 const TAGS_ZH={date:"你的日期",new:"2026新",viral:"热门",classic:"经典",tip:"贴士",missed:"刚错过"};
@@ -525,7 +525,7 @@ const PHRASES_ZH=["这班车去新小岩吗？","几号站台？","在哪里换�
 const BOOKINGS_ZH={kaba:"KABA 水陆两用巴士，11月11日周三13:00（Fujiyama Connect）",bus1:"富士急巴士 东京09:20至山中湖旭日丘（手机车票）",bus2:"富士急巴士 旭日丘15:20至东京（手机车票）",tdl:"东京迪士尼乐园一日护照，11月12日周四",sqex:"Square Enix 咖啡厅新宿时段，11月13日周五（可选）",suica:"在羽田买 Welcome Suica，或用 Apple Wallet 的 Suica",kl:"预约11月15日周日01:15吉隆坡机场接机"};
 
 const ZH_DAYS={
-mon:{dow:"周一",date:"11月9日",full:"11月9日 星期一",title:"抵达 + 秋叶原",wx:"18°C / 10°C。下午4:40天就黑了，到秋叶原时霓虹灯已经亮起。",
+mon:{dow:"周一",date:"11月9日",full:"11月9日 星期一",title:"抵达 + 秋叶原",wx:"15°C / 9°C，很可能下雨。下午4:40天就黑了，到秋叶原时霓虹灯已经亮起。",
  items:[{title:"抵达羽田机场第3航站楼",note:"PR 422 从马尼拉抵达。入境、取行李和海关预留45至60分钟。在到达大厅购买 Welcome Suica。"},
  {s:["跟随京急线（京急線）指示牌。","大多数列车都停品川，看电子屏确认。"]},
  {s:["搭 JR 横须贺线 / 总武快速线，往千叶或津田沼方向。","蓝色线路，途经东京站无需换乘。"]},
@@ -538,7 +538,7 @@ mon:{dow:"周一",date:"11月9日",full:"11月9日 星期一",title:"抵达 + �
  {title:"GiGO 秋叶原",note:"夹娃娃机，营业到很晚。红眼航班太累可以跳过。"},
  {s:["黄色线路，往千叶方向（东行）。"]}],
  tips:["红眼航班抵达：Mandarake 和 Super Potato 优先，HEY 和 GiGO 可以改到其他晚上。","如果入境排队久、17:30后才离开酒店，先去 Super Potato 和 HEY，再去 Mandarake（20:00关门）。"]},
-tue:{dow:"周二",date:"11月10日",full:"11月10日 星期二",title:"浅草、驹込、东京站",wx:"18°C / 11°C。早点出发避开浅草人潮；傍晚在东京站看日落。",
+tue:{dow:"周二",date:"11月10日",full:"11月10日 星期二",title:"浅草、驹込、东京站",wx:"14°C / 9°C，多云。早点出发避开浅草人潮；傍晚约4:37在东京站看日落。",
  items:[{s:["黄色线路，西行。"]},
  {s:["都营浅草线，往押上（押上）方向。","显示的票价是从新小岩出发的总价。"]},
  {title:"早餐：Tomorrow（友路有）",note:"6:30开门的复古咖啡馆，综合早餐套餐约¥660。可选，见美食列表。"},
@@ -556,7 +556,7 @@ tue:{dow:"周二",date:"11月10日",full:"11月10日 星期二",title:"浅草、
  {title:"八重洲地下街晚餐",note:"拉面街旁的八重洲地下街有更便宜的上班族餐厅，见美食列表。"},
  {s:["总武快速线站台在地下深处：跟随蓝色「総武線快速 / 横須賀線」指示牌。","往千叶方向。"]}],
  tips:["浅草9:00前很清静，11:00后人山人海。","东京站黄昏最好看，所以安排在最后。"]},
-wed:{dow:"周三",date:"11月11日",full:"11月11日 星期三",title:"富士山：山中湖 + KABA 水陆两用巴士",wx:"山中湖海拔约1,000米，比东京冷得多。富士山通常上午较清晰。",
+wed:{dow:"周三",date:"11月11日",full:"11月11日 星期三",title:"富士山：山中湖 + KABA 水陆两用巴士",wx:"山中湖海拔约1,000米：约9°C / 3°C，比东京冷得多。富士山通常上午较清晰，但这次预报显示云层下午才散开。",
  items:[{s:["蓝色线路，往东京方向。","站台在地下深处：预留15分钟走到巴士站。"]},
  {title:"到达巴士站",note:"看清楚手机车票：八重洲南口（八重洲南口）或八重洲北口铁钢大楼（鉄鋼ビル）。两条路线不同，不能互换。"},
  {s:["富士急高速巴士，对号入座，需出示手机车票，不能用 Suica。","约11:55抵达。"]},
@@ -569,7 +569,7 @@ wed:{dow:"周三",date:"11月11日",full:"11月11日 星期三",title:"富士山
  {s:["蓝色线路，往千叶方向。"]},
  {title:"新小岩晚餐",note:"酒店附近有很多便宜又地道的本地小店，见美食列表。"}],
  tips:["KABA 因湖水水位过低，2025年11月至2026年6月曾停运。现已每日运行，但天气不好可能取消，前一天请查看预订邮件。","如果预报大雨或云层很厚，可考虑把周三和周五对调（需改订 KABA 和巴士）。"]},
-thu:{dow:"周四",date:"11月12日",full:"11月12日 星期四",title:"东京迪士尼乐园",wx:"园区9:00至21:00开放。迪士尼圣诞活动第2天。晚上会变冷。",
+thu:{dow:"周四",date:"11月12日",full:"11月12日 星期四",title:"东京迪士尼乐园",wx:"18°C / 8°C，晴时多云。园区9:00至21:00开放，迪士尼圣诞活动第2天。晚上会变冷。",
  items:[{s:["黄色线路，往千叶 / 津田沼方向（东行），不是西行。"]},
  {s:["JR 武藏野线 / 京叶线，搭往东京（東京）或新木场（新木場）的列车。","往南船桥（南船橋）的列车不经过舞滨。","备选：搭总武快速线到东京站，再转京叶线（地下通道很长）。"]},
  {title:"步行到入口",note:"约5分钟。9:00开园，有时会提早入园。准备好 App 和门票。"},
@@ -581,7 +581,7 @@ thu:{dow:"周四",date:"11月12日",full:"11月12日 星期四",title:"东京迪
  {s:["搭往西船桥 / 武藏野线方向的列车。"]},
  {s:["黄色线路，往东京 / 三鹰方向（西行）。"]}],
  tips:["门票¥10,900（成人，11月12日），按日期购买，请在官网或 App 购买。"]},
-fri:{dow:"周五",date:"11月13日",full:"11月13日 星期五",title:"白天涩谷，晚上新宿",wx:"18°C / 10°C。歌舞伎町和哥斯拉头像天黑后最好看。",
+fri:{dow:"周五",date:"11月13日",full:"11月13日 星期五",title:"白天涩谷，晚上新宿",wx:"20°C / 9°C，晴时多云。歌舞伎町和哥斯拉头像天黑后最好看。",
  items:[{s:["黄色线路，西行。"]},
  {s:["山手线，往涩谷 / 品川方向。"]},
  {title:"忠犬八公 + 涩谷十字路口",note:"趁人少时走一趟全向十字路口。"},
@@ -726,12 +726,12 @@ const XFER_ZH={
 "sat|品川|羽田空港第3ターミナル":["在品川（品川）下车，跟随红色「京急線」指示牌。","走京急换乘闸口（京急線のりかえ口），刷一次 Suica。","搭往「羽田空港」的列车，确认屏幕显示停「羽田空港第3ターミナル」（第3航站楼）。"]
 };
 
-const FC_ZH={mon:{p:["东京（新小岩）"],t:"目前预报凉爽干燥，秋叶原晚上穿薄外套就够。"},
-tue:{p:["东京"],t:"目前预报干燥，适合清早逛浅草和傍晚在东京站看日落。"},
-wed:{p:["东京","山中湖"],t:"山中湖清晨和天黑后接近冰点。带保暖外套、手套和帽子，尤其是留下来看16:30点灯并搭18:50巴士的话。"},
-thu:{p:["东京"],t:"预报尚未发布（截至11月4日）。11月中旬一般白天约18°C、晚上约10°C，园区日落后更冷。"},
-fri:{p:["东京"],t:"预报尚未发布（截至11月4日）。11月中旬一般白天约18°C、晚上约10°C。"},
-sat:{p:["东京"],t:"预报尚未发布（截至11月4日）。11月中旬一般白天约18°C、晚上约10°C。"}};
+const FC_ZH={mon:{p:["东京（新小岩）"],t:"多云，间中有雨。秋叶原大部分在室内；带把折伞，或在便利店买一把。"},
+tue:{p:["东京"],t:"多云，是最凉的一天，有机会下雨。这么早的预报把握不大，前一晚再确认；雨天方案已包括浅草。"},
+wed:{p:["东京","山中湖"],t:"东京和山梨都是晴时多云。湖边有模型显示云层到约13:00，下午逐渐散开，所以14:00至16:30可能最容易看到富士山。清晨和天黑后接近冰点：带保暖外套、手套和帽子，尤其是要搭18:50巴士的话。"},
+thu:{p:["东京"],t:"晴时多云，白天温和，但晚上游行时会降到约8°C：多带一件保暖衣服。"},
+fri:{p:["东京"],t:"晴时多云，是整趟旅程最暖的一天。天晴适合上 MAGNET 或 SHIBUYA SKY 屋顶。"},
+sat:{p:["东京"],t:"超出官方一周预报范围。有模型显示多云、无雨；周五再确认。"}};
 </script>
 
 <script>
@@ -970,16 +970,16 @@ const EATNEAR={
  "sat|12:30":"restaurants Haneda Airport Terminal 3"
 };
 const FC={
- mon:{c:[["Tokyo, Shin-Koiwa",15,9]],t:"Cool and dry in the current forecast. A light jacket is enough for the Akihabara evening."},
- tue:{c:[["Tokyo",16,10]],t:"Dry in the current forecast; good conditions for the early Asakusa walk and sunset at Tokyo Station."},
- wed:{c:[["Tokyo",16,8],["Lake Yamanaka",12,0]],t:"Lake Yamanaka drops to around freezing early and after dark. Warm jacket, gloves and a hat, especially if you stay for the 16:30 light-up and the 18:50 bus."},
- thu:{c:[["Tokyo",null,null]],t:"Not in the forecast yet (as of 4 Nov). Typical for mid-November: about 18°C by day, 10°C at night, cooler once the sun sets at the park."},
- fri:{c:[["Tokyo",null,null]],t:"Not in the forecast yet (as of 4 Nov). Typical for mid-November: about 18°C by day, 10°C at night."},
- sat:{c:[["Tokyo",null,null]],t:"Not in the forecast yet (as of 4 Nov). Typical for mid-November: about 18°C by day, 10°C at night."}
+ mon:{c:[["Tokyo, Shin-Koiwa",15,9,70]],t:"Cloudy with spells of rain. Akihabara is mostly indoors; pack a compact umbrella or buy one at a konbini."},
+ tue:{c:[["Tokyo",14,9,40]],t:"Cloudy and the coolest day, with some chance of rain. Confidence is low this far out, so check the night before; the rain plan covers Asakusa."},
+ wed:{c:[["Tokyo",16,8,20],["Lake Yamanaka",9,3,24]],t:"Sunny spells across Tokyo and Yamanashi. At the lake, one model keeps cloud until about 13:00 and clears it by mid-afternoon, so Fuji may show best from 14:00 to 16:30. Near freezing early and after dark: warm jacket, gloves and a hat, especially if you stay for the 18:50 bus."},
+ thu:{c:[["Tokyo",18,8,20]],t:"Sunny spells and mild by day, but it drops towards 8°C by the evening parade: bring a warm layer."},
+ fri:{c:[["Tokyo",20,9,20]],t:"Sunny spells and the warmest day of the trip. Clear skies suit the MAGNET or SHIBUYA SKY rooftop."},
+ sat:{c:[["Tokyo",18,8,3]],t:"Beyond the official weekly forecast. One model shows partly cloudy and dry; recheck on Friday."}
 };
 function fcHtml(id){const f=FC[id];if(!f)return "";const fz=ZH()?FC_ZH[id]:null;
  const cards=`<div class="fc">${f.c.map(([p,h,l,pp],i)=>`<div class="fcc"><div class="pl">${esc(fz?fz.p[i]:p)}</div><div class="tp">${h===null?I("notYet"):`${h}° <small>/ ${l}°C</small>`}</div>${pp!=null?`<div class="tx">☂ ${pp}%</div>`:""}</div>`).join("")}</div>`;
- if(f.live){const dt=new Date(f.live).toLocaleString(ZH()?"zh-CN":"en-GB",{timeZone:"Asia/Tokyo",day:"numeric",month:"short",hour:"2-digit",minute:"2-digit"});return cards+`<p class="fcn">${I("liveUpd")} ${dt} (Open-Meteo)</p>`;}
+ if(f.live){const dt=new Date(f.live).toLocaleString(ZH()?"zh-CN":"en-GB",{timeZone:"Asia/Tokyo",day:"numeric",month:"short",hour:"2-digit",minute:"2-digit"});return cards+`<p class="note" style="margin:6px 0 0">${esc(fz?fz.t:f.t)}</p><p class="fcn">${I("liveUpd")} ${dt} (Open-Meteo)</p>`;}
  return cards+`<p class="note" style="margin:6px 0 0">${esc(fz?fz.t:f.t)}</p><p class="fcn">${I("fcNote")} <a href="https://www.google.com/search?q=${encodeURIComponent(id==="wed"?"Yamanakako weather":"Shin-Koiwa weather")}" target="_blank" rel="noopener">${I("liveFc")}</a></p>`}
 
 function renderDay(){
@@ -1125,7 +1125,7 @@ function renderInfoEn(){
  <h3 class="sec">Budget</h3>
  <div class="blk"><div class="li"><span>Transport + KABA</span><span class="v">${yen(total)}</span></div><div class="li"><span>Disneyland ticket</span><span class="v">¥10,900</span></div><div class="li"><span>Square Enix Cafe charge</span><span class="v">¥1,200</span></div><div class="li"><span>Suica top-up to start</span><span class="v">¥5,000 to 6,000</span></div></div>
  <h3 class="sec">Weather</h3>
- <div class="blk"><div class="li"><span>Tokyo, mid-Nov</span><span class="v">about 18°C / 10°C</span></div><div class="li"><span>Sunset</span><span class="v">about 4:35 PM</span></div><div class="li"><span>Lake Yamanaka</span><span class="v">much colder</span></div></div>
+ <div class="blk"><div class="li"><span>Tokyo, 9 to 14 Nov</span><span class="v">14 to 20°C / 8 to 9°C</span></div><div class="li"><span>Rain</span><span class="v">Mon likely, Tue possible</span></div><div class="li"><span>Sunset</span><span class="v">about 4:35 PM</span></div><div class="li"><span>Lake Yamanaka, Wed</span><span class="v">about 9°C / 3°C</span></div></div>
  <h3 class="sec">Emergency</h3>
  <div class="blk"><div class="li"><span>Police</span><a class="v" href="tel:110">110</a></div><div class="li"><span>Ambulance / Fire</span><a class="v" href="tel:119">119</a></div><div class="li"><span>JNTO Visitor Hotline, 24h</span><a class="v" href="tel:+815038162787">050-3816-2787</a></div></div>
  <h3 class="sec">Your hotel</h3>
@@ -1174,7 +1174,7 @@ function renderInfoZh(){
  <h3 class="sec">预算</h3>
  <div class="blk"><div class="li"><span>交通 + KABA</span><span class="v">${yen(total)}</span></div><div class="li"><span>迪士尼门票</span><span class="v">¥10,900</span></div><div class="li"><span>Square Enix 咖啡厅入座费</span><span class="v">¥1,200</span></div><div class="li"><span>Suica 初次充值</span><span class="v">¥5,000 至 6,000</span></div></div>
  <h3 class="sec">天气</h3>
- <div class="blk"><div class="li"><span>东京，11月中旬</span><span class="v">约 18°C / 10°C</span></div><div class="li"><span>日落</span><span class="v">约下午4:35</span></div><div class="li"><span>山中湖</span><span class="v">冷得多</span></div></div>
+ <div class="blk"><div class="li"><span>东京，11月9日至14日</span><span class="v">14至20°C / 8至9°C</span></div><div class="li"><span>降雨</span><span class="v">周一很可能，周二有机会</span></div><div class="li"><span>日落</span><span class="v">约下午4:35</span></div><div class="li"><span>山中湖，周三</span><span class="v">约 9°C / 3°C</span></div></div>
  <h3 class="sec">紧急联系</h3>
  <div class="blk"><div class="li"><span>警察</span><a class="v" href="tel:110">110</a></div><div class="li"><span>救护车 / 消防</span><a class="v" href="tel:119">119</a></div><div class="li"><span>日本观光局访客热线（24小时，有中文）</span><a class="v" href="tel:+815038162787">050-3816-2787</a></div></div>
  <h3 class="sec">你的酒店</h3>
@@ -1190,8 +1190,8 @@ Object.assign(I18N.zh,{nextDep:"下一班出发",leaveNow:"现在出发",inT:"�
 const LASTHOME={mon:{st:["秋葉原","Akihabara"],t:"00:28"},tue:{st:["東京","Tokyo Station"],t:"00:01"},wed:{st:["東京","Tokyo Station"],t:"00:01"},thu:{st:["舞浜","Maihama"],t:"23:00",approx:true},fri:{st:["新宿","Shinjuku"],t:"00:08"}};
 
 const CHECK={
-mon:{en:["Passport, plus Visit Japan Web QR codes saved on your phone","Be at KLIA T1 by about 23:20 on Sunday","Phone and power bank charged","Light jacket in your carry-on for the evening"],
-     zh:["护照，以及存在手机里的 Visit Japan Web 二维码","周日约23:20前到达吉隆坡机场 T1","手机和充电宝充满电","随身行李放一件薄外套，晚上用"]},
+mon:{en:["Passport, plus Visit Japan Web QR codes saved on your phone","Be at KLIA T1 by about 23:20 on Sunday","Phone and power bank charged","Light jacket and a compact umbrella in your carry-on: rain is forecast for Monday"],
+     zh:["护照，以及存在手机里的 Visit Japan Web 二维码","周日约23:20前到达吉隆坡机场 T1","手机和充电宝充满电","随身行李放一件薄外套和一把折伞：周一预报有雨"]},
 tue:{en:["Alarm for 07:00; leave the hotel at 07:45","Suica topped up (about ¥1,000 for the day)","Cash for Nakamise snacks and lunch","Comfortable shoes: a lot of walking today"],
      zh:["闹钟定07:00；07:45离开酒店","Suica 充值（当天约¥1,000）","准备现金买仲见世小吃和午餐","穿好走的鞋，今天走很多路"]},
 wed:{en:["Screenshot both bus tickets (09:20 and 15:20) so they work offline","Check which Tokyo stop your ticket shows: Yaesu South Exit or Tekko Building","Check the KABA booking email for any weather cancellation","Warm jacket, gloves and hat: the lake is near 0°C","Leave the hotel by 08:10"],
