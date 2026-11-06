@@ -1,0 +1,1186 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#F1F3F5" media="(prefers-color-scheme: light)">
+<meta name="theme-color" content="#11161B" media="(prefers-color-scheme: dark)">
+<title>Tokyo, 9 to 14 Nov</title>
+<meta name="description" content="Offline-friendly Tokyo trip plan, 9 to 14 November 2026">
+<style>
+:root{
+ --bg:#F1F3F5;--surface:#FFFFFF;--ink:#16202A;--muted:#5B6875;--rule:#DCE1E6;--plate:#FFFFFF;--plateInk:#16202A;
+ --day:#E0B400;--dayInk:#1B1B1B;--done:#2E9E5B;--warn:#B76E00;
+ --safe-t:env(safe-area-inset-top,0px);--safe-b:env(safe-area-inset-bottom,0px);
+ color-scheme:light;
+}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#11161B;--surface:#1A2128;--ink:#E7ECF1;--muted:#9AA7B3;--rule:#2B343D;--plate:#F4F6F8;--plateInk:#16202A;--done:#4CC27F;--warn:#E3A33B;color-scheme:dark}}
+:root[data-theme="dark"]{--bg:#11161B;--surface:#1A2128;--ink:#E7ECF1;--muted:#9AA7B3;--rule:#2B343D;--plate:#F4F6F8;--plateInk:#16202A;--done:#4CC27F;--warn:#E3A33B;color-scheme:dark}
+*{box-sizing:border-box}
+:root{box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+html{scroll-padding-top:calc(env(safe-area-inset-top,0px) + 120px)}
+body::before{content:"";position:fixed;inset:0 0 auto;height:env(safe-area-inset-top,0px);z-index:25;background:var(--bg)}
+html,body{margin:0;background:var(--bg);color:var(--ink)}
+body{font-family:-apple-system,BlinkMacSystemFont,"Hiragino Sans","Hiragino Kaku Gothic ProN","Noto Sans JP","Noto Sans CJK JP","Yu Gothic",system-ui,sans-serif;font-size:16px;line-height:1.5;-webkit-text-size-adjust:100%;padding-bottom:76px}
+button{font:inherit;color:inherit;background:none;border:0;padding:0;cursor:pointer}
+a{color:inherit}
+:focus-visible{outline:3px solid var(--day);outline-offset:2px;border-radius:6px}
+.wrap{max-width:560px;margin:0 auto;padding:0 16px}
+
+/* header + day strip */
+header{position:sticky;top:env(safe-area-inset-top,0px);z-index:20;background:var(--bg);border-bottom:1px solid var(--rule)}
+.hrow{display:flex;align-items:center;gap:10px;justify-content:space-between;padding:12px 16px 6px;max-width:560px;margin:0 auto}
+.hrow h1{font-size:17px;margin:0;font-weight:700;letter-spacing:.01em}
+.hr{display:flex;align-items:center;gap:10px;flex:0 0 auto}
+.lang{display:flex;border:1px solid var(--rule);border-radius:999px;overflow:hidden;background:var(--surface)}
+.lang button{font-size:12px;font-weight:700;padding:4px 10px;color:var(--muted);min-height:28px}
+.lang button[aria-pressed=true]{background:var(--ink);color:var(--bg)}
+.clock{font-size:13px;color:var(--muted);font-variant-numeric:tabular-nums}
+.strip{display:flex;gap:6px;overflow-x:auto;padding:4px 16px 10px;max-width:560px;margin:0 auto;scrollbar-width:none}
+.strip::-webkit-scrollbar{display:none}
+.chip{flex:0 0 auto;min-width:64px;border-radius:12px;padding:6px 10px 7px;background:var(--surface);border:1px solid var(--rule);text-align:left;position:relative}
+.chip b{display:block;font-size:15px;line-height:1.1}
+.chip span{font-size:12px;color:var(--muted)}
+.chip i{position:absolute;left:10px;right:10px;bottom:0;height:3px;border-radius:3px 3px 0 0;background:var(--c)}
+.chip[aria-selected=true]{background:var(--c);border-color:var(--c);color:var(--ci)}
+.chip[aria-selected=true] span{color:inherit;opacity:.85}
+.chip[aria-selected=true] i{display:none}
+.chip .today{font-size:10px;font-weight:700;margin-left:4px}
+
+/* day hero */
+.hero{margin:18px 0 10px}
+.hero .d{font-size:14px;color:var(--muted)}
+.hero h2{font-size:26px;line-height:1.15;margin:2px 0 8px;font-weight:800}
+.wx{font-size:14px;color:var(--muted);border-left:4px solid var(--day);padding:2px 0 2px 10px}
+.next{margin:14px 0 4px;background:var(--day);color:var(--dayInk);border-radius:16px;padding:12px 14px;display:none}
+.next.show{display:block}
+.next small{display:block;font-size:12px;opacity:.85}
+.next strong{font-size:17px}
+
+/* timeline */
+.tl{position:relative;margin:14px 0 8px;padding-left:22px}
+.tl:before{content:"";position:absolute;left:7px;top:6px;bottom:6px;width:3px;border-radius:3px;background:var(--day);opacity:.35}
+.it{position:relative;margin:0 0 10px}
+.it .dot{position:absolute;left:-22px;top:14px;width:17px;height:17px;border-radius:50%;background:var(--surface);border:3px solid var(--day)}
+.it.done .dot{background:var(--done);border-color:var(--done)}
+.it.done .dot:after{content:"";position:absolute;left:4px;top:1px;width:4px;height:8px;border:solid #fff;border-width:0 2px 2px 0;transform:rotate(45deg)}
+.it.now .dot{box-shadow:0 0 0 5px color-mix(in srgb,var(--day) 35%,transparent)}
+.card{background:var(--surface);border:1px solid var(--rule);border-radius:14px;padding:11px 13px}
+.it.now .card{border-color:var(--day);border-width:2px}
+.row1{display:flex;gap:10px;align-items:baseline}
+.time{font-weight:800;font-variant-numeric:tabular-nums;font-size:17px;min-width:48px}
+.ttl{font-weight:700;font-size:16px;line-height:1.3}
+.note{font-size:14px;color:var(--muted);margin:4px 0 0}
+.acts{display:flex;gap:14px;margin-top:8px;font-size:14px}
+.acts a,.acts button{color:var(--ink);text-decoration:underline;text-underline-offset:3px;text-decoration-color:var(--rule);text-decoration-thickness:2px}
+.it.eat .card{background:transparent;border-style:dashed}
+.eattag{font-size:12px;font-weight:700;color:var(--warn)}
+
+/* signature: station sign plates */
+.move{background:var(--surface);border:1px solid var(--rule);border-radius:14px;overflow:hidden}
+.mhead{display:flex;align-items:center;justify-content:space-between;padding:8px 12px 0;font-size:13px;color:var(--muted)}
+.badge{display:inline-block;font-size:12px;font-weight:700;padding:2px 8px;border-radius:6px}
+.signs{display:grid;grid-template-columns:1fr auto 1fr;align-items:stretch;gap:6px;padding:8px 10px 10px}
+.plate{background:var(--plate);color:var(--plateInk);border:1px solid #C9D0D7;border-radius:6px;text-align:center;padding:6px 4px 0;position:relative;overflow:hidden;display:flex;flex-direction:column;justify-content:center;min-height:68px}
+.plate .j{font-size:19px;font-weight:800;line-height:1.15;word-break:keep-all}
+.plate .r{font-size:11px;color:#4A5561;margin:2px 0 8px}
+.plate:after{content:"";position:absolute;left:0;right:0;bottom:0;height:6px;background:var(--lc)}
+.plate.long .j{font-size:14px;word-break:break-all;padding:0 4px}
+.arrow{align-self:center;font-size:18px;color:var(--muted)}
+.mfoot{display:flex;justify-content:space-between;align-items:center;border-top:1px solid var(--rule);padding:8px 12px;font-size:14px}
+.mfoot .fare{font-variant-numeric:tabular-nums;font-weight:700}
+details.steps summary{list-style:none;color:var(--ink);text-decoration:underline;text-underline-offset:3px;text-decoration-color:var(--rule);text-decoration-thickness:2px}
+details.steps summary::-webkit-details-marker{display:none}
+details.steps ol{margin:0;padding:0 12px 10px 30px;font-size:14px;color:var(--ink)}
+details.steps ol li{margin:4px 0}
+
+.hrs{font-size:13px;margin-top:6px;display:flex;gap:6px;align-items:baseline}
+.hrs span{font-weight:700;color:var(--muted);flex:0 0 auto}
+.ft{display:grid;grid-template-columns:1fr 1fr;gap:6px;padding:0 10px 8px}
+.ft div{background:color-mix(in srgb,var(--day) 10%,var(--surface));border-radius:8px;padding:5px 9px}
+.ft small{display:block;font-size:11px;color:var(--muted)}
+.ft b{font-size:16px;font-variant-numeric:tabular-nums}
+.tnote{font-size:12px;color:var(--muted);padding:0 12px 8px}
+details.todo{margin-top:8px;border-top:1px solid var(--rule);padding-top:6px}
+details.todo summary{font-size:14px;font-weight:700;cursor:pointer;list-style:none;display:flex;justify-content:space-between;align-items:center}
+details.todo summary::-webkit-details-marker{display:none}
+details.todo summary:after{content:"＋";color:var(--muted);font-weight:400}
+details.todo[open] summary:after{content:"－"}
+details.todo ul{list-style:none;margin:6px 0 2px;padding:0}
+details.todo li{font-size:14px;padding:6px 0;border-bottom:1px dashed var(--rule)}
+details.todo li:last-child{border-bottom:0}
+.tag{display:inline-block;font-size:11px;font-weight:700;color:#fff;border-radius:4px;padding:1px 6px;margin-right:6px;vertical-align:1px}
+.fc{display:grid;grid-template-columns:repeat(auto-fit,minmax(140px,1fr));gap:8px;margin:12px 0 4px}
+.fcc{background:var(--surface);border:1px solid var(--rule);border-radius:14px;padding:10px 12px}
+.fcc .pl{font-size:12px;color:var(--muted)}
+.fcc .tp{font-size:24px;font-weight:800;font-variant-numeric:tabular-nums;line-height:1.2}
+.fcc .tp small{font-size:15px;font-weight:600;color:var(--muted)}
+.fcc .tx{font-size:13px;margin-top:3px}
+.fcn{font-size:12px;color:var(--muted);margin:4px 0 0}
+.flt{background:var(--surface);border:1px solid var(--rule);border-radius:14px;margin-bottom:10px;overflow:hidden}
+.flt .fh{display:flex;justify-content:space-between;align-items:baseline;padding:10px 13px 4px}
+.flt .fh b{font-size:16px}
+.flt .fh span{font-size:13px;color:var(--muted)}
+.leg{display:grid;grid-template-columns:1fr auto 1fr;gap:6px;align-items:center;padding:8px 13px}
+.leg .ap{font-size:22px;font-weight:800;line-height:1.1}
+.leg .tm{font-size:15px;font-weight:700;font-variant-numeric:tabular-nums}
+.leg .tr{font-size:12px;color:var(--muted)}
+.leg .r{text-align:right}
+.leg .no{font-size:12px;font-weight:700;text-align:center;color:var(--muted)}
+.lay{margin:0 13px;padding:7px 10px;border-radius:8px;font-size:13px;background:color-mix(in srgb,#E3A33B 16%,var(--surface))}
+.fltf{font-size:12px;color:var(--muted);padding:6px 13px 10px}
+.steps2{counter-reset:s;list-style:none;margin:0;padding:4px 0}
+.steps2 li{counter-increment:s;position:relative;padding:8px 0 8px 34px;border-bottom:1px solid var(--rule);font-size:14px}
+.steps2 li:last-child{border-bottom:0}
+.steps2 li:before{content:counter(s);position:absolute;left:0;top:8px;width:24px;height:24px;border-radius:50%;background:var(--ink);color:var(--bg);font-size:13px;font-weight:700;display:flex;align-items:center;justify-content:center}
+.jny .mhead>span:last-child{white-space:nowrap;margin-left:8px}
+.jt{font-weight:700;font-size:15px;padding:4px 12px 2px;display:flex;justify-content:space-between;gap:8px;align-items:baseline}
+.jt span{font-size:12px;color:var(--muted);font-weight:700;white-space:nowrap}
+.leg2 .lh{display:flex;justify-content:space-between;align-items:center;padding:8px 12px 0;font-size:13px;color:var(--muted)}
+.leg2 .signs{padding-top:6px}
+.xf{margin:2px 10px 8px;padding:9px 11px;border-radius:10px;background:color-mix(in srgb,var(--day) 12%,var(--surface));border-left:4px solid var(--day)}
+.xf .xh{font-size:14px;display:flex;flex-wrap:wrap;gap:6px;align-items:baseline}
+.xf .xj{font-weight:800}
+.xf .xw{margin-left:auto;font-size:12px;font-weight:700;color:var(--muted)}
+.xf ol{margin:6px 0 0;padding-left:20px;font-size:13.5px}
+.xf li{margin:3px 0}
+.jfoot{border-top:1px solid var(--rule);font-weight:700}
+details.xtra{background:var(--surface);border:1px solid var(--rule);border-radius:14px;margin:10px 0 0;padding:0 13px}
+details.xtra summary{list-style:none;cursor:pointer;font-weight:700;font-size:15px;padding:11px 0;display:flex;align-items:center;gap:6px}
+details.xtra summary::-webkit-details-marker{display:none}
+details.xtra summary:after{content:"＋";margin-left:auto;color:var(--muted);font-weight:400}
+details.xtra[open] summary:after{content:"－"}
+details.xtra ul{margin:0 0 10px;padding-left:18px;font-size:14px}
+details.xtra li{margin:4px 0}
+details.xtra.rain summary{color:#2E6FA5}
+.cln{font-size:12px;color:var(--muted);font-weight:700;background:var(--bg);border-radius:999px;padding:1px 8px}
+details.cl .chk{font-size:14px}
+.alert{border-radius:16px;padding:11px 14px;margin:12px 0 0;display:flex;flex-direction:column;gap:1px}
+.alert small{font-size:12px;opacity:.85}
+.alert strong{font-size:20px;font-variant-numeric:tabular-nums}
+.alert span{font-size:14px}
+.alert.go{background:var(--day);color:var(--dayInk)}
+.alert.last{background:#16202A;color:#fff}
+.alert.urgent{background:#C62828;color:#fff}
+.fcc .tx{font-size:13px;color:var(--muted);margin-top:2px}
+.tips{margin:6px 0 16px;padding:0;list-style:none}
+.tips li{font-size:14px;background:color-mix(in srgb,var(--day) 14%,var(--surface));border-radius:12px;padding:10px 12px;margin-bottom:8px}
+
+/* eat */
+h3.sec{font-size:20px;margin:26px 0 4px;font-weight:800}
+.sub{font-size:14px;color:var(--muted);margin:0 0 12px}
+.area{font-size:13px;font-weight:700;color:var(--muted);margin:16px 0 6px}
+.food{background:var(--surface);border:1px solid var(--rule);border-radius:14px;padding:12px 13px;margin-bottom:8px}
+.food .top{display:flex;justify-content:space-between;gap:10px;align-items:flex-start}
+.food .nm{font-weight:700;font-size:16px;line-height:1.25}
+.food .jpn{font-size:14px;color:var(--muted)}
+.food .pr{font-size:13px;font-weight:700;white-space:nowrap;font-variant-numeric:tabular-nums}
+.food .meta{font-size:13px;color:var(--muted);margin-top:2px}
+.food .why{font-size:14px;margin:6px 0 0}
+.food .acts{margin-top:8px}
+.fav{font-size:20px;line-height:1;color:var(--muted)}
+.fav[aria-pressed=true]{color:#E0A100}
+.filters{display:flex;gap:6px;overflow-x:auto;padding:4px 0 8px;scrollbar-width:none}
+.filters button{flex:0 0 auto;border:1px solid var(--rule);background:var(--surface);border-radius:999px;padding:5px 12px;font-size:14px}
+.filters button[aria-pressed=true]{background:var(--ink);color:var(--bg);border-color:var(--ink)}
+
+/* info */
+.blk{background:var(--surface);border:1px solid var(--rule);border-radius:14px;padding:4px 13px;margin-bottom:12px}
+.li{display:flex;justify-content:space-between;gap:10px;padding:10px 0;border-bottom:1px solid var(--rule);font-size:15px}
+.li:last-child{border-bottom:0}
+.li .v{font-weight:700;text-align:right;font-variant-numeric:tabular-nums}
+.chk{display:flex;gap:12px;align-items:flex-start;padding:11px 0;border-bottom:1px solid var(--rule);font-size:15px;width:100%;text-align:left}
+.chk:last-child{border-bottom:0}
+.box{flex:0 0 22px;height:22px;border-radius:6px;border:2px solid var(--muted);margin-top:1px;position:relative}
+.chk[aria-checked=true] .box{background:var(--done);border-color:var(--done)}
+.chk[aria-checked=true] .box:after{content:"";position:absolute;left:6px;top:2px;width:5px;height:10px;border:solid #fff;border-width:0 2px 2px 0;transform:rotate(45deg)}
+.chk[aria-checked=true] span{color:var(--muted);text-decoration:line-through}
+.phr{display:block;width:100%;text-align:left;padding:10px 0;border-bottom:1px solid var(--rule)}
+.phr:last-child{border-bottom:0}
+.phr .e{font-size:13px;color:var(--muted)}
+.phr .jj{font-size:18px;font-weight:700}
+.legend{display:flex;align-items:center;gap:10px;padding:8px 0;border-bottom:1px solid var(--rule);font-size:14px}
+.legend:last-child{border-bottom:0}
+
+/* bottom tabs */
+nav.tabs{position:fixed;left:0;right:0;bottom:0;z-index:30;background:var(--surface);border-top:1px solid var(--rule);padding-bottom:var(--safe-b)}
+nav.tabs .in{display:flex;max-width:560px;margin:0 auto}
+nav.tabs button{flex:1;padding:10px 0 12px;font-size:13px;color:var(--muted);display:flex;flex-direction:column;align-items:center;gap:2px}
+nav.tabs button svg{width:22px;height:22px}
+nav.tabs button[aria-selected=true]{color:var(--ink);font-weight:700}
+
+/* overlay: show-to-staff */
+.ov{position:fixed;inset:0;z-index:50;background:#FFFFFF;color:#111;display:none;flex-direction:column;align-items:center;justify-content:center;padding:calc(24px + var(--safe-t)) 24px calc(24px + var(--safe-b));text-align:center}
+.ov.show{display:flex}
+.ov .big{font-size:clamp(40px,13vw,88px);font-weight:800;line-height:1.15;word-break:keep-all}
+.ov .small{font-size:18px;color:#555;margin-top:14px}
+.ov .bar{width:70%;height:10px;border-radius:5px;margin-top:22px}
+.ov .close{position:absolute;bottom:calc(20px + var(--safe-b));left:50%;transform:translateX(-50%);border:2px solid #111;border-radius:999px;padding:10px 26px;font-size:16px;color:#111}
+.hide{display:none}
+.foot{font-size:12px;color:var(--muted);margin:24px 0 8px}
+@media (prefers-reduced-motion:no-preference){.it.now .dot{animation:pulse 2s ease-in-out infinite}@keyframes pulse{50%{box-shadow:0 0 0 9px transparent}}}
+</style>
+</head>
+<body>
+<header>
+ <div class="hrow"><h1 id="h1">Tokyo, 9 to 14 Nov</h1><div class="hr"><span class="clock" id="clock"></span><div class="lang" role="group" aria-label="Language / 语言"><button data-lang="en" aria-pressed="true">EN</button><button data-lang="zh" aria-pressed="false">中文</button></div></div></div>
+ <div class="strip" id="strip" role="tablist" aria-label="Days"></div>
+</header>
+
+<main class="wrap">
+ <section id="v-day"></section>
+ <section id="v-eat" class="hide"></section>
+ <section id="v-info" class="hide"></section>
+</main>
+
+<nav class="tabs" aria-label="Sections"><div class="in">
+ <button data-v="day" aria-selected="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="4" width="18" height="17" rx="3"/><path d="M3 9h18M8 2v4M16 2v4"/></svg><span id="nPlan">Plan</span></button>
+ <button data-v="eat" aria-selected="false"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 3v8a3 3 0 0 0 6 0V3M8 3v18M17 3c-2 2-3 5-3 8h3v10"/></svg><span id="nEat">Eat</span></button>
+ <button data-v="info" aria-selected="false"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="9"/><path d="M12 11v6M12 7.5v.5"/></svg><span id="nInfo">Info</span></button>
+</div></nav>
+
+<div class="ov" id="ov" role="dialog" aria-modal="true" aria-label="Show to staff">
+ <div class="big" id="ovBig"></div><div class="small" id="ovSmall"></div><div class="bar" id="ovBar"></div>
+ <button class="close" id="ovClose">Close</button>
+</div>
+
+<script>
+const DAYS = [
+{id:"mon",dow:"Mon",date:"9 Nov",full:"Monday 9 November",title:"Arrival + Akihabara",color:"#E0B400",ink:"#1B1B1B",
+ wx:"18°C / 10°C. Dark by 4:40 PM, so Akihabara will already be lit.",
+ items:[
+ {t:"14:10",k:"stop",title:"Land at Haneda Terminal 3",note:"PR 422 from Manila. Allow 45 to 60 min for immigration, bags and customs. Buy Welcome Suica in arrivals."},
+ {t:"15:15",k:"move",line:"keikyu",from:["羽田空港第3ターミナル","Haneda T3"],to:["品川","Shinagawa"],dur:"20 min",fare:327,steps:["Follow signs to Keikyu Line (京急線).","Any train stopping at Shinagawa works; most do. Check the board."]},
+ {t:"15:40",k:"move",line:"rapid",from:["品川","Shinagawa"],to:["新小岩","Shin-Koiwa"],dur:"25 min",fare:341,steps:["JR Yokosuka / Sobu Rapid Line towards Chiba or Tsudanuma.","Blue line colour. It goes through Tokyo Station without a change."]},
+ {t:"16:15",k:"stop",title:"Check in at Cypress Inn Tokyo",note:"Keep it quick: drop bags, freshen up, out by 16:45.",q:"Cypress Inn Tokyo Shin-Koiwa"},
+ {t:"16:50",k:"move",line:"local",from:["新小岩","Shin-Koiwa"],to:["秋葉原","Akihabara"],dur:"14 min",fare:209,steps:["Yellow line, westbound towards Mitaka / Nakano.","No transfer. Exit via Electric Town Exit (電気街口)."]},
+ {t:"17:10",k:"stop",title:"Mandarake Complex",note:"8 floors of manga, figures, collectibles. Closes 20:00, so it goes first. Allow 75 min.",q:"Mandarake Complex Akihabara"},
+ {t:"18:30",k:"stop",title:"Super Potato",note:"Retro games, 3F to 5F. Closes 20:00 on weekdays. Passport for tax-free.",q:"Super Potato Akihabara"},
+ {t:"19:30",k:"stop",title:"HEY (Hirose Entertainment Yard)",note:"Arcade right next to Super Potato. Open late.",q:"HEY Hirose Entertainment Yard Akihabara"},
+ {t:"20:15",k:"eat",title:"Dinner",note:"See the Eat list below. Small local shops often take last orders around 20:00 to 21:00, so if you are hungry earlier, eat between Mandarake and Super Potato."},
+ {t:"21:00",k:"stop",title:"GiGO Akihabara",note:"Crane games, open late. Skip if the red-eye has caught up with you.",q:"GiGO Akihabara"},
+ {t:"21:45",k:"move",line:"local",from:["秋葉原","Akihabara"],to:["新小岩","Shin-Koiwa"],dur:"14 min",fare:209,steps:["Yellow line, eastbound towards Chiba."]}
+ ],
+ tips:["Red-eye arrival: Mandarake and Super Potato are the priorities. HEY and GiGO can move to another night.","If immigration is slow and you leave the hotel after 17:30, do Super Potato and HEY first, then Mandarake until 20:00."]},
+{id:"tue",dow:"Tue",date:"10 Nov",full:"Tuesday 10 November",title:"Asakusa, Komagome, Tokyo Station",color:"#F39700",ink:"#1B1B1B",
+ wx:"18°C / 11°C. Early start beats the Asakusa crowds; Tokyo Station at sunset.",
+ items:[
+ {t:"07:45",k:"move",line:"local",from:["新小岩","Shin-Koiwa"],to:["浅草橋","Asakusabashi"],dur:"12 min",fare:null,steps:["Yellow line, westbound."]},
+ {t:"08:00",k:"move",line:"toei",from:["浅草橋","Asakusabashi"],to:["浅草","Asakusa"],dur:"5 min",fare:387,steps:["Toei Asakusa Line towards Oshiage (押上).","Fare shown is the total from Shin-Koiwa."]},
+ {t:"08:10",k:"eat",title:"Breakfast at Tomorrow (友路有)",note:"Retro kissaten open from 6:30. Mixed morning set about ¥660. Optional; see Eat list."},
+ {t:"08:45",k:"stop",title:"Kaminarimon (雷門)",note:"Thunder Gate photos before the tour groups arrive.",q:"Kaminarimon Asakusa"},
+ {t:"09:00",k:"stop",title:"Sensō-ji (浅草寺)",note:"Tokyo’s oldest temple. Pagoda, incense, omikuji fortunes.",q:"Sensoji Temple"},
+ {t:"09:45",k:"stop",title:"Nakamise Shopping Street",note:"Shops open around 9:30 to 10:00. Snack here rather than sitting down.",q:"Nakamise Shopping Street"},
+ {t:"11:00",k:"move",line:"ginza",from:["浅草","Asakusa"],to:["上野","Ueno"],dur:"5 min",fare:null,steps:["Tokyo Metro Ginza Line towards Shibuya (渋谷)."]},
+ {t:"11:10",k:"move",line:"yama",from:["上野","Ueno"],to:["駒込","Komagome"],dur:"15 min",fare:377,steps:["Yamanote Line towards Ikebukuro (池袋).","Fare shown is the total from Asakusa."]},
+ {t:"11:40",k:"eat",title:"Lunch in Komagome",note:"Tonki (とんかつ) or Tokiwa Shokudo; see Eat list. Tonki’s lunch ends 14:15."},
+ {t:"12:40",k:"stop",title:"Komagome Myōgi Shrine (妙義神社)",note:"Quiet local shrine, about 15 to 20 min.",q:"妙義神社 駒込"},
+ {t:"13:10",k:"stop",title:"Rikugien Garden (六義園), optional",note:"Short walk from the station. Edo-period garden; early autumn colour likely. Allow 1 hour.",q:"Rikugien Garden"},
+ {t:"14:30",k:"move",line:"yama",from:["駒込","Komagome"],to:["東京","Tokyo"],dur:"20 min",fare:209,steps:["Yamanote Line towards Tabata / Ueno (田端・上野)."]},
+ {t:"15:00",k:"stop",title:"First Avenue Tokyo Station",note:"Tokyo Character Street, Okashi Land, Ramen Street. Most shops close around 20:00.",q:"First Avenue Tokyo Station"},
+ {t:"16:30",k:"stop",title:"Marunouchi facade at sunset",note:"Red-brick station as the lights come on. Best view from KITTE rooftop garden, 6F.",q:"KITTE Garden Marunouchi"},
+ {t:"18:00",k:"eat",title:"Dinner in Yaechika",note:"The Yaesu underground mall has cheaper office-worker spots next to Ramen Street; see Eat list."},
+ {t:"19:00",k:"move",line:"rapid",from:["東京","Tokyo"],to:["新小岩","Shin-Koiwa"],dur:"15 min",fare:209,steps:["Sobu Rapid platforms are deep underground: follow blue signs for 総武線快速 / 横須賀線.","Towards Chiba."]}
+ ],
+ tips:["Asakusa is calm before 9:00 and packed by 11:00.","Tokyo Station looks best at dusk, so it closes the day."]},
+{id:"wed",dow:"Wed",date:"11 Nov",full:"Wednesday 11 November",title:"Mt. Fuji: Lake Yamanaka + KABA",color:"#2E86AB",ink:"#FFFFFF",
+ wx:"Lake Yamanaka is at about 1,000 m and much colder than Tokyo. Fuji is usually clearest earlier in the day.",
+ items:[
+ {t:"08:10",k:"move",line:"rapid",from:["新小岩","Shin-Koiwa"],to:["東京","Tokyo"],dur:"15 min",fare:209,steps:["Blue line towards Tokyo.","Platforms are deep underground: allow 15 min to reach the bus stop."]},
+ {t:"09:00",k:"stop",title:"Be at your bus stop",note:"Check your mobile ticket: Yaesu South Exit (八重洲南口) or Tekko Building, Yaesu North (鉄鋼ビル). Routes differ and cannot be swapped.",q:"Tokyo Station Yaesu South Exit bus terminal"},
+ {t:"09:20",k:"move",line:"bus",from:["東京駅","Tokyo Stn"],to:["山中湖旭日丘","Yamanakako Asahigaoka"],dur:"2 h 35 min",fare:2700,steps:["Fujikyu highway bus, reserved seat, mobile ticket required. Suica not accepted.","Arrives about 11:55."]},
+ {t:"12:00",k:"stop",title:"Lakeside walk and Fuji photos",note:"Use the clearer midday light first. Stroll the shore near Asahigaoka.",q:"Yamanakako Asahigaoka"},
+ {t:"12:40",k:"stop",title:"KABA check-in",note:"Asahigaoka Bus Terminal 「森の駅」. Arrive 15 min early for the pre-show video.",q:"Yamanakako Asahigaoka Bus Terminal"},
+ {t:"13:00",k:"stop",title:"Yamanakako no KABA",note:"Amphibious bus splashes into the lake, about 30 min. ¥2,800."},
+ {t:"13:40",k:"eat",title:"Hōtō lunch",note:"Moved after KABA so there is no rush. Kosaku is open all day; see Eat list. Check walking time in Google Maps before you go."},
+ {t:"15:05",k:"stop",title:"Back at Asahigaoka bus stop",note:"Return bus leaves 15:20."},
+ {t:"15:20",k:"move",line:"bus",from:["山中湖旭日丘","Yamanakako Asahigaoka"],to:["東京駅","Tokyo Stn"],dur:"2 h 37 min",fare:2700,steps:["Scheduled arrival 17:57. Traffic can add delays.","Backup: 18:50 bus arrives 21:27 (subject to seats).","Optional: book boarding at Oshino Hakkai (忍野八海 大橋) at 15:33 and take a local bus or taxi there after lunch."]},
+ {t:"18:15",k:"move",line:"rapid",from:["東京","Tokyo"],to:["新小岩","Shin-Koiwa"],dur:"15 min",fare:209,steps:["Blue line towards Chiba."]},
+ {t:"19:00",k:"eat",title:"Dinner near Shin-Koiwa",note:"Your home turf has excellent cheap local spots; see Eat list."}
+ ],
+ tips:["KABA was suspended Nov 2025 to Jun 2026 due to low lake levels. It runs daily now, but weather can cancel trips. Check your booking email the day before.","If heavy rain or thick cloud is forecast, consider swapping Wednesday and Friday (rebook KABA and the bus)."]},
+{id:"thu",dow:"Thu",date:"12 Nov",full:"Thursday 12 November",title:"Tokyo Disneyland",color:"#C9242F",ink:"#FFFFFF",
+ wx:"Park open 9:00 to 21:00. Day 2 of Disney Christmas. Evenings get cool.",
+ items:[
+ {t:"07:30",k:"move",line:"local",from:["新小岩","Shin-Koiwa"],to:["西船橋","Nishi-Funabashi"],dur:"12 min",fare:null,steps:["Yellow line EASTBOUND towards Chiba / Tsudanuma. Not westbound."]},
+ {t:"07:50",k:"move",line:"keiyo",from:["西船橋","Nishi-Funabashi"],to:["舞浜","Maihama"],dur:"10 min",fare:440,steps:["JR Musashino / Keiyo Line, train bound for Tokyo (東京) or Shin-Kiba (新木場).","Trains towards Minami-Funabashi do NOT pass Maihama.","Fallback: Sobu Rapid to Tokyo, then Keiyo Line (long underground walk)."]},
+ {t:"08:15",k:"stop",title:"Walk to the gates",note:"5 min. Gates open 9:00; entry sometimes starts early. App and ticket ready.",q:"Tokyo Disneyland"},
+ {t:"09:00",k:"stop",title:"Rope drop",note:"Most popular ride first, then Premier Access or Standby Pass in the app."},
+ {t:"12:00",k:"eat",title:"Lunch in the park",note:"Use Mobile Order in the app to skip queues; see Eat list."},
+ {t:"13:00",k:"stop",title:"Toys Wondrous Christmas parade",note:"Once a day, about 45 min. Check the app for the exact time; claim a spot 30 to 45 min early."},
+ {t:"19:00",k:"stop",title:"Electrical Parade Dreamlights",note:"Christmas version. Use indoor rides when it gets cold. Check the app for times."},
+ {t:"21:00",k:"stop",title:"Park closes",note:"Leave a little early to avoid the crush."},
+ {t:"21:15",k:"move",line:"keiyo",from:["舞浜","Maihama"],to:["西船橋","Nishi-Funabashi"],dur:"10 min",fare:null,steps:["Train bound for Nishi-Funabashi / Musashino Line."]},
+ {t:"21:30",k:"move",line:"local",from:["西船橋","Nishi-Funabashi"],to:["新小岩","Shin-Koiwa"],dur:"12 min",fare:440,steps:["Yellow line westbound towards Tokyo / Mitaka."]}
+ ],
+ tips:["Park ticket ¥10,900 (adult, 12 Nov), date-specific. Buy on the official site or app."]},
+{id:"fri",dow:"Fri",date:"13 Nov",full:"Friday 13 November",title:"Shibuya by day, Shinjuku by night",color:"#4E9A2A",ink:"#FFFFFF",
+ wx:"18°C / 10°C. Kabukicho and the Godzilla Head look best after dark.",
+ items:[
+ {t:"09:30",k:"move",line:"local",from:["新小岩","Shin-Koiwa"],to:["代々木","Yoyogi"],dur:"32 min",fare:null,steps:["Yellow line westbound."]},
+ {t:"10:02",k:"move",line:"yama",from:["代々木","Yoyogi"],to:["渋谷","Shibuya"],dur:"6 min",fare:341,steps:["Yamanote Line towards Shibuya / Shinagawa."]},
+ {t:"10:15",k:"stop",title:"Hachiko + Shibuya Crossing",note:"Walk the scramble while it is quieter.",q:"Shibuya Scramble Crossing"},
+ {t:"10:30",k:"stop",title:"Shibuya 109",note:"Fashion floors; opens 10:00.",q:"Shibuya 109"},
+ {t:"11:30",k:"stop",title:"Pokémon Center Shibuya",note:"Shibuya PARCO 6F; Nintendo TOKYO on the same floor.",q:"Pokemon Center Shibuya"},
+ {t:"12:30",k:"eat",title:"Lunch",note:"Senryo’s ¥680 kushi-katsu set or a fish teishoku; see Eat list."},
+ {t:"13:30",k:"stop",title:"MAGNET by SHIBUYA109",note:"Rooftop view straight down onto the crossing.",q:"MAGNET by SHIBUYA109"},
+ {t:"14:15",k:"stop",title:"MEGA Don Quijote Shibuya",note:"Souvenirs and snacks, tax-free with passport. Open 24 hours.",q:"MEGA Don Quijote Shibuya"},
+ {t:"15:00",k:"move",line:"yama",from:["渋谷","Shibuya"],to:["新宿","Shinjuku"],dur:"7 min",fare:199,steps:["Yamanote Line towards Shinjuku / Ikebukuro."]},
+ {t:"15:30",k:"stop",title:"Square Enix Cafe & Shop",note:"Paselabo Tower, Shinjuku 3-36-1, near East Exit. 11:00 to 22:00. Shop on 1F is open to all; cafe is reservation-first, 90 min, ¥1,200 charge.",q:"Officially Licensed SQUARE ENIX Cafe & Shop SHINJUKU"},
+ {t:"17:30",k:"stop",title:"Kabukicho after dark",note:"Godzilla Head on the Toho building, then Don Quijote Kabukicho.",q:"Godzilla Head Shinjuku"},
+ {t:"19:00",k:"eat",title:"Dinner in Shinjuku",note:"Swapped Omoide Yokocho (now tourist-priced) for local picks; see Eat list."},
+ {t:"20:30",k:"move",line:"local",from:["新宿","Shinjuku"],to:["新小岩","Shin-Koiwa"],dur:"35 min",fare:341,steps:["Yellow line eastbound towards Chiba. Direct, no change.","Friday night trains are busy."]}
+ ],
+ tips:["Shibuya shopping in daylight; Shinjuku neon after sunset."]},
+{id:"sat",dow:"Sat",date:"14 Nov",full:"Saturday 14 November",title:"Departure",color:"#0067C0",ink:"#FFFFFF",
+ wx:"PR 421 departs Haneda T3 at 15:25, connects in Manila to PR 529, lands KL 01:15 Sunday.",
+ items:[
+ {t:"09:00",k:"stop",title:"Breakfast + last shopping",note:"Shin-Koiwa’s covered shopping arcade by the station."},
+ {t:"10:30",k:"stop",title:"Check out",note:"Passport, phone, Suica in your carry-on."},
+ {t:"10:45",k:"move",line:"rapid",from:["新小岩","Shin-Koiwa"],to:["品川","Shinagawa"],dur:"25 min",fare:341,steps:["Blue line towards Tokyo / Shinagawa (Yokosuka Line)."]},
+ {t:"11:15",k:"move",line:"keikyu",from:["品川","Shinagawa"],to:["羽田空港第3ターミナル","Haneda T3"],dur:"20 min",fare:327,steps:["Keikyu train bound for Haneda Airport (羽田空港). Check the board."]},
+ {t:"12:00",k:"stop",title:"Check in for PR 421",note:"Check bags through to Kuala Lumpur and get both boarding passes (PR 421 and PR 529)."},
+ {t:"12:30",k:"eat",title:"Last meal at the airport",note:"Spend leftover Suica balance; it is not refundable."},
+ {t:"15:25",k:"stop",title:"PR 421 departs",note:"Arrange your KLIA pickup for 01:15 Sunday."}
+ ],
+ tips:[]}
+];
+
+/* Dining: local-recommended, budget-first. Sources are Japanese review sites (Tabelog, Retty) and Japanese travel media. */
+const EAT = [
+ // Akihabara (Mon)
+ {day:"mon",area:"Akihabara",meal:"Dinner",name:"Echigoya Heiji",jp:"越後屋平次 秋葉原店",kind:"Grilled fish set meals",price:"¥1,000 to 2,000",why:"Charcoal-grilled fish teishoku with free extra rice. Close to the station, easy for one.",src:"Retty",q:"越後屋平次 秋葉原店"},
+ {day:"mon",area:"Akihabara",meal:"Dinner",name:"Gyudon Sambo",jp:"牛丼専門 サンボ",kind:"Beef bowl",price:"Under ¥1,000",why:"Showa-era beef bowl counter with a homely, not-chain taste. Ticket machine, cash only, fast.",src:"Retty",q:"牛丼専門サンボ 秋葉原"},
+ {day:"mon",area:"Akihabara",meal:"Dinner",name:"Gohan-dokoro Adachi",jp:"ごはん処あだち",kind:"Set meals",price:"¥1,000 to 2,000",why:"Huge rice portions and a husband-and-wife team whose banter keeps the room laughing.",src:"Retty",q:"ごはん処あだち 秋葉原"},
+ {day:"mon",area:"Akihabara",meal:"Dinner",name:"Fuku no Ken",jp:"福の軒",kind:"Tonkotsu ramen",price:"From ¥630",why:"Cheap, solid pork-bone ramen popular with local office workers.",src:"aumo",q:"福の軒 秋葉原"},
+ {day:"mon",area:"Akihabara",meal:"Treat",name:"Marugo",jp:"丸五",kind:"Tonkatsu",price:"About ¥2,400",why:"Akihabara’s tonkatsu institution since 1975, Michelin Bib Gourmand. Worth one splurge; expect a queue.",src:"Tabelog",q:"丸五 秋葉原 とんかつ"},
+ // Asakusa (Tue)
+ {day:"tue",area:"Asakusa",meal:"Breakfast",name:"Tomorrow",jp:"友路有 (トゥモロー)",kind:"Retro kissaten",price:"About ¥660",why:"Opens 6:30. The mixed morning set (thick toast, eggs, ham, salad, soup) is the local favourite. English menu.",src:"LIVE JAPAN",q:"友路有 浅草"},
+ {day:"tue",area:"Asakusa",meal:"If you linger",name:"Yoshikami",jp:"ヨシカミ",kind:"Yoshoku (Japanese-Western)",price:"¥1,200 to 1,400",why:"Neighbourhood yoshoku since 1951; hayashi rice and omurice. Opens 11:30, so only if you stay later.",src:"Mapple",q:"ヨシカミ 浅草"},
+ // Komagome (Tue)
+ {day:"tue",area:"Komagome",meal:"Lunch",name:"Tonki",jp:"とんかつ とんき",kind:"Tonkatsu",price:"About ¥2,000",why:"Locals' favourite: ultra-thin crisp coating, counter seats, free refills of rice and cabbage. Lunch ends 14:15; no bookings.",src:"Tabelog / Retty",q:"とんき 駒込"},
+ {day:"tue",area:"Komagome",meal:"Lunch",name:"Sugamo Tokiwa Shokudo",jp:"巣鴨ときわ食堂 駒込店",kind:"Diner set meals",price:"¥1,000 to 2,000",why:"1 min from the station. Fish and meat teishoku, one free rice refill. November means oyster fry season.",src:"Retty",q:"巣鴨ときわ食堂 駒込店"},
+ {day:"tue",area:"Komagome",meal:"Quick bite",name:"Ichimaru Soba",jp:"一〇そば",kind:"Standing soba",price:"Under ¥600",why:"Open from 5:30 all day. The cheapest, fastest local option.",src:"Tabelog",q:"一〇そば 駒込"},
+ // Tokyo Station (Tue)
+ {day:"tue",area:"Tokyo Station",meal:"Dinner",name:"Ora ga Soba",jp:"おらが蕎麦 ヤエチカ店",kind:"Soba and curry",price:"About ¥1,000",why:"Office-worker staple in the Yaesu underground. Open until about 22:30 on weekdays.",src:"Retty",q:"おらが蕎麦 ヤエチカ"},
+ {day:"tue",area:"Tokyo Station",meal:"Dinner",name:"Himono Yaro",jp:"ひもの野郎 ヤエチカ",kind:"Grilled dried fish",price:"¥1,000 to 2,000",why:"Grilled himono fish with rice; open late. Feels like where locals eat after work.",src:"Retty",q:"ひもの野郎 東京駅ヤエチカ"},
+ {day:"tue",area:"Tokyo Station",meal:"Dinner",name:"Kamatake Udon",jp:"釜たけうどん 八重洲北口店",kind:"Osaka-style udon",price:"¥1,000 to 1,500",why:"Chewy udon from a famous Namba shop; a good-value alternative to the Ramen Street queues.",src:"Mapple",q:"釜たけうどん 八重洲北口店"},
+ {day:"tue",area:"Tokyo Station",meal:"Dinner",name:"Umanchu Shubo",jp:"海人酒房 八重洲地下街",kind:"Okinawan",price:"About ¥1,000",why:"Okinawa soba and rafute pork bowls; relaxed and close to the station.",src:"Retty",q:"海人酒房 八重洲地下街"},
+ // Yamanakako (Wed)
+ {day:"wed",area:"Lake Yamanaka",meal:"Lunch",name:"Kosaku Yamanakako",jp:"甲州ほうとう 小作 山中湖店",kind:"Hōtō noodles",price:"Mid-range",why:"Kabocha hōtō in an iron pot; loved by locals and visitors alike. Open 11:00 to 21:00. Check walking time from Asahigaoka.",src:"Japanese travel media",q:"甲州ほうとう小作 山中湖店"},
+ {day:"wed",area:"Lake Yamanaka",meal:"Lunch",name:"Kikuya Shokudo",jp:"喜久屋食堂",kind:"Old-style diner",price:"Budget",why:"Long-running unpretentious diner used by locals as well as visitors.",src:"Tabelog via nap-camp",q:"喜久屋食堂 山中湖"},
+ {day:"wed",area:"Lake Yamanaka",meal:"Lunch",name:"Taiho",jp:"お食事処 大豊",kind:"Hōtō, salt or miso",price:"Budget",why:"Described by locals as a hidden gem; the salt hōtō is the signature. A little away from the lake, so probably a taxi.",src:"Local blog",q:"お食事処大豊 山中湖"},
+ // Shin-Koiwa (Wed / any night)
+ {day:"wed",area:"Shin-Koiwa",meal:"Dinner",name:"Shigekin",jp:"しげきん",kind:"Standing bar, fish",price:"¥360 per dish",why:"Locals' standing bar 4 min from the south exit. Sashimi and simmered fish; every dish ¥360. Some seats too.",src:"aumo",q:"しげきん 新小岩"},
+ {day:"wed",area:"Shin-Koiwa",meal:"Dinner",name:"Nikuya Shokudo Takeuchi",jp:"肉屋食堂 たけうち",kind:"Butcher-run set meals",price:"About ¥1,000 to 1,500",why:"Run by a butcher: 3 cm thick pork cutlets, free large rice. The top local lunch and dinner pick.",src:"Retty",q:"肉屋食堂たけうち 新小岩"},
+ {day:"wed",area:"Shin-Koiwa",meal:"Dinner",name:"Chuka Gojuban",jp:"中華料理 五十番",kind:"Machi-chuka",price:"Budget",why:"Old-school neighbourhood Chinese 5 min from the south exit. Gentle shoyu ramen, fried rice, omurice.",src:"Retty",q:"五十番 新小岩"},
+ {day:"wed",area:"Shin-Koiwa",meal:"Dinner",name:"Yakitori Obako",jp:"やきとりおばこ",kind:"Yakiton izakaya",price:"Budget",why:"Since 1958. Big skewers, famous stew, retro fridge. A short walk from the station.",src:"Retty",q:"やきとりおばこ 新小岩"},
+ // Disney (Thu)
+ {day:"thu",area:"Tokyo Disneyland",meal:"Lunch",name:"Use Mobile Order",jp:"モバイルオーダー",kind:"In-park tip",price:"Park prices",why:"Order in the Tokyo Disney Resort app and collect at a set time; saves 20 to 40 min of queueing. Counter-service curry and rice dishes are the best value.",src:"Official app",q:"Tokyo Disneyland"},
+ {day:"thu",area:"Shin-Koiwa",meal:"Breakfast",name:"Konbini run",jp:"コンビニ",kind:"Onigiri, sandwiches",price:"Under ¥600",why:"Grab breakfast at a convenience store by Shin-Koiwa station before the 07:30 train.",src:"",q:"コンビニ 新小岩駅"},
+ // Shibuya (Fri)
+ {day:"fri",area:"Shibuya",meal:"Lunch",name:"Senryo",jp:"千両",kind:"Showa izakaya lunch",price:"¥680",why:"Family-run since the Showa era, 4 min from the station. The kushi-katsu and croquette set is the must-order; packed with office workers.",src:"Retty",q:"千両 渋谷"},
+ {day:"fri",area:"Shibuya",meal:"Lunch",name:"Kaihin Shokudo Takeda",jp:"海浜食堂たけだ",kind:"Fish set meals",price:"About ¥1,000",why:"3 min from the station. Saba miso set with big tonjiru. Lunch 11:30 to 15:00.",src:"Retty",q:"海浜食堂たけだ 渋谷"},
+ {day:"fri",area:"Shibuya",meal:"Lunch",name:"Nakayoshi",jp:"土鍋炊ごはん なかよし 渋谷ストリーム店",kind:"Claypot rice sets",price:"¥1,000 to 2,000",why:"Rice cooked fresh in a clay pot with simple set meals. Open 11:00 to 22:30.",src:"Retty",q:"なかよし 渋谷ストリーム"},
+ // Shinjuku (Fri)
+ {day:"fri",area:"Shinjuku",meal:"Dinner",name:"Numazuko Shinjuku Honten",jp:"沼津港 新宿本店",kind:"Conveyor sushi",price:"¥2,000 to 3,000",why:"Locals' value sushi on the way to Shinjuku-sanchome, near the Square Enix Cafe. Open 11:00 to 23:00.",src:"Retty",q:"沼津港 新宿本店"},
+ {day:"fri",area:"Shinjuku",meal:"Dinner",name:"Ban’nai Kabukicho",jp:"坂内 歌舞伎町店",kind:"Kitakata ramen",price:"About ¥1,000",why:"Thick chewy noodles and lots of pork, tucked in a Kabukicho side street. Good after Godzilla.",src:"Retty",q:"坂内 歌舞伎町店"},
+ {day:"fri",area:"Shinjuku",meal:"Dinner",name:"Tatsuya",jp:"たつ屋 新宿店",kind:"Donburi",price:"About ¥500",why:"Tiny Showa-era counter: beef, oyako and katsu bowls at about one coin.",src:"Retty",q:"たつ屋 新宿"},
+ {day:"fri",area:"Shinjuku",meal:"Dinner",name:"Tokyo Mentsudan",jp:"東京麺通団",kind:"Sanuki udon",price:"From ¥310",why:"Self-serve udon at Kagawa prices. Cheap and quick; popular with visitors too, so lunch hours are busy.",src:"aumo",q:"東京麺通団 新宿"},
+ // Sat
+ {day:"sat",area:"Shin-Koiwa",meal:"Breakfast",name:"Yoshoku Kissa Koyama",jp:"洋食喫茶 小山",kind:"Retro yoshoku cafe",price:"Budget",why:"Showa-retro cafe inside the station building; a calm last meal before the airport. Check opening time.",src:"Retty",q:"洋食喫茶 小山 新小岩"},
+ {day:"sat",area:"Shin-Koiwa",meal:"Any time",name:"Kitchen Dai",jp:"キッチン大",kind:"Pick-3 set meals",price:"¥1,000 to 1,500",why:"Choose 3 dishes, big rice, tonjiru included. Open 11:00 to 20:00 Mon to Sat. Good any day you eat near the hotel.",src:"Retty",q:"キッチン大 新小岩"}
+];
+
+const LINES = {
+ local:{n:"Chuo-Sobu Local",jp:"中央・総武線各駅停車",c:"#F2C200",f:"#1B1B1B"},
+ rapid:{n:"Sobu Rapid",jp:"総武快速線",c:"#0067C0",f:"#fff"},
+ yama:{n:"Yamanote",jp:"山手線",c:"#6BBF3A",f:"#fff"},
+ keiyo:{n:"Keiyo / Musashino",jp:"京葉線・武蔵野線",c:"#C9242F",f:"#fff"},
+ keikyu:{n:"Keikyu Airport",jp:"京急空港線",c:"#D7001E",f:"#fff"},
+ toei:{n:"Toei Asakusa",jp:"都営浅草線",c:"#E85298",f:"#fff"},
+ ginza:{n:"Ginza Line",jp:"銀座線",c:"#F39700",f:"#1B1B1B"},
+ bus:{n:"Fujikyu Highway Bus",jp:"富士急高速バス",c:"#4A4F55",f:"#fff"}
+};
+
+const PHRASES = [
+ ["Does this train go to Shin-Koiwa?","この電車は新小岩に行きますか？"],
+ ["Which platform?","何番線ですか？"],
+ ["Where is the transfer?","乗り換えはどこですか？"],
+ ["Where is the bus stop?","バス乗り場はどこですか？"],
+ ["Is this the correct train?","この電車で合っていますか？"],
+ ["A table for two, please.","二人です。"],
+ ["What do you recommend?","おすすめは何ですか？"],
+ ["The bill, please.","お会計お願いします。"],
+ ["Can I pay by card?","カードで払えますか？"],
+ ["Tax-free, please.","免税でお願いします。"],
+ ["Help, please.","助けてください。"]
+];
+
+const BOOKINGS = [
+ ["kaba","KABA amphibious bus, Wed 11 Nov 13:00 (Fujiyama Connect)"],
+ ["bus1","Fujikyu bus Tokyo 09:20 to Yamanakako Asahigaoka (mobile ticket)"],
+ ["bus2","Fujikyu bus Asahigaoka 15:20 to Tokyo (mobile ticket)"],
+ ["tdl","Tokyo Disneyland 1-Day Passport, Thu 12 Nov"],
+ ["sqex","Square Enix Cafe Shinjuku slot, Fri 13 Nov (optional)"],
+ ["suica","Welcome Suica at Haneda, or Suica in Apple Wallet"],
+ ["kl","KLIA pickup for 01:15 Sun 15 Nov"]
+];
+
+</script>
+<script>
+/* ===== Chinese (Simplified) translations. English data stays the source; these overlay it when 中文 is selected. ===== */
+const I18N={
+en:{title:"Tokyo, 9 to 14 Nov",plan:"Plan",eat:"Eat",info:"Info",close:"Close",today:"today",now:"Now",firstUp:"First up",nextAt:"Next at",
+firstTrain:"First train",lastTrain:"Last train",firstBus:"First bus",lastBus:"Last bus",howRide:"How to ride",howRideX:"How to ride + transfer",inTotal:"In total",
+liveRoute:"Live route in Google Maps",transferAt:"Transfer at",walk:"walk ≈",min:"min",direct:"Direct",totalFare:"Total fare",meal:"Meal",hours:"Hours",
+todo:"Things to do here",map:"Map",eatNearby:"Eat nearby",dayTransport:"Day transport",eatToday:"Eat nearby today",eatSub:"Local-recommended and budget-first. Prices per person.",
+footDay:"First and last trains use the weekday timetable unless noted, from the departure station in the direction shown. ≈ means approximate: check Google Maps on the day. Map and route links need data.",
+showName:"Show name",via:"via",noPicks:"No sit-down picks needed today.",eatTitle:"Where to eat",
+eatIntro:"Picked from Japanese review sites (Tabelog, Retty) and local media, favouring set-meal shops, standing bars and old diners over tourist strips. Tap the star to save.",
+all:"All",saved:"Saved",nothingSaved:"Nothing saved yet. Tap ☆ on a place to keep it here.",
+eatTips:"Tips: many small shops are cash only and use a ticket machine (食券機) by the door. Lunch sets are the cheapest way to eat well. Last orders are often 30 min before closing.",
+notYet:"Not yet",fcNote:"Forecast as of 4 Nov 2026; recheck 48 hours before.",liveFc:"Live forecast",check:"Check",showLarge:"Show in large text",markDone:"Mark done"},
+zh:{title:"东京之旅 11月9日至14日",plan:"行程",eat:"美食",info:"资讯",close:"关闭",today:"今天",now:"现在",firstUp:"首先",nextAt:"下一个",
+firstTrain:"首班车",lastTrain:"末班车",firstBus:"首班巴士",lastBus:"末班巴士",howRide:"乘车方法",howRideX:"乘车方法 + 换乘",inTotal:"见总价",
+liveRoute:"在 Google Maps 查看实时路线",transferAt:"换乘站",walk:"步行≈",min:"分钟",direct:"直达",totalFare:"总车费",meal:"用餐",hours:"营业时间",
+todo:"这里可以做什么",map:"地图",eatNearby:"附近美食",dayTransport:"当天交通费",eatToday:"今日附近美食",eatSub:"本地人推荐，价格实惠。价格以每人计。",
+footDay:"首末班车以平日时刻表为准（另有注明除外），指出发站往所示方向。≈ 表示约数，当天请用 Google Maps 确认。地图和路线链接需要网络。",
+showName:"出示店名",via:"来源",noPicks:"今天不需要另外找餐厅。",eatTitle:"吃什么",
+eatIntro:"选自日本本地点评网站（Tabelog、Retty）和本地媒体，优先定食店、立饮店和老食堂，避开游客区。点星星收藏。",
+all:"全部",saved:"已收藏",nothingSaved:"还没有收藏。点店家的 ☆ 就会出现在这里。",
+eatTips:"贴士：很多小店只收现金，门口用食券机（食券機）点餐。午餐套餐最划算。最后点餐通常在关门前30分钟。",
+notYet:"尚未发布",fcNote:"预报截至2026年11月4日；出发前48小时再确认。",liveFc:"实时天气",check:"待查",showLarge:"放大显示",markDone:"标记完成"}
+};
+const LINES_ZH={local:"中央・总武线各站停车",rapid:"总武快速线",yama:"山手线",keiyo:"京叶线 / 武藏野线",keikyu:"京急机场线",toei:"都营浅草线",ginza:"银座线",bus:"富士急高速巴士"};
+const TAGS_ZH={date:"你的日期",new:"2026新",viral:"热门",classic:"经典",tip:"贴士",missed:"刚错过"};
+const AREA_ZH={"Akihabara":"秋叶原","Asakusa":"浅草","Komagome":"驹込","Tokyo Station":"东京站","Lake Yamanaka":"山中湖","Shin-Koiwa":"新小岩","Tokyo Disneyland":"东京迪士尼乐园","Shibuya":"涩谷","Shinjuku":"新宿"};
+const MEAL_ZH={"Dinner":"晚餐","Treat":"犒劳一下","Breakfast":"早餐","If you linger":"多逗留时","Lunch":"午餐","Quick bite":"快速一餐","Any time":"任何时间"};
+const PHRASES_ZH=["这班车去新小岩吗？","几号站台？","在哪里换乘？","巴士站在哪里？","这班车对吗？","两位。","有什么推荐？","请结账。","可以刷卡吗？","请帮我办免税。","请帮帮我。"];
+const BOOKINGS_ZH={kaba:"KABA 水陆两用巴士，11月11日周三13:00（Fujiyama Connect）",bus1:"富士急巴士 东京09:20至山中湖旭日丘（手机车票）",bus2:"富士急巴士 旭日丘15:20至东京（手机车票）",tdl:"东京迪士尼乐园一日护照，11月12日周四",sqex:"Square Enix 咖啡厅新宿时段，11月13日周五（可选）",suica:"在羽田买 Welcome Suica，或用 Apple Wallet 的 Suica",kl:"预约11月15日周日01:15吉隆坡机场接机"};
+
+const ZH_DAYS={
+mon:{dow:"周一",date:"11月9日",full:"11月9日 星期一",title:"抵达 + 秋叶原",wx:"18°C / 10°C。下午4:40天就黑了，到秋叶原时霓虹灯已经亮起。",
+ items:[{title:"抵达羽田机场第3航站楼",note:"PR 422 从马尼拉抵达。入境、取行李和海关预留45至60分钟。在到达大厅购买 Welcome Suica。"},
+ {s:["跟随京急线（京急線）指示牌。","大多数列车都停品川，看电子屏确认。"]},
+ {s:["搭 JR 横须贺线 / 总武快速线，往千叶或津田沼方向。","蓝色线路，途经东京站无需换乘。"]},
+ {title:"入住 Cypress Inn Tokyo",note:"快速入住：放行李、梳洗，16:45前出门。"},
+ {s:["黄色线路，往三鹰 / 中野方向（西行）。","无需换乘。从电器街口（電気街口）出站。"]},
+ {title:"Mandarake Complex（まんだらけ）",note:"8层楼的漫画、手办和收藏品。20:00关门，所以先去。预留75分钟。"},
+ {title:"Super Potato（スーパーポテト）",note:"复古游戏，3F至5F。平日20:00关门。免税记得带护照。"},
+ {title:"HEY 街机厅（Hirose Entertainment Yard）",note:"就在 Super Potato 隔壁，营业到很晚。"},
+ {title:"晚餐",note:"见下方美食列表。本地小店常在20:00至21:00最后点餐，如果早点饿了，可以在 Mandarake 和 Super Potato 之间先吃。"},
+ {title:"GiGO 秋叶原",note:"夹娃娃机，营业到很晚。红眼航班太累可以跳过。"},
+ {s:["黄色线路，往千叶方向（东行）。"]}],
+ tips:["红眼航班抵达：Mandarake 和 Super Potato 优先，HEY 和 GiGO 可以改到其他晚上。","如果入境排队久、17:30后才离开酒店，先去 Super Potato 和 HEY，再去 Mandarake（20:00关门）。"]},
+tue:{dow:"周二",date:"11月10日",full:"11月10日 星期二",title:"浅草、驹込、东京站",wx:"18°C / 11°C。早点出发避开浅草人潮；傍晚在东京站看日落。",
+ items:[{s:["黄色线路，西行。"]},
+ {s:["都营浅草线，往押上（押上）方向。","显示的票价是从新小岩出发的总价。"]},
+ {title:"早餐：Tomorrow（友路有）",note:"6:30开门的复古咖啡馆，综合早餐套餐约¥660。可选，见美食列表。"},
+ {title:"雷门（雷門）",note:"趁旅行团还没到，先拍雷门。"},
+ {title:"浅草寺",note:"东京最古老的寺庙。五重塔、香炉、求签。"},
+ {title:"仲见世商店街",note:"店铺约9:30至10:00开门。在这里买小吃，不必坐下吃饭。"},
+ {s:["东京地铁银座线，往涩谷（渋谷）方向。"]},
+ {s:["山手线，往池袋（池袋）方向。","显示的票价是从浅草出发的总价。"]},
+ {title:"驹込午餐",note:"推荐 Tonki 炸猪排（とんき）或常盘食堂，见美食列表。Tonki 午餐到14:15。"},
+ {title:"驹込妙义神社（妙義神社）",note:"安静的社区神社，约15至20分钟。"},
+ {title:"六义园（六義園），可选",note:"离车站步行很近。江户时代庭园，可能已开始转红。预留约1小时。"},
+ {s:["山手线，往田端 / 上野（田端・上野）方向。"]},
+ {title:"东京站一番街",note:"东京动漫人物街、东京零食乐园、东京拉面街。多数店铺约20:00关门。"},
+ {title:"日落时的丸之内站舍",note:"红砖站舍亮灯时最美。KITTE 6楼屋顶花园视角最好。"},
+ {title:"八重洲地下街晚餐",note:"拉面街旁的八重洲地下街有更便宜的上班族餐厅，见美食列表。"},
+ {s:["总武快速线站台在地下深处：跟随蓝色「総武線快速 / 横須賀線」指示牌。","往千叶方向。"]}],
+ tips:["浅草9:00前很清静，11:00后人山人海。","东京站黄昏最好看，所以安排在最后。"]},
+wed:{dow:"周三",date:"11月11日",full:"11月11日 星期三",title:"富士山：山中湖 + KABA 水陆两用巴士",wx:"山中湖海拔约1,000米，比东京冷得多。富士山通常上午较清晰。",
+ items:[{s:["蓝色线路，往东京方向。","站台在地下深处：预留15分钟走到巴士站。"]},
+ {title:"到达巴士站",note:"看清楚手机车票：八重洲南口（八重洲南口）或八重洲北口铁钢大楼（鉄鋼ビル）。两条路线不同，不能互换。"},
+ {s:["富士急高速巴士，对号入座，需出示手机车票，不能用 Suica。","约11:55抵达。"]},
+ {title:"湖畔散步拍富士山",note:"趁中午光线较好先拍照，在旭日丘附近湖边散步。"},
+ {title:"KABA 报到",note:"旭日丘巴士总站「森の駅」。提前15分钟到，观看行前影片。"},
+ {title:"山中湖 KABA 水陆两用巴士",note:"巴士直接冲进湖里，约30分钟。¥2,800。"},
+ {title:"馎饦（ほうとう）午餐",note:"改到 KABA 之后，不用赶。小作全天营业，见美食列表。出发前用 Google Maps 查步行时间。"},
+ {title:"回到旭日丘巴士站",note:"回程巴士15:20开出。"},
+ {s:["预定17:57抵达，塞车可能延误。","备选：18:50班次，21:27抵达（视座位情况）。","可选：把上车站改为忍野八海（忍野八海 大橋，15:33），午餐后搭本地巴士或出租车过去。"]},
+ {s:["蓝色线路，往千叶方向。"]},
+ {title:"新小岩晚餐",note:"酒店附近有很多便宜又地道的本地小店，见美食列表。"}],
+ tips:["KABA 因湖水水位过低，2025年11月至2026年6月曾停运。现已每日运行，但天气不好可能取消，前一天请查看预订邮件。","如果预报大雨或云层很厚，可考虑把周三和周五对调（需改订 KABA 和巴士）。"]},
+thu:{dow:"周四",date:"11月12日",full:"11月12日 星期四",title:"东京迪士尼乐园",wx:"园区9:00至21:00开放。迪士尼圣诞活动第2天。晚上会变冷。",
+ items:[{s:["黄色线路，往千叶 / 津田沼方向（东行），不是西行。"]},
+ {s:["JR 武藏野线 / 京叶线，搭往东京（東京）或新木场（新木場）的列车。","往南船桥（南船橋）的列车不经过舞滨。","备选：搭总武快速线到东京站，再转京叶线（地下通道很长）。"]},
+ {title:"步行到入口",note:"约5分钟。9:00开园，有时会提早入园。准备好 App 和门票。"},
+ {title:"开园冲刺",note:"先冲最热门的设施，之后用 App 的尊享卡或预约等候卡。"},
+ {title:"园内午餐",note:"用 App 的移动点餐避开排队，见美食列表。"},
+ {title:"Toys Wondrous Christmas 圣诞游行",note:"每天一次，约45分钟。在 App 查看具体时间，提前30至45分钟占位。"},
+ {title:"夜间电子花车游行",note:"圣诞特别版。冷的时候去室内设施。时间以 App 为准。"},
+ {title:"闭园",note:"稍早离开，避开人潮。"},
+ {s:["搭往西船桥 / 武藏野线方向的列车。"]},
+ {s:["黄色线路，往东京 / 三鹰方向（西行）。"]}],
+ tips:["门票¥10,900（成人，11月12日），按日期购买，请在官网或 App 购买。"]},
+fri:{dow:"周五",date:"11月13日",full:"11月13日 星期五",title:"白天涩谷，晚上新宿",wx:"18°C / 10°C。歌舞伎町和哥斯拉头像天黑后最好看。",
+ items:[{s:["黄色线路，西行。"]},
+ {s:["山手线，往涩谷 / 品川方向。"]},
+ {title:"忠犬八公 + 涩谷十字路口",note:"趁人少时走一趟全向十字路口。"},
+ {title:"涩谷109",note:"潮流服饰，10:00开门。"},
+ {title:"宝可梦中心涩谷",note:"涩谷PARCO 6楼，同层有任天堂东京（Nintendo TOKYO）。"},
+ {title:"午餐",note:"千两的¥680串炸套餐或鱼类定食，见美食列表。"},
+ {title:"MAGNET by SHIBUYA109",note:"从屋顶俯瞰十字路口。"},
+ {title:"MEGA 唐吉诃德涩谷本店",note:"买手信零食，凭护照免税。24小时营业。"},
+ {s:["山手线，往新宿 / 池袋方向。"]},
+ {title:"Square Enix 咖啡厅 & 商店",note:"新宿3-36-1 Paselabo Tower，近东口。11:00至22:00。1楼商店人人可进；咖啡厅优先预约，90分钟，另收¥1,200入座费。"},
+ {title:"夜游歌舞伎町",note:"东宝大楼上的哥斯拉头像，然后逛唐吉诃德歌舞伎町店。"},
+ {title:"新宿晚餐",note:"回忆横丁现在偏向游客价，改为本地人推荐的店，见美食列表。"},
+ {s:["黄色线路，往千叶方向（东行），直达无需换乘。","周五晚上列车很挤。"]}],
+ tips:["白天逛涩谷购物，日落后看新宿霓虹。"]},
+sat:{dow:"周六",date:"11月14日",full:"11月14日 星期六",title:"回程",wx:"PR 421 15:25从羽田第3航站楼起飞，在马尼拉转乘 PR 529，周日01:15抵达吉隆坡。",
+ items:[{title:"早餐 + 最后购物",note:"新小岩车站旁的有盖商店街。"},
+ {title:"退房",note:"护照、手机、Suica 放随身行李。"},
+ {s:["蓝色线路，往东京 / 品川方向（横须贺线）。"]},
+ {s:["搭往羽田机场（羽田空港）的京急列车，看电子屏确认。"]},
+ {title:"办理 PR 421 登机手续",note:"行李直挂吉隆坡，确认拿到两张登机牌（PR 421 和 PR 529）。"},
+ {title:"机场最后一餐",note:"把 Suica 余额用完，余额不能退。"},
+ {title:"PR 421 起飞",note:"提前安排好周日01:15在吉隆坡机场的接机。"}],
+ tips:[]}
+};
+DAYS.forEach(d=>{const z=ZH_DAYS[d.id];if(!z)return;d.items.forEach((it,i)=>{if(z.items[i])it.zh=z.items[i];});});
+
+const EAT_ZH={
+"Echigoya Heiji":{k:"烤鱼定食",p:"¥1,000 至 2,000",w:"炭烤鱼定食，白饭免费加大。离车站近，一个人也方便。"},
+"Gyudon Sambo":{k:"牛肉饭",p:"¥1,000 以下",w:"昭和风格的牛肉饭老店，家常味道不像连锁店。食券机点餐，只收现金，出餐快。"},
+"Gohan-dokoro Adachi":{k:"定食",p:"¥1,000 至 2,000",w:"饭量超大，老板夫妇像说相声一样，店里总是笑声不断。"},
+"Fuku no Ken":{k:"豚骨拉面",p:"¥630 起",w:"便宜实在的豚骨拉面，深受附近上班族欢迎。"},
+"Marugo":{k:"炸猪排",p:"约¥2,400",w:"1975年创业的秋叶原炸猪排名店，入选米其林必比登。值得奢侈一次，通常要排队。"},
+"Tomorrow":{k:"复古咖啡馆（喫茶店）",p:"约¥660",w:"6:30开门。综合早餐套餐（厚片吐司、炒蛋、火腿、沙拉、汤）最受本地人欢迎。有英文菜单。"},
+"Yoshikami":{k:"日式洋食",p:"¥1,200 至 1,400",w:"1951年开业的街坊洋食店，招牌牛肉烩饭和蛋包饭。11:30才开门，适合待得比较久时。"},
+"Tonki":{k:"炸猪排",p:"约¥2,000",w:"本地人最爱：超薄酥脆面衣，吧台座位，白饭和高丽菜免费续。午餐到14:15，不接受预约。"},
+"Sugamo Tokiwa Shokudo":{k:"大众食堂定食",p:"¥1,000 至 2,000",w:"离车站1分钟。鱼和肉类定食，白饭可免费续一次。11月正是炸牡蛎季节。"},
+"Ichimaru Soba":{k:"立食荞麦面",p:"¥600 以下",w:"5:30起全天营业，最便宜最快的本地选择。"},
+"Ora ga Soba":{k:"荞麦面和咖喱",p:"约¥1,000",w:"八重洲地下街的上班族常去店，平日营业到约22:30。"},
+"Himono Yaro":{k:"烤鱼干",p:"¥1,000 至 2,000",w:"烤鱼干配白饭，营业到很晚，是下班族常去的地方。"},
+"Kamatake Udon":{k:"大阪风乌冬",p:"¥1,000 至 1,500",w:"来自大阪难波名店的Q弹乌冬，比拉面街排队更划算。"},
+"Umanchu Shubo":{k:"冲绳料理",p:"约¥1,000",w:"冲绳面和红烧五花肉饭，氛围轻松，离车站近。"},
+"Kosaku Yamanakako":{k:"馎饦（ほうとう）",p:"中等价位",w:"铁锅南瓜馎饦，本地人和游客都爱。11:00至21:00营业。从旭日丘出发前先查步行时间。"},
+"Kikuya Shokudo":{k:"老式食堂",p:"平价",w:"经营多年的朴实食堂，本地人和游客都会光顾。"},
+"Taiho":{k:"盐味或味噌馎饦",p:"平价",w:"本地人口中的隐藏名店，招牌是盐味馎饦。离湖边稍远，可能要搭出租车。"},
+"Shigekin":{k:"立饮酒吧（鱼料理）",p:"每道¥360",w:"南口步行4分钟的本地立饮店。生鱼片和煮鱼，每道¥360，也有少量座位。"},
+"Nikuya Shokudo Takeuchi":{k:"肉铺直营定食",p:"约¥1,000 至 1,500",w:"肉铺经营：3厘米厚的炸猪排，白饭免费加大。本地人午餐晚餐首选。"},
+"Chuka Gojuban":{k:"街坊中华料理",p:"平价",w:"南口步行5分钟的老派中华料理店。清淡酱油拉面、炒饭、蛋包饭。"},
+"Yakitori Obako":{k:"烤猪串居酒屋",p:"平价",w:"1958年开业。大串烤串、招牌炖菜、复古冰箱，离车站走一小段。"},
+"Use Mobile Order":{k:"园内贴士",p:"园区价格",w:"在东京迪士尼度假区 App 点餐并按时取餐，可省20至40分钟排队。快餐类咖喱饭最划算。"},
+"Konbini run":{k:"饭团、三明治",p:"¥600 以下",w:"07:30出发前在新小岩车站便利店买早餐。"},
+"Senryo":{k:"昭和居酒屋午餐",p:"¥680",w:"昭和年代开业的家族居酒屋，离车站4分钟。必点串炸加可乐饼套餐，午间挤满上班族。"},
+"Kaihin Shokudo Takeda":{k:"鱼类定食",p:"约¥1,000",w:"离车站3分钟。味噌煮鲭鱼套餐配大碗猪肉味噌汤。午餐11:30至15:00。"},
+"Nakayoshi":{k:"土锅饭定食",p:"¥1,000 至 2,000",w:"现煮土锅饭配简单定食。11:00至22:30营业。"},
+"Numazuko Shinjuku Honten":{k:"回转寿司",p:"¥2,000 至 3,000",w:"本地人的平价寿司，往新宿三丁目方向，离 Square Enix 咖啡厅很近。11:00至23:00。"},
+"Ban’nai Kabukicho":{k:"喜多方拉面",p:"约¥1,000",w:"粗而有嚼劲的面条，叉烧满满，藏在歌舞伎町小巷里。看完哥斯拉正好来一碗。"},
+"Tatsuya":{k:"盖饭",p:"约¥500",w:"昭和风小吧台：牛肉饭、亲子饭、猪排饭大约一个硬币的价格。"},
+"Tokyo Mentsudan":{k:"赞岐乌冬",p:"¥310 起",w:"自助式乌冬，香川价格。便宜快捷，游客也多，午餐时段较忙。"},
+"Yoshoku Kissa Koyama":{k:"复古洋食咖啡馆",p:"平价",w:"车站大楼里的昭和复古咖啡馆，去机场前安静吃一顿。请确认开门时间。"},
+"Kitchen Dai":{k:"自选三菜定食",p:"¥1,000 至 1,500",w:"自选3道菜，大碗白饭，附猪肉味噌汤。周一至周六11:00至20:00。住附近哪天都适合。"}
+};
+const NC="未确认，请查 Google Maps";
+const EATHRS_ZH={"Echigoya Heiji":NC,"Gyudon Sambo":NC,"Gohan-dokoro Adachi":NC,"Fuku no Ken":NC,"Marugo":NC+"（午餐和晚餐时段）","Tomorrow":"6:30起","Yoshikami":"11:30至22:00（21:30最后点餐）","Tonki":"午餐到14:15；晚餐时间未确认","Sugamo Tokiwa Shokudo":"很早开门；关门时间未确认","Ichimaru Soba":"5:30起全天营业","Ora ga Soba":"平日11:00至22:30（22:00最后点餐）","Himono Yaro":"平日11:00至23:00（22:30最后点餐）","Kamatake Udon":NC,"Umanchu Shubo":NC,"Kosaku Yamanakako":"11:00至21:00","Kikuya Shokudo":NC,"Taiho":NC,"Shigekin":"晚上营业；具体时间未确认","Nikuya Shokudo Takeuchi":NC,"Chuka Gojuban":NC,"Yakitori Obako":"晚上营业；具体时间未确认","Use Mobile Order":"园区9:00至21:00","Konbini run":"24小时营业","Senryo":"平日午餐；具体时间未确认","Kaihin Shokudo Takeda":"11:30至15:00、17:00至23:00（周一至周六）","Nakayoshi":"11:00至22:30","Numazuko Shinjuku Honten":"11:00至23:00","Ban’nai Kabukicho":NC,"Tatsuya":NC,"Tokyo Mentsudan":NC,"Yoshoku Kissa Koyama":NC,"Kitchen Dai":"11:00至20:00，周一至周六"};
+
+const HOURS_ZH={"Land at Haneda Terminal 3":"机场24小时开放","Check in at Cypress Inn Tokyo":"入住时间以预订为准","Mandarake Complex":"12:00至20:00，每天营业","Super Potato":"平日11:00至20:00（周末10:00至20:00）","HEY (Hirose Entertainment Yard)":"≈10:00至23:00","GiGO Akihabara":"≈10:00至23:30","Kaminarimon (雷門)":"24小时开放","Sensō-ji (浅草寺)":"寺院范围24小时；本堂6:30至17:00（10月至3月）","Nakamise Shopping Street":"≈9:30至19:00（各店不同）","Komagome Myōgi Shrine (妙義神社)":"白天开放；社务所≈9:00至17:00","Rikugien Garden (六義園), optional":"9:00至17:00，16:30停止入园。¥300","First Avenue Tokyo Station":"≈10:00至20:30（拉面街≈7:30起）","Marunouchi facade at sunset":"站舍随时可看；KITTE屋顶花园≈11:00至23:00","Be at your bus stop":"巴士站全天开放","Lakeside walk and Fuji photos":"全天开放；日落≈16:35","KABA check-in":"柜台8:30开；最后一班16:00","Yamanakako no KABA":"每天6至9班，最后常规班次16:00","Back at Asahigaoka bus stop":"巴士站全天开放","Walk to the gates":"11月12日园区9:00至21:00","Rope drop":"园区9:00至21:00","Toys Wondrous Christmas parade":"每天一次；时间见 App","Electrical Parade Dreamlights":"晚上；时间见 App","Park closes":"21:00","Hachiko + Shibuya Crossing":"24小时开放","Shibuya 109":"≈10:00至21:00","Pokémon Center Shibuya":"10:00至21:00（跟随PARCO营业时间）","MAGNET by SHIBUYA109":"≈10:00至23:00（屋顶）","MEGA Don Quijote Shibuya":"24小时营业","Square Enix Cafe & Shop":"11:00至22:00；咖啡厅最后入场21:20；无休","Kabukicho after dark":"哥斯拉头像随时可看；唐吉诃德歌舞伎町店≈24小时","Breakfast + last shopping":"商店街≈10:00至20:00；咖啡馆较早开","Check out":"退房时间以预订为准","Check in for PR 421":"值机柜台通常在起飞前≈3小时开放","PR 421 departs":"15:25起飞"};
+
+const TRAINS_ZH={"mon|品川|新小岩":"只搭快速列车；特急（NEX）不停","tue|東京|新小岩":"只搭快速列车；NEX和潮骚特急不停","wed|東京駅|山中湖旭日丘":"其他开往湖区的班次包括14:10和18:10","wed|山中湖旭日丘|東京駅":"你的班次15:20；备选18:50，21:27抵达","wed|東京|新小岩":"只搭快速列车；NEX和潮骚特急不停","thu|西船橋|舞浜":"直通舞滨的列车班次比其他线路少","thu|舞浜|西船橋":"如果迟迟没有车，先搭任何往新木场 / 东京的京叶线再转车","fri|新宿|新小岩":"搭往千叶或津田沼的列车；00:12那班只到御茶之水","sat|新小岩|品川":"周六时刻表","sat|品川|羽田空港第3ターミナル":"周六时刻表"};
+
+const TODO_ZH={
+"Land at Haneda Terminal 3":[["tip","江户小路：第3航站楼里的江户风格商店街和餐厅，周六最后一餐也可以在这里吃。"],["tip","楼上有免费观景台，可以看飞机。"]],
+"Mandarake Complex":[["classic","先搭电梯到顶楼，再一层层往下逛，每层主题都不同。"],["new","Mandarake Complex 2 于2025年在对面开业，走过去约10秒。"],["tip","带护照可享免税。"]],
+"Super Potato":[["classic","顶楼是复古街机区，还有日本古早零食（駄菓子）。"],["tip","适合逛和拍照，不适合捡便宜；本地人说价格偏高。"]],
+"HEY (Hirose Entertainment Yard)":[["classic","楼上是射击游戏和复古街机，一楼是夹娃娃机。"]],
+"GiGO Akihabara":[["classic","GiGO 经常更换动漫联名奖品，看橱窗就知道这周有什么。"],["new","2026年4月起，唐吉诃德秋叶原店内设有 Aniplex 官方专区（鬼灭之刃、孤独摇滚周边）。"],["viral","秋叶原扭蛋会馆（外神田3-15-5）：一家店里有数百台扭蛋机。"],["tip","天黑后在主要十字路口拍中央通的霓虹夜景。"]],
+"Kaminarimon (雷門)":[["classic","抬头看大红灯笼底部的龙雕刻。"],["viral","步行3分钟到吾妻桥，拍隔着隅田川的晴空塔和金色朝日大楼。"]],
+"Sensō-ji (浅草寺)":[["classic","¥100求签：摇签筒、抽签、按号码找抽屉。抽到凶签就绑在架子上留下。"],["tip","用大香炉的烟往身上扇，祈求健康。"],["viral","清晨光线下的五重塔是 Instagram 热门角度，要赶在人潮前。"],["missed","鹫神社的酉之市在2026年11月7日和19日，刚好不在你的日期内。"]],
+"Nakamise Shopping Street":[["classic","小吃巡礼：人形烧、炸馒头、吉备团子。在店门口吃完；这里不鼓励边走边吃。"],["tip","拐进传法院通，江户风格店面，人也少。"]],
+"Komagome Myōgi Shrine (妙義神社)":[["tip","社务所开着的话可以求御朱印（神社印章），很好的纪念品。"]],
+"Rikugien Garden (六義園), optional":[["date","树叶会开始变色；最佳红叶期通常在11月下旬至12月上旬。"],["missed","夜间点灯在2026年11月25日至12月6日，那时你已离开。"],["tip","在池边茶屋喝抹茶。"],["tip","替代选择：旧古河庭园，步行约15分钟，西式洋馆加秋季玫瑰，通常10月至11月盛开。"]],
+"First Avenue Tokyo Station":[["classic","东京动漫人物街：一条地下街集合数十家官方角色商店。"],["classic","东京零食乐园：日本大品牌零食，有车站限定口味。"],["classic","东京拉面街：沾面名店排长龙，17:30前去。"]],
+"Marunouchi facade at sunset":[["date","东京 Square Garden 冬季灯饰从2026年11月5日开始：约17万颗LED，从八重洲步行5分钟。"],["viral","从KITTE 6楼屋顶花园俯拍红砖站舍，经典角度。"],["missed","丸之内灯饰11月12日、WHITE KITTE 11月19日才开始，你经过时还没亮。"],["date","可选：在上野换车时顺路去上野公园的东京圣诞降临节（11月6日起），有100多个圣诞老人和户外马戏。"]],
+"Lakeside walk and Fuji photos":[["date","夕烧之渚・红叶祭，2026年10月30日至11月15日，在旭日丘湖畔绿地公园，离巴士站步行5分钟。红叶回廊、小吃和手信摊位。"],["date","红叶预计11月9日左右最盛，你去时正好。"],["viral","16:30至20:30点灯，可看到富士山剪影。想看的话，把回程改为18:50的巴士（21:27到东京）。"],["viral","钻石富士季节（夕阳落在山顶）为10月下旬至2月，约15:30至16:30，视天气条件。"]],
+"KABA check-in":[["new","2026年6月和7月新增的敞篷KABA巴士，你可能会搭到。"]],
+"Yamanakako no KABA":[["viral","拍下巴士冲进湖里溅起水花的瞬间，人人都会发这一段。"]],
+"Walk to the gates":[["date","迪士尼圣诞活动11月11日开始，你去的是第2天。圣诞商品11月10日起发售。"],["viral","从世界市集拍圣诞树框住城堡的照片。"]],
+"Toys Wondrous Christmas parade":[["new","2026年新游行，约45分钟，每天一次。花车会在指定地点停下，选在停车区段占位。"]],
+"Electrical Parade Dreamlights":[["date","只在圣诞活动期间的特别版。"]],
+"Rope drop":[["date","乡村熊剧场本季上演圣诞版 Jingle Bell Jamboree。"],["date","全园圣诞菜单，包括季节限定的 Jolly Food Plaza。"]],
+"Hachiko + Shibuya Crossing":[["viral","稍后在 MAGNET 屋顶从上往下拍十字路口；现在先跟着人潮斜着走一次。"]],
+"Pokémon Center Shibuya":[["viral","入口有会动的真人大小超梦。"],["classic","宝可梦设计实验室：当场设计并印制自己的T恤。"],["classic","同层有任天堂东京（马力欧、塞尔达、斯普拉遁）。"]],
+"MAGNET by SHIBUYA109":[["viral","屋顶是拍十字路口缩时影片的最佳位置。"]],
+"MEGA Don Quijote Shibuya":[["new","2026年4月起设有 Aniplex 官方专区（鬼灭之刃、孤独摇滚）。"],["tip","店内有免税柜台；收据和护照放一起。"]],
+"Square Enix Cafe & Shop":[["viral","菜单有回复史莱姆汉堡、陆行鸟布丁、FF药水和钢之炼金术师肉包。"],["tip","1楼商店不用预约；咖啡厅楼层优先预约。"]],
+"Kabukicho after dark":[["viral","新宿东口 Cross Shinjuku Vision 的巨型3D三花猫，在广告之间出现（屏幕7:00至1:00播放）。"],["classic","在电影院通尽头拍哥斯拉头像。"],["viral","西侧东京都厅的免费光雕投影，每晚播放，获吉尼斯纪录认证。当天确认场次。"],["classic","回忆横丁的灯笼小巷适合拍照，吃饭可以去别处。"]],
+"Breakfast + last shopping":[["tip","新小岩 Lumiere：南口旁很长的有盖商店街，适合买便宜零食和手信。"]],
+"Check in for PR 421":[["tip","还有时间？第3航站楼的江户小路美食街和观景台。"]]
+};
+
+const XFER_ZH={
+"mon|品川|新小岩":["下京急列车，上到大厅层。","跟随「JR線」指示牌。京急有专用的JR换乘闸口（JR線のりかえ口）：刷一次 Suica，会自动结算京急车费并进入JR。","进入JR后，跟随蓝色「横須賀線・総武快速線」指示牌。","去「東京・千葉方面」（东京 / 千叶）的站台，不是「横浜」（横滨）。到新小岩约25分钟，无需再换乘。"],
+"tue|浅草橋|浅草":["从JR浅草桥东口（東口）刷卡出站。","跟随粉红色「A」字母的「都営浅草線」指示牌，入口沿江户通（江戸通り）走不到5分钟。","用 Suica 进站，去「押上方面」（押上）站台。","浅草（浅草）是第2站。出站后跟随「雷門」指示牌。"],
+"tue|上野|駒込":["在上野（上野）下银座线，跟随「JR線」指示牌。","先刷卡出东京地铁闸口，再走一小段刷卡进JR闸口。","跟随绿色「山手線」指示牌，去「池袋・新宿方面」站台。","驹込（駒込）是第5站。"],
+"wed|東京駅|新小岩":["巴士在车票上写的东京站一侧下车，步行进站。","跟随蓝色「総武線快速 / 横須賀線」指示牌下到地下深处的站台（约10分钟）。","在「千葉方面」站台上车，到新小岩约15分钟。"],
+"thu|西船橋|舞浜":["下黄色列车，留在JR闸口内，无需刷卡。","跟随「武蔵野線・京葉線」指示牌。","搭显示「東京」（东京）或「新木場」（新木场）的列车。往「南船橋」的列车不停舞滨。","舞滨（舞浜）是第3站。"],
+"thu|西船橋|新小岩":["下武藏野线列车，留在JR闸口内。","跟随黄色「総武線（各駅停車）」指示牌。","去「秋葉原・新宿・三鷹方面」站台。","新小岩（新小岩）是第5站。"],
+"fri|代々木|渋谷":["在代代木（代々木）下黄色列车，同一车站，不用过闸。","跟随绿色「山手線」指示牌，去「渋谷・品川方面」站台。","涩谷（渋谷）是第2站。"],
+"sat|品川|羽田空港第3ターミナル":["在品川（品川）下车，跟随红色「京急線」指示牌。","走京急换乘闸口（京急線のりかえ口），刷一次 Suica。","搭往「羽田空港」的列车，确认屏幕显示停「羽田空港第3ターミナル」（第3航站楼）。"]
+};
+
+const FC_ZH={mon:{p:["东京（新小岩）"],t:"目前预报凉爽干燥，秋叶原晚上穿薄外套就够。"},
+tue:{p:["东京"],t:"目前预报干燥，适合清早逛浅草和傍晚在东京站看日落。"},
+wed:{p:["东京","山中湖"],t:"山中湖清晨和天黑后接近冰点。带保暖外套、手套和帽子，尤其是留下来看16:30点灯并搭18:50巴士的话。"},
+thu:{p:["东京"],t:"预报尚未发布（截至11月4日）。11月中旬一般白天约18°C、晚上约10°C，园区日落后更冷。"},
+fri:{p:["东京"],t:"预报尚未发布（截至11月4日）。11月中旬一般白天约18°C、晚上约10°C。"},
+sat:{p:["东京"],t:"预报尚未发布（截至11月4日）。11月中旬一般白天约18°C、晚上约10°C。"}};
+</script>
+
+<script>
+/* Hours and first/last trains. "≈" = approximate; unconfirmed items say so. */
+const HOURS={
+"Land at Haneda Terminal 3":"Airport open 24 hours",
+"Check in at Cypress Inn Tokyo":"Check-in time as per your booking",
+"Mandarake Complex":"12:00 to 20:00, open daily",
+"Super Potato":"11:00 to 20:00 weekdays (10:00 to 20:00 weekends)",
+"HEY (Hirose Entertainment Yard)":"≈10:00 to 23:00",
+"GiGO Akihabara":"≈10:00 to 23:30",
+"Kaminarimon (雷門)":"Open 24 hours",
+"Sensō-ji (浅草寺)":"Grounds 24 hours; main hall 6:30 to 17:00 (Oct to Mar)",
+"Nakamise Shopping Street":"≈9:30 to 19:00 (shops vary)",
+"Komagome Myōgi Shrine (妙義神社)":"Grounds open in daylight; office hours ≈9:00 to 17:00",
+"Rikugien Garden (六義園), optional":"9:00 to 17:00, last entry 16:30. ¥300",
+"First Avenue Tokyo Station":"≈10:00 to 20:30 (Ramen Street from ≈7:30)",
+"Marunouchi facade at sunset":"Facade 24 hours; KITTE rooftop garden ≈11:00 to 23:00",
+"Be at your bus stop":"Bus stop open all day",
+"Lakeside walk and Fuji photos":"Open all day; sunset ≈16:35",
+"KABA check-in":"Counter opens 8:30; departures until 16:00",
+"Yamanakako no KABA":"6 to 9 departures a day, last regular trip 16:00",
+"Back at Asahigaoka bus stop":"Bus stop open all day",
+"Walk to the gates":"Park 9:00 to 21:00 on 12 Nov",
+"Rope drop":"Park 9:00 to 21:00",
+"Toys Wondrous Christmas parade":"Once daily; time shown in the app",
+"Electrical Parade Dreamlights":"Evening; time shown in the app",
+"Park closes":"21:00",
+"Hachiko + Shibuya Crossing":"Open 24 hours",
+"Shibuya 109":"≈10:00 to 21:00",
+"Pokémon Center Shibuya":"10:00 to 21:00 (follows PARCO hours)",
+"MAGNET by SHIBUYA109":"≈10:00 to 23:00 (rooftop)",
+"MEGA Don Quijote Shibuya":"Open 24 hours",
+"Square Enix Cafe & Shop":"11:00 to 22:00; cafe last entry 21:20; no closing day",
+"Kabukicho after dark":"Godzilla Head visible any time; Don Quijote Kabukicho ≈24 hours",
+"Breakfast + last shopping":"Arcade shops ≈10:00 to 20:00; cafes earlier",
+"Check out":"Check-out time as per your booking",
+"Check in for PR 421":"Check-in counters usually open ≈3 hours before departure",
+"PR 421 departs":"Departs 15:25"
+};
+const EATHRS={
+"Echigoya Heiji":"Not confirmed, check Google Maps",
+"Gyudon Sambo":"Not confirmed, check Google Maps",
+"Gohan-dokoro Adachi":"Not confirmed, check Google Maps",
+"Fuku no Ken":"Not confirmed, check Google Maps",
+"Marugo":"Not confirmed, check Google Maps (lunch and dinner sittings)",
+"Tomorrow":"From 6:30",
+"Yoshikami":"11:30 to 22:00 (last order 21:30)",
+"Tonki":"Lunch until 14:15; dinner hours not confirmed",
+"Sugamo Tokiwa Shokudo":"Opens early in the day; closing not confirmed",
+"Ichimaru Soba":"From 5:30, open through the day",
+"Ora ga Soba":"11:00 to 22:30 weekdays (last order 22:00)",
+"Himono Yaro":"11:00 to 23:00 weekdays (last order 22:30)",
+"Kamatake Udon":"Not confirmed, check Google Maps",
+"Umanchu Shubo":"Not confirmed, check Google Maps",
+"Kosaku Yamanakako":"11:00 to 21:00",
+"Kikuya Shokudo":"Not confirmed, check Google Maps",
+"Taiho":"Not confirmed, check Google Maps",
+"Shigekin":"Evenings; exact hours not confirmed",
+"Nikuya Shokudo Takeuchi":"Not confirmed, check Google Maps",
+"Chuka Gojuban":"Not confirmed, check Google Maps",
+"Yakitori Obako":"Evenings; exact hours not confirmed",
+"Use Mobile Order":"Park hours 9:00 to 21:00",
+"Konbini run":"Open 24 hours",
+"Senryo":"Lunch on weekdays; exact hours not confirmed",
+"Kaihin Shokudo Takeda":"11:30 to 15:00 and 17:00 to 23:00 (Mon to Sat)",
+"Nakayoshi":"11:00 to 22:30",
+"Numazuko Shinjuku Honten":"11:00 to 23:00",
+"Ban’nai Kabukicho":"Not confirmed, check Google Maps",
+"Tatsuya":"Not confirmed, check Google Maps",
+"Tokyo Mentsudan":"Not confirmed, check Google Maps",
+"Yoshoku Kissa Koyama":"Not confirmed, check Google Maps",
+"Kitchen Dai":"11:00 to 20:00, Mon to Sat"
+};
+/* key: day|from|to  ->  [first, last, note]  (weekday timetable unless noted) */
+const TRAINS={
+"mon|羽田空港第3ターミナル|品川":["≈05:25","≈00:00",""],
+"mon|品川|新小岩":["≈05:30","≈23:50","Rapid trains only; limited expresses (NEX) do not stop"],
+"mon|新小岩|秋葉原":["04:48","00:20",""],
+"mon|秋葉原|新小岩":["04:31","00:28",""],
+"tue|新小岩|浅草橋":["04:48","00:20",""],
+"tue|浅草橋|浅草":["≈05:15","≈00:20",""],
+"tue|浅草|上野":["≈05:00","≈00:00",""],
+"tue|上野|駒込":["≈04:40","≈00:45",""],
+"tue|駒込|東京":["≈04:30","≈00:30",""],
+"tue|東京|新小岩":["05:04","00:01","Rapid trains only; NEX and Shiosai expresses do not stop"],
+"wed|新小岩|東京":["05:10","00:15",""],
+"wed|東京駅|山中湖旭日丘":["Check","18:10","Other departures to the lake include 14:10 and 18:10"],
+"wed|山中湖旭日丘|東京駅":["07:50","18:50","Your bus 15:20; backup 18:50 arrives 21:27"],
+"wed|東京|新小岩":["05:04","00:01","Rapid trains only; NEX and Shiosai expresses do not stop"],
+"thu|新小岩|西船橋":["04:45","00:41",""],
+"thu|西船橋|舞浜":["≈05:30","≈23:00","Through trains to Maihama are less frequent than other lines"],
+"thu|舞浜|西船橋":["≈05:30","≈23:00","If none soon, take any Keiyo train to Shin-Kiba/Tokyo and change"],
+"thu|西船橋|新小岩":["≈04:40","≈00:10",""],
+"fri|新小岩|代々木":["04:48","00:20",""],
+"fri|代々木|渋谷":["≈04:40","≈00:50",""],
+"fri|渋谷|新宿":["≈04:45","≈00:50",""],
+"fri|新宿|新小岩":["04:31","00:08","Board trains for Chiba or Tsudanuma; the 00:12 only goes to Ochanomizu"],
+"sat|新小岩|品川":["≈05:10","≈00:00","Saturday timetable"],
+"sat|品川|羽田空港第3ターミナル":["≈05:20","≈00:00","Saturday timetable"]
+};
+DAYS.forEach(d=>d.items.forEach(it=>{
+ if(it.k==="move"){const t=TRAINS[d.id+"|"+it.from[0]+"|"+it.to[0]]; if(t){it.first=t[0];it.last=t[1];it.tnote=t[2];}}
+ else if(HOURS[it.title]) it.hrs=HOURS[it.title];
+}));
+EAT.forEach(e=>{if(EATHRS[e.name]) e.hrs=EATHRS[e.name];});
+</script>
+
+
+<script>
+/* Things to do. Tags: date = on during your visit, new = new in 2026, viral = widely shared on social, classic, tip, missed = just outside your dates */
+const TODO={
+"Land at Haneda Terminal 3":[["tip","Edo-koji: an old-Tokyo style street of shops and restaurants inside Terminal 3. Good for your last meal on Saturday too."],["tip","Free observation deck on the upper floor for plane-spotting."]],
+"Mandarake Complex":[["classic","Take the lift to the top floor and work your way down; every floor has its own theme."],["new","Mandarake Complex 2 opened in 2025 directly across the street, about 10 seconds away."],["tip","Bring your passport for tax-free purchases."]],
+"Super Potato":[["classic","Top floor retro arcade with old cabinets and Japanese dagashi snacks."],["tip","Better for browsing and photos than bargains; locals say prices carry a premium."]],
+"HEY (Hirose Entertainment Yard)":[["classic","Shoot-em-ups and retro cabinets upstairs, crane games on the ground floor."]],
+"GiGO Akihabara":[["classic","GiGO runs rotating anime collab prizes; check the window displays for what is on that week."],["new","Aniplex official corner inside Don Quijote Akihabara since April 2026 (Demon Slayer, Bocchi the Rock goods)."],["viral","Akihabara Gachapon Kaikan (Sotokanda 3-15-5): hundreds of capsule-toy machines in one shop."],["tip","Neon photo of Chuo-dori after dark from the main crossing."]],
+"Kaminarimon (雷門)":[["classic","Look up under the giant red lantern for the carved dragon."],["viral","Walk 3 min to Azumabashi bridge for the Skytree and golden Asahi building shot over the river."]],
+"Sensō-ji (浅草寺)":[["classic","Omikuji fortune for ¥100: shake the box, draw a stick, find your drawer. Tie a bad fortune to the rack and leave it behind."],["tip","Waft smoke from the big incense burner over yourself for good health."],["viral","Morning light on the five-storey pagoda is the Instagram angle, before the crowds."],["missed","Tori-no-Ichi fair at Otori Shrine falls on 7 and 19 Nov 2026, just outside your dates."]],
+"Nakamise Shopping Street":[["classic","Snack crawl: ningyo-yaki, age-manju, kibi-dango. Eat at the shop front; walking while eating is discouraged here."],["tip","Duck into Denbōin-dōri, the side street with Edo-style shopfronts and fewer crowds."]],
+"Komagome Myōgi Shrine (妙義神社)":[["tip","Ask for a goshuin (shrine stamp) if the office is open; a nice keepsake."]],
+"Rikugien Garden (六義園), optional":[["date","Leaves will be turning; peak colour is usually late November to early December."],["missed","Night illumination runs 25 Nov to 6 Dec 2026, after your visit."],["tip","Matcha at the teahouse overlooking the pond."],["tip","Alternative: Kyu-Furukawa Gardens, about 15 min walk, Western mansion with autumn roses usually in bloom Oct to Nov."]],
+"First Avenue Tokyo Station":[["classic","Tokyo Character Street: dozens of official character shops in one underground lane."],["classic","Tokyo Okashi Land: Japan’s big snack brands with station-exclusive flavours."],["classic","Tokyo Ramen Street: famous tsukemen queues; go before 17:30."]],
+"Marunouchi facade at sunset":[["date","Tokyo Square Garden Winter Illumination is on from 5 Nov 2026: about 170,000 LEDs, 5 min walk from Yaesu."],["viral","Classic overhead shot of the red-brick station from KITTE’s 6F rooftop garden."],["missed","Marunouchi Illumination starts 12 Nov and WHITE KITTE 19 Nov, a couple of days after you pass through."],["date","Optional detour when you change trains at Ueno: Tokyo Christmas Advent in Ueno Park (from 6 Nov) with 100+ Santa figures and an outdoor circus."]],
+"Lakeside walk and Fuji photos":[["date","Yuyake no Nagisa Autumn Leaves Festival, 30 Oct to 15 Nov 2026, at Asahigaoka Lakeside Park, 5 min walk from your bus stop. Maple corridor, food and souvenir stalls."],["date","Foliage forecast to peak around 9 Nov, so colour should be at its best for you."],["viral","Light-up 16:30 to 20:30 with Fuji in silhouette. To see it, switch your return to the 18:50 bus (Tokyo 21:27)."],["viral","Diamond Fuji season (sun setting on the summit) runs late Oct to Feb, around 15:30 to 16:30, if conditions line up."]],
+"KABA check-in":[["new","The new open-roof KABA buses (introduced June and July 2026) may be the one you ride."]],
+"Yamanakako no KABA":[["viral","Film the splash as the bus dives into the lake; it is the moment everyone posts."]],
+"Walk to the gates":[["date","Disney Christmas started 11 Nov, so you are there on day 2. Christmas merchandise on sale from 10 Nov."],["viral","Photo of the castle framed by the World Bazaar Christmas tree."]],
+"Toys Wondrous Christmas parade":[["new","New for 2026, about 45 min, once a day. Floats stop at set points, so pick a spot along the stop sections."]],
+"Electrical Parade Dreamlights":[["date","Special Christmas version during the event only."]],
+"Rope drop":[["date","Country Bear Theater runs its Christmas show, Jingle Bell Jamboree, this season."],["date","Christmas menus across the park, including the seasonal Jolly Food Plaza."]],
+"Hachiko + Shibuya Crossing":[["viral","Film the scramble from above at MAGNET’s rooftop later; down here, cross diagonally with the crowd."]],
+"Pokémon Center Shibuya":[["viral","Life-size moving Mewtwo in a capsule at the entrance."],["classic","Pokémon Design Lab: design and print your own T-shirt on the spot."],["classic","Nintendo TOKYO on the same floor (Mario, Zelda, Splatoon)."]],
+"MAGNET by SHIBUYA109":[["viral","The rooftop is the best free-ish vantage for the crossing time-lapse."]],
+"MEGA Don Quijote Shibuya":[["new","Aniplex official store corner since April 2026 (Demon Slayer, Bocchi the Rock)."],["tip","Tax-free counter on site; keep receipts and passport together."]],
+"Square Enix Cafe & Shop":[["viral","Menu includes a Hoimi Slime burger, Chocobo pudding, FF potions and Fullmetal Alchemist steamed buns."],["tip","The 1F shop needs no booking; cafe floors are reservation-first."]],
+"Kabukicho after dark":[["viral","Giant 3D calico cat on Cross Shinjuku Vision at the East Exit, appearing between ads (screen runs 7:00 to 1:00)."],["classic","Godzilla Head photo from the end of Cinema Road."],["viral","Free projection mapping on the Tokyo Metropolitan Government Building (west side), shown nightly; Guinness-record display. Check showtimes on the day."],["classic","Omoide Yokocho lantern alley for photos, even if you eat elsewhere."]],
+"Breakfast + last shopping":[["tip","Shin-Koiwa Lumiere: a long covered shopping arcade by the south exit, good for cheap snacks and souvenirs."]],
+"Check in for PR 421":[["tip","Leftover time? Edo-koji food street and the observation deck in Terminal 3."]]
+};
+const TAGS={date:["On your dates","#2E9E5B"],new:["New 2026","#0067C0"],viral:["Viral","#C2185B"],classic:["Classic","#5B6875"],tip:["Tip","#B76E00"],missed:["Just missed","#8A8F96"]};
+DAYS.forEach(d=>d.items.forEach(it=>{if(TODO[it.title]) it.todo=TODO[it.title];}));
+</script>
+
+<script>
+/* Transfer walking guides, keyed day|transfer station|next destination */
+const XFER={
+"mon|品川|新小岩":{w:6,s:["Get off the Keikyu train and go up to the concourse.","Follow the signs for JR線 (JR Lines). Keikyu has its own JR transfer gate (JR線のりかえ口): tap your Suica once and it settles the Keikyu fare as you enter JR.","Inside JR, follow the blue 横須賀線・総武快速線 (Yokosuka / Sobu Rapid) signs.","Take the platform for 東京・千葉方面 (Tokyo / Chiba), not 横浜 (Yokohama). Shin-Koiwa is about 25 min, no further change."]},
+"tue|浅草橋|浅草":{w:5,s:["Tap out of JR Asakusabashi through the East Exit (東口).","Follow the pink “A” signs for 都営浅草線 (Toei Asakusa Line). The subway entrance is a short walk along Edo-dōri (江戸通り), under 5 min.","Tap in with Suica and go to the platform for 押上方面 (Oshiage).","Asakusa (浅草) is 2 stops. Exit by following the signs for 雷門 (Kaminarimon)."]},
+"tue|上野|駒込":{w:6,s:["Get off the Ginza Line at Ueno (上野) and follow the signs for JR線 (JR Lines).","Tap out of the Tokyo Metro gate, then tap into the JR gate a short walk away.","Follow the green 山手線 (Yamanote) signs to the platform for 池袋・新宿方面 (Ikebukuro / Shinjuku).","Komagome (駒込) is the 5th stop."]},
+"wed|東京駅|新小岩":{w:10,s:["The bus drops you on the Tokyo Station side shown on your ticket; walk into the station.","Follow the blue 総武線快速 / 横須賀線 signs down to the deep underground platforms (allow about 10 min).","Board on the platform for 千葉方面 (Chiba). Shin-Koiwa is about 15 min."]},
+"thu|西船橋|舞浜":{w:5,s:["Get off the yellow train. Stay inside the JR gates; no need to tap.","Follow the signs for 武蔵野線・京葉線 (Musashino / Keiyo Line).","Board a train showing 東京 (Tokyo) or 新木場 (Shin-Kiba). Trains for 南船橋 (Minami-Funabashi) do not stop at Maihama.","Maihama (舞浜) is 3 stops."]},
+"thu|西船橋|新小岩":{w:5,s:["Get off the Musashino Line. Stay inside the JR gates.","Follow the yellow 総武線 (各駅停車) signs.","Take the platform for 秋葉原・新宿・三鷹方面 (Akihabara / Shinjuku).","Shin-Koiwa (新小岩) is the 5th stop."]},
+"fri|代々木|渋谷":{w:3,s:["Get off the yellow train at Yoyogi (代々木). Same station, no gate.","Follow the green 山手線 (Yamanote) signs to the platform for 渋谷・品川方面 (Shibuya / Shinagawa).","Shibuya (渋谷) is the 2nd stop."]},
+"sat|品川|羽田空港第3ターミナル":{w:6,s:["Get off at Shinagawa (品川) and follow the red 京急線 (Keikyu) signs.","Use the Keikyu transfer gate (京急線のりかえ口); tap Suica once.","Board a train for 羽田空港 (Haneda Airport) and check the display shows it stops at 羽田空港第3ターミナル (Terminal 3)."]}
+};
+const minsOf=s=>{let m=0;const h=String(s).match(/(\d+)\s*h/);const mm=String(s).match(/(\d+)\s*min/);if(h)m+=+h[1]*60;if(mm)m+=+mm[1];return m};
+DAYS.forEach(d=>{
+ const out=[];let run=null;
+ d.items.forEach(it=>{ if(it.k==="move"){ if(!run){run={k:"journey",t:it.t,legs:[]};out.push(run);} run.legs.push(it);} else {run=null;out.push(it);} });
+ out.forEach(j=>{ if(j.k!=="journey")return; const L=j.legs;
+  j.title=L[0].from[1]+" to "+L[L.length-1].to[1];
+  j.fare=L.reduce((a,x)=>a+(x.fare||0),0)||null;
+  j.xfer=[]; for(let i=0;i<L.length-1;i++) j.xfer.push(XFER[d.id+"|"+L[i].to[0]+"|"+L[i+1].to[0]]||null);
+  j.mins=L.reduce((a,x)=>a+minsOf(x.dur),0)+j.xfer.reduce((a,x)=>a+(x?x.w:0),0);
+ });
+ d.items=out;
+});
+</script>
+<script>
+(function(){
+const $=s=>document.querySelector(s);
+const esc=s=>String(s).replace(/[&<>"]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
+const store={get(k,d){try{const v=localStorage.getItem("tk26:"+k);return v?JSON.parse(v):d}catch(e){return d}},set(k,v){try{localStorage.setItem("tk26:"+k,JSON.stringify(v))}catch(e){}}};
+const maps=q=>"https://www.google.com/maps/search/?api=1&query="+encodeURIComponent(q);
+const dir=(o,d)=>"https://www.google.com/maps/dir/?api=1&origin="+encodeURIComponent(o+" Station")+"&destination="+encodeURIComponent(d+" Station")+"&travelmode=transit";
+const yen=n=>"¥"+n.toLocaleString("en-US");
+
+function jstNow(){
+ const p=new Intl.DateTimeFormat("en-CA",{timeZone:"Asia/Tokyo",year:"numeric",month:"2-digit",day:"2-digit",hour:"2-digit",minute:"2-digit",hourCycle:"h23"}).formatToParts(new Date());
+ const g=t=>p.find(x=>x.type===t).value;
+ return {date:g("year")+"-"+g("month")+"-"+g("day"),min:+g("hour")*60+ +g("minute"),hm:g("hour")+":"+g("minute")};
+}
+const DATES={mon:"2026-11-09",tue:"2026-11-10",wed:"2026-11-11",thu:"2026-11-12",fri:"2026-11-13",sat:"2026-11-14"};
+const toMin=t=>{const m=t.match(/(\d{1,2}):(\d{2})/);return m?+m[1]*60+ +m[2]:null};
+
+let now=jstNow();
+let todayId=Object.keys(DATES).find(k=>DATES[k]===now.date)||null;
+let cur=store.get("day",todayId||"mon"); if(todayId) cur=todayId;
+let done=store.get("done",{});
+let favs=store.get("favs",{});
+let booked=store.get("booked",{});
+let eatFilter="All";
+let lang=store.get("lang","en");
+
+function setDayVars(d){document.documentElement.style.setProperty("--day",d.color);document.documentElement.style.setProperty("--dayInk",d.ink)}
+
+const I=k=>(I18N[lang]&&I18N[lang][k])||I18N.en[k];
+const ZH=()=>lang==="zh";
+const ZT=(it,f)=>ZH()&&it.zh&&it.zh[f]?it.zh[f]:it[f];
+const durT=s=>ZH()?String(s).replace(/(\d+)\s*h/,"$1小时").replace(/(\d+)\s*min/,"$1分钟").replace(/\s+/g,""):s;
+const lineN=k=>ZH()?LINES_ZH[k]:LINES[k].n;
+const jTitle=it=>ZH()?it.legs[0].from[0]+" → "+it.legs[it.legs.length-1].to[0]:it.title;
+const itTitle=it=>it.k==="journey"?jTitle(it):ZT(it,"title");
+const dayZ=d=>ZH()?ZH_DAYS[d.id]:d;
+
+function applyStatic(){
+ document.documentElement.lang=ZH()?"zh-Hans":"en";
+ $("#h1").textContent=I("title");document.title=I("title");
+ $("#nPlan").textContent=I("plan");$("#nEat").textContent=I("eat");$("#nInfo").textContent=I("info");$("#ovClose").textContent=I("close");
+ document.querySelectorAll("[data-lang]").forEach(b=>b.setAttribute("aria-pressed",b.dataset.lang===lang));
+}
+
+function renderStrip(){
+ $("#strip").innerHTML=DAYS.map(d=>{const z=dayZ(d);return `<button class="chip" role="tab" aria-selected="${d.id===cur}" data-d="${d.id}" style="--c:${d.color};--ci:${d.ink}"><b>${z.dow}${d.id===todayId?`<span class="today">${I("today")}</span>`:''}</b><span>${z.date}</span><i></i></button>`}).join("");
+ $("#strip").querySelectorAll(".chip").forEach(b=>b.onclick=()=>{cur=b.dataset.d;store.set("day",cur);show("day");renderAll();window.scrollTo({top:0})});
+ const sel=$("#strip").querySelector('[aria-selected=true]'); if(sel) sel.scrollIntoView({inline:"center",block:"nearest"});
+}
+
+function plate(st,lc){const long=st[0].length>6;return `<button class="plate${long?" long":""}" style="--lc:${lc}" data-show="${esc(st[0])}" data-sub="${esc(st[1])}" data-col="${lc}" aria-label="${I("showLarge")}: ${esc(st[1])}"><span class="j">${esc(st[0])}</span><span class="r">${esc(st[1])}</span></button>`}
+
+function nowIndex(d){
+ if(d.id!==todayId) return -1;
+ let idx=-1; d.items.forEach((it,i)=>{const m=toMin(it.t); if(m!==null&&m<=now.min) idx=i}); return idx;
+}
+
+const EATNEAR={
+ "mon|20:15":"restaurants near Akihabara Station",
+ "tue|08:10":"友路有 浅草",
+ "tue|11:40":"restaurants near Komagome Station",
+ "tue|18:00":"restaurants Yaesu Chikagai Tokyo Station",
+ "wed|13:40":"ほうとう 山中湖 旭日丘",
+ "wed|19:00":"restaurants near Shin-Koiwa Station",
+ "thu|12:00":"restaurants Tokyo Disneyland",
+ "fri|12:30":"lunch near Shibuya Station",
+ "fri|19:00":"restaurants near Shinjuku Station East Exit",
+ "sat|12:30":"restaurants Haneda Airport Terminal 3"
+};
+const FC={
+ mon:{c:[["Tokyo, Shin-Koiwa",15,9]],t:"Cool and dry in the current forecast. A light jacket is enough for the Akihabara evening."},
+ tue:{c:[["Tokyo",16,10]],t:"Dry in the current forecast; good conditions for the early Asakusa walk and sunset at Tokyo Station."},
+ wed:{c:[["Tokyo",16,8],["Lake Yamanaka",12,0]],t:"Lake Yamanaka drops to around freezing early and after dark. Warm jacket, gloves and a hat, especially if you stay for the 16:30 light-up and the 18:50 bus."},
+ thu:{c:[["Tokyo",null,null]],t:"Not in the forecast yet (as of 4 Nov). Typical for mid-November: about 18°C by day, 10°C at night, cooler once the sun sets at the park."},
+ fri:{c:[["Tokyo",null,null]],t:"Not in the forecast yet (as of 4 Nov). Typical for mid-November: about 18°C by day, 10°C at night."},
+ sat:{c:[["Tokyo",null,null]],t:"Not in the forecast yet (as of 4 Nov). Typical for mid-November: about 18°C by day, 10°C at night."}
+};
+function fcHtml(id){const f=FC[id];if(!f)return "";const fz=ZH()?FC_ZH[id]:null;
+ const cards=`<div class="fc">${f.c.map(([p,h,l,pp],i)=>`<div class="fcc"><div class="pl">${esc(fz?fz.p[i]:p)}</div><div class="tp">${h===null?I("notYet"):`${h}° <small>/ ${l}°C</small>`}</div>${pp!=null?`<div class="tx">☂ ${pp}%</div>`:""}</div>`).join("")}</div>`;
+ if(f.live){const dt=new Date(f.live).toLocaleString(ZH()?"zh-CN":"en-GB",{timeZone:"Asia/Tokyo",day:"numeric",month:"short",hour:"2-digit",minute:"2-digit"});return cards+`<p class="fcn">${I("liveUpd")} ${dt} (Open-Meteo)</p>`;}
+ return cards+`<p class="note" style="margin:6px 0 0">${esc(fz?fz.t:f.t)}</p><p class="fcn">${I("fcNote")} <a href="https://www.google.com/search?q=${encodeURIComponent(id==="wed"?"Yamanakako weather":"Shin-Koiwa weather")}" target="_blank" rel="noopener">${I("liveFc")}</a></p>`}
+
+function renderDay(){
+ const d=DAYS.find(x=>x.id===cur); setDayVars(d); const dz=dayZ(d);
+ const ni=nowIndex(d);
+ const nextIt=ni>=0?d.items[ni+1]:null;
+ let h=`<div class="hero"><div class="d">${dz.full}</div><h2>${esc(dz.title)}</h2><div class="wx">${esc(dz.wx)}</div>${fcHtml(d.id)}</div>`+extrasHtml(d);
+ if(todayId===d.id){
+  const c=d.items[ni];
+  h+=`<div class="next show" aria-live="polite"><small>${c?I("now"):I("firstUp")}</small><strong>${esc(itTitle(c||d.items[0]))}</strong>${nextIt?`<small style="margin-top:4px">${I("nextAt")} ${nextIt.t}: ${esc(itTitle(nextIt))}</small>`:""}</div>`;
+ }
+ h+=`<div class="tl">`;
+ d.items.forEach((it,i)=>{
+  const key=d.id+":"+i, isDone=!!done[key], isNow=i===ni;
+  const cls=["it",it.k==="eat"?"eat":"",isDone?"done":"",isNow?"now":""].join(" ");
+  const dotBtn=`<button class="dot" data-done="${key}" aria-label="${I("markDone")}"></button>`;
+  if(it.k==="journey"){
+   const multi=it.legs.length>1, n=it.legs.length-1;
+   const fm=m=>ZH()?(m>=60?`${Math.floor(m/60)}小时${m%60}分钟`:`${m}分钟`):(m>=60?`${Math.floor(m/60)} h ${m%60} min`:`${m} min`);
+   const legHtml=(l,xf)=>{const L=LINES[l.line];
+     const tn=ZH()?(TRAINS_ZH[d.id+"|"+l.from[0]+"|"+l.to[0]]||l.tnote):l.tnote;
+     const fst=l.first==="Check"?I("check"):l.first;
+     const steps=(ZH()&&l.zh&&l.zh.s)||l.steps;
+     return `<div class="leg2">
+     ${multi?`<div class="lh"><span><span class="badge" style="background:${L.c};color:${L.f}">${lineN(l.line)}</span></span><span>${esc(l.t)}, ${esc(durT(l.dur))}</span></div>`:""}
+     <div class="signs">${plate(l.from,L.c)}<span class="arrow" aria-hidden="true">▶</span>${plate(l.to,L.c)}</div>
+     ${l.first?`<div class="ft"><div><small>${l.line==="bus"?I("firstBus"):I("firstTrain")}</small><b>${esc(fst)}</b></div><div><small>${l.line==="bus"?I("lastBus"):I("lastTrain")}</small><b>${esc(l.last)}</b></div></div>${tn?`<div class="tnote">${esc(tn)}</div>`:""}`:""}
+     <details class="steps"><summary class="mfoot"><span>${xf?I("howRideX"):I("howRide")}</span><span class="fare">${l.fare?yen(l.fare):(multi?I("inTotal"):"")}</span></summary><ol>${steps.map(x=>`<li>${esc(x)}</li>`).join("")}<li><a href="${dir(l.from[1],l.to[1])}">${I("liveRoute")}</a></li></ol>${xf||""}</details></div>`};
+   const xHtml=(x,st,k)=>{const ss=(ZH()&&XFER_ZH[k])||(x&&x.s);return `<div class="xf"><div class="xh"><b>${I("transferAt")} ${esc(ZH()?st[0]:st[1])}</b><span class="xj">${esc(ZH()?st[1]:st[0])}</span>${x?`<span class="xw">${I("walk")}${x.w} ${I("min")}</span>`:""}</div>${ss?`<ol>${ss.map(y=>`<li>${esc(y)}</li>`).join("")}</ol>`:""}</div>`};
+   h+=`<div class="${cls}">${dotBtn}<div class="move jny">
+    <div class="mhead"><span><b style="color:var(--ink);font-variant-numeric:tabular-nums">${it.t}</b>&nbsp; ${it.legs.map(l=>`<span class="badge" style="background:${LINES[l.line].c};color:${LINES[l.line].f}">${lineN(l.line)}</span>`).join(" ")}</span><span>≈${fm(it.mins)}</span></div>
+    <div class="jt">${esc(jTitle(it))}<span>${multi?(ZH()?`${n} 次换乘`:`${n} transfer${n>1?"s":""}`):I("direct")}</span></div>
+    ${it.legs.map((l,i)=>legHtml(l,i<n?xHtml(it.xfer[i],l.to,d.id+"|"+l.to[0]+"|"+it.legs[i+1].to[0]):"")).join("")}
+    ${multi?`<div class="mfoot jfoot"><span>${I("totalFare")}</span><span class="fare">${it.fare?yen(it.fare):""}</span></div>`:""}
+   </div></div>`;
+  } else {
+   const hrs=it.hrs?((ZH()&&HOURS_ZH[it.title])||it.hrs):null;
+   const td=it.todo?((ZH()&&TODO_ZH[it.title])||it.todo):null;
+   h+=`<div class="${cls}">${dotBtn}<div class="card">
+    <div class="row1"><span class="time">${it.t}</span><div>${it.k==="eat"?`<div class="eattag">${I("meal")}</div>`:''}<div class="ttl">${esc(ZT(it,"title"))}</div></div></div>
+    <p class="note">${esc(ZT(it,"note"))}</p>
+    ${hrs?`<div class="hrs"><span>${I("hours")}</span>${esc(hrs)}</div>`:""}
+    ${td?`<details class="todo"><summary>${I("todo")} (${td.length})</summary><ul>${td.map(([t,x])=>`<li><span class="tag" style="background:${TAGS[t][1]}">${ZH()?TAGS_ZH[t]:TAGS[t][0]}</span>${esc(x)}</li>`).join("")}</ul></details>`:""}
+    ${(it.q||it.k==="eat")?`<div class="acts">${it.q?`<a href="${maps(it.q)}">${I("map")}</a>`:""}${it.k==="eat"?`<button data-jump="eat">${I("eatNearby")}</button><a href="${maps(EATNEAR[d.id+"|"+it.t]||it.title)}" target="_blank" rel="noopener">${I("map")}</a>`:""}</div>`:""}
+   </div></div>`;
+  }
+ });
+ h+=`</div>`;
+ const tips=dz.tips;
+ if(tips.length) h+=`<ul class="tips">${tips.map(t=>`<li>${esc(t)}</li>`).join("")}</ul>`;
+ const fares=d.items.filter(x=>x.fare).reduce((a,x)=>a+x.fare,0);
+ h+=`<div class="blk"><div class="li"><span>${I("dayTransport")}</span><span class="v">${yen(fares)}</span></div></div>`;
+ h+=`<h3 class="sec" id="eat-here">${I("eatToday")}</h3><p class="sub">${I("eatSub")}</p>`+foodList(EAT.filter(e=>e.day===d.id));
+ h+=`<p class="foot">${I("footDay")}</p>`;
+ $("#v-day").innerHTML=h;
+ renderAlerts();
+}
+
+function foodList(list){
+ let h="",area="";const sep=ZH()?"，":", ";
+ list.forEach(e=>{
+  const id=e.name, z=ZH()?EAT_ZH[e.name]:null;
+  if(e.area!==area){area=e.area;h+=`<div class="area">${esc(ZH()?(AREA_ZH[area]||area):area)}</div>`}
+  const hr=ZH()?(EATHRS_ZH[e.name]||e.hrs):e.hrs;
+  h+=`<div class="food"><div class="top"><div><div class="nm">${esc(e.name)}</div><div class="jpn">${esc(e.jp)}</div></div><button class="fav" data-fav="${esc(id)}" aria-pressed="${!!favs[id]}" aria-label="☆ ${esc(e.name)}">${favs[id]?"★":"☆"}</button></div>
+  <div class="meta">${esc(ZH()?(MEAL_ZH[e.meal]||e.meal):e.meal)}${sep}${esc(z?z.k:e.kind)}${sep}<span class="pr" style="color:var(--ink)">${esc(z?z.p:e.price)}</span></div>
+  <p class="why">${esc(z?z.w:e.why)}</p>${hr?`<div class="hrs"><span>${I("hours")}</span>${esc(hr)}</div>`:""}
+  <div class="acts"><a href="${maps(e.q)}">${I("map")}</a><button data-show="${esc(e.jp)}" data-sub="${esc(e.name)}">${I("showName")}</button>${e.src?`<span style="color:var(--muted);margin-left:auto;font-size:12px">${I("via")} ${esc(e.src)}</span>`:""}</div></div>`;
+ });
+ return h||`<p class="sub">${I("noPicks")}</p>`;
+}
+
+function renderEat(){
+ const areas=["All","Saved",...new Set(EAT.map(e=>e.area))];
+ const lab=a=>a==="All"?I("all"):a==="Saved"?I("saved"):(ZH()?(AREA_ZH[a]||a):a);
+ let list=EAT; if(eatFilter==="Saved") list=EAT.filter(e=>favs[e.name]); else if(eatFilter!=="All") list=EAT.filter(e=>e.area===eatFilter);
+ $("#v-eat").innerHTML=`<h3 class="sec">${I("eatTitle")}</h3><p class="sub">${I("eatIntro")}</p>
+ <div class="filters">${areas.map(a=>`<button data-f="${esc(a)}" aria-pressed="${a===eatFilter}">${esc(lab(a))}</button>`).join("")}</div>
+ ${list.length?foodList(list):`<p class="sub">${I("nothingSaved")}</p>`}
+ <div class="tips" style="margin-top:16px"><li style="list-style:none">${I("eatTips")}</li></div>`;
+}
+
+function renderInfoEn(){
+ const total=DAYS.reduce((a,d)=>a+d.items.filter(x=>x.fare).reduce((b,x)=>b+x.fare,0),0)+2800;
+ $("#v-info").innerHTML=`
+ <h3 class="sec">Flights</h3>
+ <p class="sub">Philippine Airlines, one booking, connecting in Manila (NAIA Terminal 1) both ways. Times are local. ≈ marks a time estimated from the current schedule; your boarding pass is final.</p>
+ <div class="flt"><div class="fh"><b>Outbound</b><span>Mon 9 Nov</span></div>
+  <div class="leg"><div><div class="ap">KUL</div><div class="tm">02:20</div><div class="tr">KLIA Terminal 1</div></div><div class="no">PR 530<br>≈ 4 h</div><div class="r"><div class="ap">MNL</div><div class="tm">06:20</div><div class="tr">NAIA Terminal 1</div></div></div>
+  <div class="lay"><b>Transfer in Manila, about 2 h 30 min.</b> Same terminal, no immigration. See the transfer guide below.</div>
+  <div class="leg"><div><div class="ap">MNL</div><div class="tm">≈08:50</div><div class="tr">NAIA Terminal 1</div></div><div class="no">PR 422<br>≈ 4 h 20</div><div class="r"><div class="ap">HND</div><div class="tm">14:10</div><div class="tr">Haneda Terminal 3</div></div></div>
+  <div class="fltf">Be at KLIA T1 by about 23:20 on Sun 8 Nov (3 hours before). Malaysia is 1 hour behind Japan.</div></div>
+ <div class="flt"><div class="fh"><b>Return</b><span>Sat 14 to Sun 15 Nov</span></div>
+  <div class="leg"><div><div class="ap">HND</div><div class="tm">15:25</div><div class="tr">Haneda Terminal 3</div></div><div class="no">PR 421<br>≈ 5 h</div><div class="r"><div class="ap">MNL</div><div class="tm">≈19:50</div><div class="tr">NAIA Terminal 1</div></div></div>
+  <div class="lay"><b>Transfer in Manila, about 1 h 25 min. This one is tight.</b> Move straight to transfer security; no shopping until you are at the gate.</div>
+  <div class="leg"><div><div class="ap">MNL</div><div class="tm">21:15</div><div class="tr">NAIA Terminal 1</div></div><div class="no">PR 529<br>≈ 4 h</div><div class="r"><div class="ap">KUL</div><div class="tm">01:15</div><div class="tr">KLIA Terminal 1, Sun</div></div></div>
+  <div class="fltf">Haneda check-in: arrive by about 12:00. KLIA at 01:15: trains have likely stopped for the night, so prebook a pickup or Grab.</div></div>
+ <h3 class="sec">Transfer guide, Manila T1</h3>
+ <p class="sub">International to international on one PAL ticket, both directions. Same terminal, no Philippine immigration.</p>
+ <div class="blk"><ol class="steps2">
+  <li><b>At check-in (KLIA and Haneda):</b> ask for both boarding passes and confirm your bag is tagged to the final airport (HND outbound, KUL on return).</li>
+  <li><b>After landing in Manila:</b> follow the <b>Transfer / Flight Connections</b> signs. Do not follow Arrival or Immigration.</li>
+  <li><b>No onward boarding pass, or delayed?</b> Go to the PAL Transfer Desk first; they reissue passes and rebook missed connections on the same ticket.</li>
+  <li><b>Transfer security screening</b> (Office for Transportation Security). Liquids over 100 ml are taken here, so pack sake, sauces and drinks bought in Japan in your checked bag.</li>
+  <li><b>Go to your gate</b> and check the screens; gates change often. Be there at least 30 min before departure.</li>
+ </ol></div>
+ <div class="blk" style="padding:10px 13px"><div style="font-size:14px"><b>Before you fly</b></div><ul style="font-size:14px">
+  <li><b>Visit Japan Web:</b> fill in immigration and customs before Monday and keep the QR codes on your phone for Haneda.</li>
+  <li><b>Philippine eTravel:</b> needed only if you leave the airport in Manila. It is free and takes minutes, so registering within 72 hours is a harmless backup.</li>
+  <li><b>Check flight status the day before</b> in the PAL app. PR 530 has had recent last-minute cancellations.</li>
+  <li><b>Return delay plan:</b> if PR 421 leaves Haneda late, tell the crew you connect to PR 529 and ask to sit near the front.</li>
+ </ul></div>
+ <h3 class="sec">Bookings</h3>
+ <div class="blk">${BOOKINGS.map(([k,t])=>`<button class="chk" role="checkbox" aria-checked="${!!booked[k]}" data-bk="${k}"><span class="box"></span><span>${esc(t)}</span></button>`).join("")}</div>
+ <h3 class="sec">Train colours</h3>
+ <div class="blk">${Object.values(LINES).map(L=>`<div class="legend"><span class="badge" style="background:${L.c};color:${L.f};min-width:118px;text-align:center">${L.n}</span><span>${L.jp}</span></div>`).join("")}</div>
+ <h3 class="sec">Last trains home</h3><p class="sub">Last train that still reaches Shin-Koiwa, weekday timetable.</p>
+ <div class="blk"><div class="li"><span>Akihabara, yellow line</span><span class="v">00:28</span></div><div class="li"><span>Shinjuku, yellow line</span><span class="v">00:08</span></div><div class="li"><span>Tokyo Station, Sobu Rapid</span><span class="v">00:01</span></div><div class="li"><span>Maihama via Nishi-Funabashi</span><span class="v">≈23:00</span></div><div class="li"><span>Last Fuji bus back (Asahigaoka)</span><span class="v">18:50</span></div></div>
+ <h3 class="sec">Show to staff</h3><p class="sub">Tap a phrase to show it full screen.</p>
+ <div class="blk">${PHRASES.map(([e,j])=>`<button class="phr" data-show="${esc(j)}" data-sub="${esc(e)}"><div class="e">${esc(e)}</div><div class="jj">${esc(j)}</div></button>`).join("")}</div>
+ <h3 class="sec">Budget</h3>
+ <div class="blk"><div class="li"><span>Transport + KABA</span><span class="v">${yen(total)}</span></div><div class="li"><span>Disneyland ticket</span><span class="v">¥10,900</span></div><div class="li"><span>Square Enix Cafe charge</span><span class="v">¥1,200</span></div><div class="li"><span>Suica top-up to start</span><span class="v">¥5,000 to 6,000</span></div></div>
+ <h3 class="sec">Weather</h3>
+ <div class="blk"><div class="li"><span>Tokyo, mid-Nov</span><span class="v">about 18°C / 10°C</span></div><div class="li"><span>Sunset</span><span class="v">about 4:35 PM</span></div><div class="li"><span>Lake Yamanaka</span><span class="v">much colder</span></div></div>
+ <h3 class="sec">Emergency</h3>
+ <div class="blk"><div class="li"><span>Police</span><a class="v" href="tel:110">110</a></div><div class="li"><span>Ambulance / Fire</span><a class="v" href="tel:119">119</a></div><div class="li"><span>JNTO Visitor Hotline, 24h</span><a class="v" href="tel:+815038162787">050-3816-2787</a></div></div>
+ <h3 class="sec">Your hotel</h3>
+ <div class="blk"><button class="phr" data-show="新小岩" data-sub="Cypress Inn Tokyo, near Shin-Koiwa Station"><div class="e">Show taxi driver</div><div class="jj">サイプレスイン東京 / 新小岩駅</div></button></div>
+ <p class="foot">Things to do: Instagram can’t be scraped directly, so picks come from Japanese event listings and media coverage of what is trending, checked against your dates. “On your dates” items are confirmed for 9 to 14 Nov 2026. Built 4 Nov 2026. This link needs data to load; once open, keep the tab and it works without signal. Hours and prices can change; recheck bookings on the day. Done ticks, saved places and bookings are stored on this phone only.</p>`;
+}
+
+function renderInfoZh(){
+ const total=DAYS.reduce((a,d)=>a+d.items.filter(x=>x.fare).reduce((b,x)=>b+x.fare,0),0)+2800;
+ $("#v-info").innerHTML=`
+ <h3 class="sec">航班</h3>
+ <p class="sub">菲律宾航空，同一订单，去回程都在马尼拉（NAIA 第1航站楼）转机。时间为当地时间。≈ 为根据现行时刻表推算的时间，以登机牌为准。</p>
+ <div class="flt"><div class="fh"><b>去程</b><span>11月9日 周一</span></div>
+  <div class="leg"><div><div class="ap">KUL</div><div class="tm">02:20</div><div class="tr">吉隆坡机场 T1</div></div><div class="no">PR 530<br>≈ 4小时</div><div class="r"><div class="ap">MNL</div><div class="tm">06:20</div><div class="tr">NAIA 第1航站楼</div></div></div>
+  <div class="lay"><b>马尼拉转机约2小时30分钟。</b>同一航站楼，无需入境。见下方转机指南。</div>
+  <div class="leg"><div><div class="ap">MNL</div><div class="tm">≈08:50</div><div class="tr">NAIA 第1航站楼</div></div><div class="no">PR 422<br>≈ 4小时20分</div><div class="r"><div class="ap">HND</div><div class="tm">14:10</div><div class="tr">羽田第3航站楼</div></div></div>
+  <div class="fltf">11月8日周日约23:20前到达吉隆坡机场 T1（起飞前3小时）。马来西亚比日本慢1小时。</div></div>
+ <div class="flt"><div class="fh"><b>回程</b><span>11月14日至15日</span></div>
+  <div class="leg"><div><div class="ap">HND</div><div class="tm">15:25</div><div class="tr">羽田第3航站楼</div></div><div class="no">PR 421<br>≈ 5小时</div><div class="r"><div class="ap">MNL</div><div class="tm">≈19:50</div><div class="tr">NAIA 第1航站楼</div></div></div>
+  <div class="lay"><b>马尼拉转机约1小时25分钟，时间很紧。</b>直接去转机安检，到登机口前不要逛街。</div>
+  <div class="leg"><div><div class="ap">MNL</div><div class="tm">21:15</div><div class="tr">NAIA 第1航站楼</div></div><div class="no">PR 529<br>≈ 4小时</div><div class="r"><div class="ap">KUL</div><div class="tm">01:15</div><div class="tr">吉隆坡机场 T1，周日</div></div></div>
+  <div class="fltf">羽田值机：约12:00前到达。01:15抵达吉隆坡时火车可能已停驶，请预约接机或 Grab。</div></div>
+ <h3 class="sec">马尼拉 T1 转机指南</h3>
+ <p class="sub">菲律宾航空同一机票国际转国际，去回程相同。同一航站楼，无需菲律宾入境。</p>
+ <div class="blk"><ol class="steps2">
+  <li><b>在吉隆坡和羽田值机时：</b>要求拿到两张登机牌，并确认行李直挂终点（去程 HND，回程 KUL）。</li>
+  <li><b>在马尼拉落地后：</b>跟随「Transfer / Flight Connections」（转机）指示牌，不要跟 Arrival（到达）或 Immigration（入境）走。</li>
+  <li><b>没有下一程登机牌或航班延误？</b>先去菲律宾航空转机柜台（Transfer Desk），可补发登机牌，同一机票错过转机会帮你改签。</li>
+  <li><b>转机安检</b>（交通安全办公室 OTS）。超过100毫升的液体会被没收，在日本买的清酒、酱料和饮料请放托运行李。</li>
+  <li><b>前往登机口</b>，留意屏幕，登机口常会更改。至少提前30分钟到。</li>
+ </ol></div>
+ <div class="blk" style="padding:10px 13px"><div style="font-size:14px"><b>出发前</b></div><ul style="font-size:14px">
+  <li><b>Visit Japan Web：</b>周一前填好入境和海关资料，把二维码存在手机里，到羽田使用。</li>
+  <li><b>菲律宾 eTravel：</b>只有离开马尼拉机场才需要。免费、几分钟搞定，起飞前72小时内登记也无妨，当作备用。</li>
+  <li><b>前一天在菲律宾航空 App 查航班状态。</b>PR 530 最近曾临时取消。</li>
+  <li><b>回程延误应对：</b>如果 PR 421 在羽田延误起飞，告诉机组你要转 PR 529，请求坐在前排。</li>
+ </ul></div>
+ <h3 class="sec">预订清单</h3>
+ <div class="blk">${BOOKINGS.map(([k,t])=>`<button class="chk" role="checkbox" aria-checked="${!!booked[k]}" data-bk="${k}"><span class="box"></span><span>${esc(BOOKINGS_ZH[k]||t)}</span></button>`).join("")}</div>
+ <h3 class="sec">电车颜色</h3>
+ <div class="blk">${Object.keys(LINES).map(k=>{const L=LINES[k];return `<div class="legend"><span class="badge" style="background:${L.c};color:${L.f};min-width:118px;text-align:center">${LINES_ZH[k]}</span><span>${L.jp}</span></div>`}).join("")}</div>
+ <h3 class="sec">回酒店末班车</h3><p class="sub">还能到新小岩的末班车，平日时刻表。</p>
+ <div class="blk"><div class="li"><span>秋叶原，黄色线路</span><span class="v">00:28</span></div><div class="li"><span>新宿，黄色线路</span><span class="v">00:08</span></div><div class="li"><span>东京站，总武快速线</span><span class="v">00:01</span></div><div class="li"><span>舞滨经西船桥</span><span class="v">≈23:00</span></div><div class="li"><span>富士山末班回程巴士（旭日丘）</span><span class="v">18:50</span></div></div>
+ <h3 class="sec">出示给工作人员</h3><p class="sub">点一下句子即可全屏显示日文。</p>
+ <div class="blk">${PHRASES.map(([e,j],i)=>`<button class="phr" data-show="${esc(j)}" data-sub="${esc(PHRASES_ZH[i]||e)}"><div class="e">${esc(PHRASES_ZH[i]||e)}</div><div class="jj">${esc(j)}</div></button>`).join("")}</div>
+ <h3 class="sec">预算</h3>
+ <div class="blk"><div class="li"><span>交通 + KABA</span><span class="v">${yen(total)}</span></div><div class="li"><span>迪士尼门票</span><span class="v">¥10,900</span></div><div class="li"><span>Square Enix 咖啡厅入座费</span><span class="v">¥1,200</span></div><div class="li"><span>Suica 初次充值</span><span class="v">¥5,000 至 6,000</span></div></div>
+ <h3 class="sec">天气</h3>
+ <div class="blk"><div class="li"><span>东京，11月中旬</span><span class="v">约 18°C / 10°C</span></div><div class="li"><span>日落</span><span class="v">约下午4:35</span></div><div class="li"><span>山中湖</span><span class="v">冷得多</span></div></div>
+ <h3 class="sec">紧急联系</h3>
+ <div class="blk"><div class="li"><span>警察</span><a class="v" href="tel:110">110</a></div><div class="li"><span>救护车 / 消防</span><a class="v" href="tel:119">119</a></div><div class="li"><span>日本观光局访客热线（24小时，有中文）</span><a class="v" href="tel:+815038162787">050-3816-2787</a></div></div>
+ <h3 class="sec">你的酒店</h3>
+ <div class="blk"><button class="phr" data-show="新小岩" data-sub="Cypress Inn Tokyo，新小岩站附近"><div class="e">给出租车司机看</div><div class="jj">サイプレスイン東京 / 新小岩駅</div></button></div>
+ <p class="foot">「这里可以做什么」：无法直接抓取 Instagram，内容来自日本活动资讯和媒体对热门话题的报道，并已对照你的日期。标有「你的日期」的项目已确认在2026年11月9日至14日期间。制作于2026年11月4日。此链接需要网络加载；打开后保持页面，没有信号也能用。营业时间和价格可能变动，当天请再确认预订。完成勾选、收藏和预订状态只保存在这部手机上。</p>`;
+}
+function renderInfo(){ if(ZH()) renderInfoZh(); else renderInfoEn(); }
+
+/* ===== Added: leave-by / last-train alerts, night-before checklists, rain plans, live weather when self-hosted ===== */
+Object.assign(I18N.en,{nextDep:"Next departure",leaveNow:"Leave now",inT:"in ",lastHome:"Last train home from",lastGone:"The last train home has left. Take a taxi: show the hotel card in the Info tab.",cl:"Night-before checklist",clMon:"Before you fly",rainPlan:"If it rains",liveUpd:"Live forecast, updated"});
+Object.assign(I18N.zh,{nextDep:"下一班出发",leaveNow:"现在出发",inT:"还有 ",lastHome:"回酒店末班车：",lastGone:"回酒店的末班车已开走。请搭出租车：在「资讯」页出示酒店卡片。",cl:"前一晚检查清单",clMon:"出发前清单",rainPlan:"下雨怎么办",liveUpd:"实时预报，更新于"});
+
+const LASTHOME={mon:{st:["秋葉原","Akihabara"],t:"00:28"},tue:{st:["東京","Tokyo Station"],t:"00:01"},wed:{st:["東京","Tokyo Station"],t:"00:01"},thu:{st:["舞浜","Maihama"],t:"23:00",approx:true},fri:{st:["新宿","Shinjuku"],t:"00:08"}};
+
+const CHECK={
+mon:{en:["Passport, plus Visit Japan Web QR codes saved on your phone","Be at KLIA T1 by about 23:20 on Sunday","Phone and power bank charged","Light jacket in your carry-on for the evening"],
+     zh:["护照，以及存在手机里的 Visit Japan Web 二维码","周日约23:20前到达吉隆坡机场 T1","手机和充电宝充满电","随身行李放一件薄外套，晚上用"]},
+tue:{en:["Alarm for 07:00; leave the hotel at 07:45","Suica topped up (about ¥1,000 for the day)","Cash for Nakamise snacks and lunch","Comfortable shoes: a lot of walking today"],
+     zh:["闹钟定07:00；07:45离开酒店","Suica 充值（当天约¥1,000）","准备现金买仲见世小吃和午餐","穿好走的鞋，今天走很多路"]},
+wed:{en:["Screenshot both bus tickets (09:20 and 15:20) so they work offline","Check which Tokyo stop your ticket shows: Yaesu South Exit or Tekko Building","Check the KABA booking email for any weather cancellation","Warm jacket, gloves and hat: the lake is near 0°C","Leave the hotel by 08:10"],
+     zh:["把两张巴士车票（09:20和15:20）截图，离线也能用","确认车票上的东京上车站：八重洲南口还是铁钢大楼","查看 KABA 预订邮件，确认没有因天气取消","保暖外套、手套和帽子：湖边接近0°C","08:10前离开酒店"]},
+thu:{en:["Disney ticket loaded in the Tokyo Disney Resort app","App logged in, with a payment card added for Premier Access","Phone fully charged, plus a power bank","Buy breakfast at a convenience store tonight or early tomorrow","Leave the hotel by 07:30"],
+     zh:["门票已加入东京迪士尼度假区 App","App 已登录，并绑定付款卡（尊享卡用）","手机充满电，带上充电宝","今晚或明早在便利店买早餐","07:30前离开酒店"]},
+fri:{en:["Square Enix Cafe reservation confirmed, if you booked","Passport for tax-free shopping at Don Quijote","Spare space in your bag for shopping"],
+     zh:["确认 Square Enix 咖啡厅预约（如有预约）","带护照，在唐吉诃德办免税","包里留空间装战利品"]},
+sat:{en:["Pack tonight; put sake, sauces and other liquids in your checked bag","Passport and both boarding passes in your carry-on","Spend leftover Suica balance; it is not refundable","Check out by 10:30 and leave at 10:45","Confirm your KLIA pickup for 01:15 Sunday"],
+     zh:["今晚收拾好行李；清酒、酱料等液体放托运行李","护照和两张登机牌放随身行李","用完 Suica 余额，不能退款","10:30前退房，10:45出发","确认周日01:15吉隆坡机场接机"]}
+};
+
+const RAIN={
+mon:{en:["Akihabara is mostly indoors anyway: Mandarake, Super Potato, HEY and GiGO are all inside.","Yodobashi Akiba, the huge electronics store by the station, is a good dry stop between shops.","Convenience stores sell clear umbrellas for about ¥500 to 1,000."],
+     zh:["秋叶原大部分本来就在室内：Mandarake、Super Potato、HEY 和 GiGO 都在室内。","车站旁的大型电器店 Yodobashi Akiba，适合在逛店之间避雨。","便利店有卖透明雨伞，约¥500至1,000。"]},
+tue:{en:["Sensō-ji’s main hall is indoors; visit Asakusa a little later if the rain eases.","Skip Rikugien and spend longer in Tokyo Station’s underground malls (Character Street, Okashi Land) and KITTE, all indoors.","Yaechika, the Yaesu underground mall, connects most of what you need without going outside."],
+     zh:["浅草寺本堂在室内；如果雨会停，可以稍晚再去浅草。","跳过六义园，多花时间在东京站地下商场（动漫人物街、零食乐园）和 KITTE，全在室内。","八重洲地下街（Yaechika）连接大部分地方，不用出到外面。"]},
+wed:{en:["If heavy rain or thick cloud is forecast 48 hours before, swap Wednesday and Friday, and rebook the bus and KABA.","In light rain KABA may still run; cancellations come by email, so check before you leave.","Fuji may be hidden by cloud, but the autumn leaves festival and its food stalls still go ahead."],
+     zh:["如果出发前48小时预报大雨或云层很厚，把周三和周五对调，并改订巴士和 KABA。","小雨时 KABA 可能照常运行；取消会以邮件通知，出发前请查看。","富士山可能被云挡住，但红叶祭和小吃摊照常。"]},
+thu:{en:["Ponchos are sold in the park; bring a plastic bag for your phone.","Parades can be cancelled or shortened in rain; check the app.","Focus on indoor rides and shows; queues for outdoor rides often get shorter."],
+     zh:["园内有卖雨衣；带个塑料袋装手机。","下雨时游行可能取消或缩短，请看 App。","以室内设施和表演为主；户外设施排队通常会变短。"]},
+fri:{en:["Shibuya and Shinjuku are mostly indoors: 109, PARCO, MAGNET, Don Quijote and the Square Enix Cafe are all inside.","Skip the wet MAGNET rooftop and watch the crossing through the windows of the Shibuya Mark City walkway.","In Shinjuku, the Subnade underground mall takes you most of the way to Kabukicho."],
+     zh:["涩谷和新宿大部分在室内：109、PARCO、MAGNET、唐吉诃德和 Square Enix 咖啡厅都在室内。","下雨就不上 MAGNET 屋顶，改在涩谷 Mark City 连通道的窗边看十字路口。","在新宿，地下商场 Subnade 可以带你走到歌舞伎町附近。"]},
+sat:{en:["Allow 15 extra minutes; trains run normally but stations are slower in rain.","Keep your umbrella out of your checked bag until you reach Haneda."],
+     zh:["多预留15分钟；下雨时列车正常，但车站会比较慢。","雨伞到羽田前都不要放进托运行李。"]}
+};
+
+let checks=store.get("checks",{});
+const fmtIn=m=>ZH()?(m>=60?`${Math.floor(m/60)}小时${m%60}分钟`:`${m}分钟`):(m>=60?`${Math.floor(m/60)} h ${m%60} min`:`${m} min`);
+
+function extrasHtml(d){
+ let h="";
+ const r=RAIN[d.id];
+ if(r){const L=ZH()?r.zh:r.en;h+=`<details class="xtra rain"><summary>☂ ${I("rainPlan")}</summary><ul>${L.map(x=>`<li>${esc(x)}</li>`).join("")}</ul></details>`;}
+ const c=CHECK[d.id];
+ if(c){const L=ZH()?c.zh:c.en;const n=L.filter((_,i)=>checks[d.id+":"+i]).length;
+  h+=`<details class="xtra cl"><summary>✓ ${I(d.id==="mon"?"clMon":"cl")} <span class="cln" id="cln-${d.id}">${n}/${L.length}</span></summary><div>${L.map((x,i)=>`<button class="chk" role="checkbox" aria-checked="${!!checks[d.id+":"+i]}" data-cl="${d.id}:${i}"><span class="box"></span><span>${esc(x)}</span></button>`).join("")}</div></details>`;}
+ return h+`<div id="alerts" aria-live="polite"></div>`;
+}
+
+function renderAlerts(){
+ const el=document.getElementById("alerts"); if(!el) return;
+ const ids=DAYS.map(x=>x.id);
+ let h="";
+ if(todayId&&cur===todayId){
+  const d=DAYS.find(x=>x.id===cur);
+  const nx=d.items.find(it=>it.k==="journey"&&toMin(it.t)>now.min);
+  if(nx){const diff=toMin(nx.t)-now.min; if(diff<=120) h+=`<div class="alert go"><small>${I("nextDep")}</small><strong>${diff<=2?I("leaveNow"):I("inT")+fmtIn(diff)}</strong><span>${nx.t}  ${esc(jTitle(nx))}</span></div>`;}
+ }
+ /* last train: evening of today, or after midnight for the previous day */
+ let lhId=null, nm=now.min;
+ if(todayId&&now.min>=21*60+30) lhId=todayId;
+ else if(now.min<240){const ti=todayId?ids.indexOf(todayId):-1; if(ti>0) lhId=ids[ti-1]; nm=now.min+1440;}
+ if(lhId&&(cur===lhId||cur===todayId)&&LASTHOME[lhId]){
+  const lh=LASTHOME[lhId];let lt=toMin(lh.t);if(lt<240)lt+=1440;const diff=lt-nm;
+  if(diff>-60) h+= diff>0?`<div class="alert last${diff<=30?" urgent":""}"><small>${I("lastHome")} ${esc(ZH()?lh.st[0]:lh.st[1])} ${lh.approx?"≈":""}${lh.t}</small><strong>${I("inT")}${fmtIn(diff)}</strong></div>`:`<div class="alert last urgent"><strong>${I("lastGone")}</strong></div>`;
+ }
+ el.innerHTML=h;
+}
+
+/* Live weather: only where the host allows outside requests (GitHub Pages, Netlify, Cloudflare Pages, Vercel, or the file opened directly). On claude.ai the saved snapshot is used. */
+const LIVE_OK=location.protocol==="file:"||/(github\.io|netlify\.app|pages\.dev|vercel\.app)$/.test(location.hostname);
+function applyLive(w){
+ if(!w||!w.d) return;
+ Object.keys(w.d).forEach(id=>{const f=FC[id]; if(!f) return;
+  let got=false; w.d[id].forEach((v,i)=>{ if(f.c[i]&&v&&v[0]!=null){f.c[i][1]=Math.round(v[0]);f.c[i][2]=Math.round(v[1]);f.c[i][3]=v[2];got=true;} });
+  if(got) f.live=w.t; });
+}
+async function liveWeather(){
+ if(!LIVE_OK||!navigator.onLine) return;
+ const q=(lat,lon)=>`https://api.open-meteo.com/v1/forecast?latitude=${lat}&longitude=${lon}&daily=temperature_2m_max,temperature_2m_min,precipitation_probability_max&timezone=Asia%2FTokyo&start_date=2026-11-09&end_date=2026-11-14`;
+ try{
+  const [a,b]=await Promise.all([fetch(q(35.7167,139.8584)).then(r=>r.json()),fetch(q(35.4106,138.8652)).then(r=>r.json())]);
+  if(!a.daily) return;
+  const ids=["mon","tue","wed","thu","fri","sat"], out={t:Date.now(),d:{}};
+  ids.forEach((id,i)=>{const row=k=>a.daily[k][i];out.d[id]=[[row("temperature_2m_max"),row("temperature_2m_min"),row("precipitation_probability_max")]];
+   if(id==="wed"&&b.daily) out.d[id].push([b.daily.temperature_2m_max[i],b.daily.temperature_2m_min[i],b.daily.precipitation_probability_max[i]]);});
+  store.set("wx",out); applyLive(out);
+  if(!$("#v-day").classList.contains("hide")) renderDay();
+ }catch(e){}
+}
+
+
+function renderAll(){renderStrip();renderDay();renderEat();renderInfo()}
+
+function show(v){
+ ["day","eat","info"].forEach(x=>$("#v-"+x).classList.toggle("hide",x!==v));
+ document.querySelectorAll("nav.tabs button").forEach(b=>b.setAttribute("aria-selected",b.dataset.v===v));
+ $("#strip").style.display=v==="day"?"":"none";
+}
+
+document.addEventListener("click",e=>{
+ const t=e.target.closest("button,[data-show]"); if(!t) return;
+ if(t.dataset.cl){const k=t.dataset.cl;checks[k]=!checks[k];store.set("checks",checks);t.setAttribute("aria-checked",!!checks[k]);const id=k.split(":")[0];const c=CHECK[id];const L=c?c.en:[];const n=L.filter((_,i)=>checks[id+":"+i]).length;const el=document.getElementById("cln-"+id);if(el)el.textContent=n+"/"+L.length;return}
+ if(t.dataset.lang){lang=t.dataset.lang;store.set("lang",lang);applyStatic();renderAll();tick();return}
+ if(t.dataset.v){show(t.dataset.v);window.scrollTo({top:0});return}
+ if(t.dataset.done){done[t.dataset.done]=!done[t.dataset.done];store.set("done",done);renderDay();return}
+ if(t.dataset.fav){favs[t.dataset.fav]=!favs[t.dataset.fav];store.set("favs",favs);renderDay();renderEat();return}
+ if(t.dataset.f){eatFilter=t.dataset.f;renderEat();return}
+ if(t.dataset.bk){booked[t.dataset.bk]=!booked[t.dataset.bk];store.set("booked",booked);renderInfo();return}
+ if(t.dataset.jump){document.getElementById("eat-here").scrollIntoView({behavior:"smooth"});return}
+ if(t.dataset.show){$("#ovBig").textContent=t.dataset.show;$("#ovSmall").textContent=t.dataset.sub||"";$("#ovBar").style.background=t.dataset.col||"transparent";$("#ov").classList.add("show");$("#ovClose").focus();return}
+});
+$("#ovClose").onclick=()=>$("#ov").classList.remove("show");
+document.addEventListener("keydown",e=>{if(e.key==="Escape")$("#ov").classList.remove("show")});
+
+function tick(){now=jstNow();$("#clock").textContent=(lang==="zh"?"东京 ":"Tokyo ")+now.hm;}
+if(LIVE_OK)applyLive(store.get("wx",null));applyStatic();tick();renderAll();liveWeather();setInterval(liveWeather,3*3600*1000);
+if(todayId){const n=document.querySelector(".it.now");if(n)setTimeout(()=>n.scrollIntoView({block:"center"}),150)}
+setInterval(()=>{const before=now.min;tick();renderAlerts();if(todayId&&cur===todayId&&Math.floor(now.min/5)!==Math.floor(before/5))renderDay()},30000);
+})();
+</script>
+</body>
+</html>
