@@ -96,6 +96,7 @@ details.steps ol li{margin:4px 0}
 
 .hrs{font-size:13px;margin-top:6px;display:flex;gap:6px;align-items:baseline}
 .hrs span{font-weight:700;color:var(--muted);flex:0 0 auto}
+.hrs.warn,.hrs.warn span{color:var(--warn);font-weight:600}
 .ft{display:grid;grid-template-columns:1fr 1fr;gap:6px;padding:0 10px 8px}
 .ft div{background:color-mix(in srgb,var(--day) 10%,var(--surface));border-radius:8px;padding:5px 9px}
 .ft small{display:block;font-size:11px;color:var(--muted)}
@@ -277,7 +278,7 @@ const DAYS = [
  {t:"09:45",k:"stop",title:"Nakamise Shopping Street",note:"Shops open around 9:30 to 10:00. Snack here rather than sitting down.",q:"Nakamise Shopping Street"},
  {t:"11:00",k:"move",line:"ginza",from:["浅草","Asakusa"],to:["上野","Ueno"],dur:"5 min",fare:null,steps:["Tokyo Metro Ginza Line towards Shibuya (渋谷)."]},
  {t:"11:10",k:"move",line:"yama",from:["上野","Ueno"],to:["駒込","Komagome"],dur:"15 min",fare:377,steps:["Yamanote Line towards Ikebukuro (池袋).","Fare shown is the total from Asakusa."]},
- {t:"11:40",k:"eat",title:"Lunch in Komagome",note:"Tonki (とんかつ) or Tokiwa Shokudo; see Eat list. Tonki’s lunch ends 14:15."},
+ {t:"11:40",k:"eat",title:"Lunch in Komagome",note:"Tonki (とんかつ) or Tokiwa Shokudo; see Eat list. Tonki’s lunch last order is around 14:00."},
  {t:"12:40",k:"stop",title:"Komagome Myōgi Shrine (妙義神社)",note:"Quiet local shrine, about 15 to 20 min.",q:"妙義神社 駒込"},
  {t:"13:10",k:"stop",title:"Rikugien Garden (六義園), optional",note:"Short walk from the station. Edo-period garden; early autumn colour likely. Allow 1 hour.",q:"Rikugien Garden"},
  {t:"14:30",k:"move",line:"yama",from:["駒込","Komagome"],to:["東京","Tokyo"],dur:"20 min",fare:209,steps:["Yamanote Line towards Tabata / Ueno (田端・上野)."]},
@@ -326,7 +327,7 @@ const DAYS = [
  {t:"10:15",k:"stop",title:"Hachiko + Shibuya Crossing",note:"Walk the scramble while it is quieter.",q:"Shibuya Scramble Crossing"},
  {t:"10:30",k:"stop",title:"Shibuya 109",note:"Fashion floors; opens 10:00.",q:"Shibuya 109"},
  {t:"11:30",k:"stop",title:"Pokémon Center Shibuya",note:"Shibuya PARCO 6F; Nintendo TOKYO on the same floor.",q:"Pokemon Center Shibuya"},
- {t:"12:30",k:"eat",title:"Lunch",note:"Senryo’s ¥680 kushi-katsu set or a fish teishoku; see Eat list."},
+ {t:"12:30",k:"eat",title:"Lunch",note:"Kaihin Shokudo Takeda’s fish set or Nakayoshi’s claypot rice; see Eat list. Senryo’s lunch is not confirmed."},
  {t:"13:30",k:"stop",title:"MAGNET by SHIBUYA109",note:"Rooftop view straight down onto the crossing.",q:"MAGNET by SHIBUYA109"},
  {t:"14:15",k:"stop",title:"MEGA Don Quijote Shibuya",note:"Souvenirs and snacks, tax-free with passport. Open 24 hours.",q:"MEGA Don Quijote Shibuya"},
  {t:"15:00",k:"move",line:"yama",from:["渋谷","Shibuya"],to:["新宿","Shinjuku"],dur:"7 min",fare:199,steps:["Yamanote Line towards Shinjuku / Ikebukuro."]},
@@ -355,23 +356,21 @@ const EAT = [
  // Akihabara (Mon)
  {day:"mon",area:"Akihabara",meal:"Dinner",name:"Echigoya Heiji",jp:"越後屋平次 秋葉原店",kind:"Grilled fish set meals",price:"¥1,000 to 2,000",why:"Charcoal-grilled fish teishoku with free extra rice. Close to the station, easy for one.",src:"Retty",q:"越後屋平次 秋葉原店"},
  {day:"mon",area:"Akihabara",meal:"Dinner",name:"Gyudon Sambo",jp:"牛丼専門 サンボ",kind:"Beef bowl",price:"Under ¥1,000",why:"Showa-era beef bowl counter with a homely, not-chain taste. Ticket machine, cash only, fast.",src:"Retty",q:"牛丼専門サンボ 秋葉原"},
- {day:"mon",area:"Akihabara",meal:"Dinner",name:"Gohan-dokoro Adachi",jp:"ごはん処あだち",kind:"Set meals",price:"¥1,000 to 2,000",why:"Huge rice portions and a husband-and-wife team whose banter keeps the room laughing.",src:"Retty",q:"ごはん処あだち 秋葉原"},
  {day:"mon",area:"Akihabara",meal:"Dinner",name:"Fuku no Ken",jp:"福の軒",kind:"Tonkotsu ramen",price:"From ¥630",why:"Cheap, solid pork-bone ramen popular with local office workers.",src:"aumo",q:"福の軒 秋葉原"},
  {day:"mon",area:"Akihabara",meal:"Treat",name:"Marugo",jp:"丸五",kind:"Tonkatsu",price:"About ¥2,400",why:"Akihabara’s tonkatsu institution since 1975, Michelin Bib Gourmand. Worth one splurge; expect a queue.",src:"Tabelog",q:"丸五 秋葉原 とんかつ"},
  // Asakusa (Tue)
  {day:"tue",area:"Asakusa",meal:"Breakfast",name:"Tomorrow",jp:"友路有 (トゥモロー)",kind:"Retro kissaten",price:"About ¥660",why:"Opens 6:30. The mixed morning set (thick toast, eggs, ham, salad, soup) is the local favourite. English menu.",src:"LIVE JAPAN",q:"友路有 浅草"},
  {day:"tue",area:"Asakusa",meal:"If you linger",name:"Yoshikami",jp:"ヨシカミ",kind:"Yoshoku (Japanese-Western)",price:"¥1,200 to 1,400",why:"Neighbourhood yoshoku since 1951; hayashi rice and omurice. Opens 11:30, so only if you stay later.",src:"Mapple",q:"ヨシカミ 浅草"},
  // Komagome (Tue)
- {day:"tue",area:"Komagome",meal:"Lunch",name:"Tonki",jp:"とんかつ とんき",kind:"Tonkatsu",price:"About ¥2,000",why:"Locals' favourite: ultra-thin crisp coating, counter seats, free refills of rice and cabbage. Lunch ends 14:15; no bookings.",src:"Tabelog / Retty",q:"とんき 駒込"},
+ {day:"tue",area:"Komagome",meal:"Lunch",name:"Tonki",jp:"とんかつ とんき",kind:"Tonkatsu",price:"About ¥2,000",why:"Locals' favourite: ultra-thin crisp coating, counter seats, free refills of rice and cabbage. Go early: lunch last order is around 14:00; no bookings.",src:"Tabelog / Retty",q:"とんき 駒込"},
  {day:"tue",area:"Komagome",meal:"Lunch",name:"Sugamo Tokiwa Shokudo",jp:"巣鴨ときわ食堂 駒込店",kind:"Diner set meals",price:"¥1,000 to 2,000",why:"1 min from the station. Fish and meat teishoku, one free rice refill. November means oyster fry season.",src:"Retty",q:"巣鴨ときわ食堂 駒込店"},
- {day:"tue",area:"Komagome",meal:"Quick bite",name:"Ichimaru Soba",jp:"一〇そば",kind:"Standing soba",price:"Under ¥600",why:"Open from 5:30 all day. The cheapest, fastest local option.",src:"Tabelog",q:"一〇そば 駒込"},
+ {day:"tue",area:"Komagome",meal:"Quick bite",name:"Ichimaru Soba",jp:"一〇そば",kind:"Standing soba",price:"Under ¥600",why:"Opens before dawn and shuts at 15:00, so lunch only. The cheapest, fastest local option.",src:"Tabelog",q:"一〇そば 駒込"},
  // Tokyo Station (Tue)
- {day:"tue",area:"Tokyo Station",meal:"Dinner",name:"Ora ga Soba",jp:"おらが蕎麦 ヤエチカ店",kind:"Soba and curry",price:"About ¥1,000",why:"Office-worker staple in the Yaesu underground. Open until about 22:30 on weekdays.",src:"Retty",q:"おらが蕎麦 ヤエチカ"},
  {day:"tue",area:"Tokyo Station",meal:"Dinner",name:"Himono Yaro",jp:"ひもの野郎 ヤエチカ",kind:"Grilled dried fish",price:"¥1,000 to 2,000",why:"Grilled himono fish with rice; open late. Feels like where locals eat after work.",src:"Retty",q:"ひもの野郎 東京駅ヤエチカ"},
  {day:"tue",area:"Tokyo Station",meal:"Dinner",name:"Kamatake Udon",jp:"釜たけうどん 八重洲北口店",kind:"Osaka-style udon",price:"¥1,000 to 1,500",why:"Chewy udon from a famous Namba shop; a good-value alternative to the Ramen Street queues.",src:"Mapple",q:"釜たけうどん 八重洲北口店"},
  {day:"tue",area:"Tokyo Station",meal:"Dinner",name:"Umanchu Shubo",jp:"海人酒房 八重洲地下街",kind:"Okinawan",price:"About ¥1,000",why:"Okinawa soba and rafute pork bowls; relaxed and close to the station.",src:"Retty",q:"海人酒房 八重洲地下街"},
  // Yamanakako (Wed)
- {day:"wed",area:"Lake Yamanaka",meal:"Lunch",name:"Kosaku Yamanakako",jp:"甲州ほうとう 小作 山中湖店",kind:"Hōtō noodles",price:"Mid-range",why:"Kabocha hōtō in an iron pot; loved by locals and visitors alike. Open 11:00 to 21:00. Check walking time from Asahigaoka.",src:"Japanese travel media",q:"甲州ほうとう小作 山中湖店"},
+ {day:"wed",area:"Lake Yamanaka",meal:"Lunch",name:"Kosaku Yamanakako",jp:"甲州ほうとう 小作 山中湖店",kind:"Hōtō noodles",price:"Mid-range",why:"Kabocha hōtō in an iron pot; loved by locals and visitors alike. Open 11:00 to 20:00. Check walking time from Asahigaoka.",src:"Japanese travel media",q:"甲州ほうとう小作 山中湖店"},
  {day:"wed",area:"Lake Yamanaka",meal:"Lunch",name:"Kikuya Shokudo",jp:"喜久屋食堂",kind:"Old-style diner",price:"Budget",why:"Long-running unpretentious diner used by locals as well as visitors.",src:"Tabelog via nap-camp",q:"喜久屋食堂 山中湖"},
  {day:"wed",area:"Lake Yamanaka",meal:"Lunch",name:"Taiho",jp:"お食事処 大豊",kind:"Hōtō, salt or miso",price:"Budget",why:"Described by locals as a hidden gem; the salt hōtō is the signature. A little away from the lake, so probably a taxi.",src:"Local blog",q:"お食事処大豊 山中湖"},
  // Shin-Koiwa (Wed / any night)
@@ -384,15 +383,14 @@ const EAT = [
  {day:"thu",area:"Shin-Koiwa",meal:"Breakfast",name:"Konbini run",jp:"コンビニ",kind:"Onigiri, sandwiches",price:"Under ¥600",why:"Grab breakfast at a convenience store by Shin-Koiwa station before the 07:30 train.",src:"",q:"コンビニ 新小岩駅"},
  // Shibuya (Fri)
  {day:"fri",area:"Shibuya",meal:"Lunch",name:"Senryo",jp:"千両",kind:"Showa izakaya lunch",price:"¥680",why:"Family-run since the Showa era, 4 min from the station. The kushi-katsu and croquette set is the must-order; packed with office workers.",src:"Retty",q:"千両 渋谷"},
- {day:"fri",area:"Shibuya",meal:"Lunch",name:"Kaihin Shokudo Takeda",jp:"海浜食堂たけだ",kind:"Fish set meals",price:"About ¥1,000",why:"3 min from the station. Saba miso set with big tonjiru. Lunch 11:30 to 15:00.",src:"Retty",q:"海浜食堂たけだ 渋谷"},
+ {day:"fri",area:"Shibuya",meal:"Lunch",name:"Kaihin Shokudo Takeda",jp:"海浜食堂たけだ",kind:"Fish set meals",price:"About ¥1,000",why:"3 min from the station. Saba miso set with big tonjiru. Every seat is a smoking seat.",src:"Retty",q:"海浜食堂たけだ 渋谷"},
  {day:"fri",area:"Shibuya",meal:"Lunch",name:"Nakayoshi",jp:"土鍋炊ごはん なかよし 渋谷ストリーム店",kind:"Claypot rice sets",price:"¥1,000 to 2,000",why:"Rice cooked fresh in a clay pot with simple set meals. Open 11:00 to 22:30.",src:"Retty",q:"なかよし 渋谷ストリーム"},
  // Shinjuku (Fri)
  {day:"fri",area:"Shinjuku",meal:"Dinner",name:"Numazuko Shinjuku Honten",jp:"沼津港 新宿本店",kind:"Conveyor sushi",price:"¥2,000 to 3,000",why:"Locals' value sushi on the way to Shinjuku-sanchome, near the Square Enix Cafe. Open 11:00 to 23:00.",src:"Retty",q:"沼津港 新宿本店"},
  {day:"fri",area:"Shinjuku",meal:"Dinner",name:"Ban’nai Kabukicho",jp:"坂内 歌舞伎町店",kind:"Kitakata ramen",price:"About ¥1,000",why:"Thick chewy noodles and lots of pork, tucked in a Kabukicho side street. Good after Godzilla.",src:"Retty",q:"坂内 歌舞伎町店"},
- {day:"fri",area:"Shinjuku",meal:"Dinner",name:"Tatsuya",jp:"たつ屋 新宿店",kind:"Donburi",price:"About ¥500",why:"Tiny Showa-era counter: beef, oyako and katsu bowls at about one coin.",src:"Retty",q:"たつ屋 新宿"},
+ {day:"fri",area:"Shinjuku",meal:"Dinner",name:"Tatsuya",jp:"たつ屋 新宿店",kind:"Donburi",price:"About ¥500",why:"Tiny Showa-era counter under the stairs by the JR south-east exit: beef, oyako and katsu bowls at about one coin. Cash only.",src:"Retty",q:"たつ屋 新宿"},
  {day:"fri",area:"Shinjuku",meal:"Dinner",name:"Tokyo Mentsudan",jp:"東京麺通団",kind:"Sanuki udon",price:"From ¥310",why:"Self-serve udon at Kagawa prices. Cheap and quick; popular with visitors too, so lunch hours are busy.",src:"aumo",q:"東京麺通団 新宿"},
  // Sat
- {day:"sat",area:"Shin-Koiwa",meal:"Breakfast",name:"Yoshoku Kissa Koyama",jp:"洋食喫茶 小山",kind:"Retro yoshoku cafe",price:"Budget",why:"Showa-retro cafe inside the station building; a calm last meal before the airport. Check opening time.",src:"Retty",q:"洋食喫茶 小山 新小岩"},
  {day:"sat",area:"Shin-Koiwa",meal:"Any time",name:"Kitchen Dai",jp:"キッチン大",kind:"Pick-3 set meals",price:"¥1,000 to 1,500",why:"Choose 3 dishes, big rice, tonjiru included. Open 11:00 to 20:00 Mon to Sat. Good any day you eat near the hotel.",src:"Retty",q:"キッチン大 新小岩"}
 ];
 
@@ -478,7 +476,7 @@ footDay:"First and last trains use the weekday timetable unless noted, from the 
 showName:"Show name",via:"via",noPicks:"No sit-down picks needed today.",eatTitle:"Where to eat",
 eatIntro:"Picked from Japanese review sites (Tabelog, Retty) and local media, favouring set-meal shops, standing bars and old diners over tourist strips. Tap the star to save.",
 all:"All",saved:"Saved",nothingSaved:"Nothing saved yet. Tap ☆ on a place to keep it here.",
-eatTips:"Tips: many small shops are cash only and use a ticket machine (食券機) by the door. Lunch sets are the cheapest way to eat well. Last orders are often 30 min before closing.",
+eatTips:"Tips: many small shops are cash only and use a ticket machine (食券機) by the door. Lunch sets are the cheapest way to eat well. Last orders are often 30 min before closing. Hours checked 6 Nov 2026; ≈ means listings differ, so confirm in Google Maps.",
 near:"Nearby",nearTitle:"Also nearby",nearIntro:"Famous and local-favourite places close to each day’s stops that are not already in your plan. Each card says how to fit it in. Tap the star to save.",fitIn:"Fit it in",nearFoot:"Hours checked 6 Nov 2026 against official and Japanese listings. ≈ means approximate or taken from an older listing; recheck in Google Maps on the day.",notYet:"Not yet",fcNote:"Forecast as of 4 Nov 2026; recheck 48 hours before.",liveFc:"Live forecast",check:"Check",showLarge:"Show in large text",markDone:"Mark done"},
 zh:{title:"东京之旅 11月9日至14日",plan:"行程",eat:"美食",info:"资讯",close:"关闭",today:"今天",now:"现在",firstUp:"首先",nextAt:"下一个",
 firstTrain:"首班车",lastTrain:"末班车",firstBus:"首班巴士",lastBus:"末班巴士",howRide:"乘车方法",howRideX:"乘车方法 + 换乘",inTotal:"见总价",
@@ -488,7 +486,7 @@ footDay:"首末班车以平日时刻表为准（另有注明除外），指出�
 showName:"出示店名",via:"来源",noPicks:"今天不需要另外找餐厅。",eatTitle:"吃什么",
 eatIntro:"选自日本本地点评网站（Tabelog、Retty）和本地媒体，优先定食店、立饮店和老食堂，避开游客区。点星星收藏。",
 all:"全部",saved:"已收藏",nothingSaved:"还没有收藏。点店家的 ☆ 就会出现在这里。",
-eatTips:"贴士：很多小店只收现金，门口用食券机（食券機）点餐。午餐套餐最划算。最后点餐通常在关门前30分钟。",
+eatTips:"贴士：很多小店只收现金，门口用食券机（食券機）点餐。午餐套餐最划算。最后点餐通常在关门前30分钟。营业时间于2026年11月6日核实；≈ 表示各资料不一致，请用 Google Maps 确认。",
 near:"周边",nearTitle:"附近还能去",nearIntro:"每天行程附近、尚未排进计划的知名景点和本地人爱去的地方。每张卡片都写了怎么安排。点星星收藏。",fitIn:"怎么安排",nearFoot:"营业时间于2026年11月6日对照官方及日本资讯核实。≈ 表示约数或来自较旧的资料，当天请用 Google Maps 再确认。",notYet:"尚未发布",fcNote:"预报截至2026年11月4日；出发前48小时再确认。",liveFc:"实时天气",check:"待查",showLarge:"放大显示",markDone:"标记完成"}
 };
 const LINES_ZH={local:"中央・总武线各站停车",rapid:"总武快速线",yama:"山手线",keiyo:"京叶线 / 武藏野线",keikyu:"京急机场线",toei:"都营浅草线",ginza:"银座线",bus:"富士急高速巴士"};
@@ -548,7 +546,7 @@ tue:{dow:"周二",date:"11月10日",full:"11月10日 星期二",title:"浅草、
  {title:"仲见世商店街",note:"店铺约9:30至10:00开门。在这里买小吃，不必坐下吃饭。"},
  {s:["东京地铁银座线，往涩谷（渋谷）方向。"]},
  {s:["山手线，往池袋（池袋）方向。","显示的票价是从浅草出发的总价。"]},
- {title:"驹込午餐",note:"推荐 Tonki 炸猪排（とんき）或常盘食堂，见美食列表。Tonki 午餐到14:15。"},
+ {title:"驹込午餐",note:"推荐 Tonki 炸猪排（とんき）或常盘食堂，见美食列表。Tonki 午餐最后点餐约14:00。"},
  {title:"驹込妙义神社（妙義神社）",note:"安静的社区神社，约15至20分钟。"},
  {title:"六义园（六義園），可选",note:"离车站步行很近。江户时代庭园，可能已开始转红。预留约1小时。"},
  {s:["山手线，往田端 / 上野（田端・上野）方向。"]},
@@ -588,7 +586,7 @@ fri:{dow:"周五",date:"11月13日",full:"11月13日 星期五",title:"白天涩
  {title:"忠犬八公 + 涩谷十字路口",note:"趁人少时走一趟全向十字路口。"},
  {title:"涩谷109",note:"潮流服饰，10:00开门。"},
  {title:"宝可梦中心涩谷",note:"涩谷PARCO 6楼，同层有任天堂东京（Nintendo TOKYO）。"},
- {title:"午餐",note:"千两的¥680串炸套餐或鱼类定食，见美食列表。"},
+ {title:"午餐",note:"海浜食堂たけだ的鱼类定食或なかよし的土锅饭，见美食列表。千两的午餐未确认。"},
  {title:"MAGNET by SHIBUYA109",note:"从屋顶俯瞰十字路口。"},
  {title:"MEGA 唐吉诃德涩谷本店",note:"买手信零食，凭护照免税。24小时营业。"},
  {s:["山手线，往新宿 / 池袋方向。"]},
@@ -612,19 +610,17 @@ DAYS.forEach(d=>{const z=ZH_DAYS[d.id];if(!z)return;d.items.forEach((it,i)=>{if(
 const EAT_ZH={
 "Echigoya Heiji":{k:"烤鱼定食",p:"¥1,000 至 2,000",w:"炭烤鱼定食，白饭免费加大。离车站近，一个人也方便。"},
 "Gyudon Sambo":{k:"牛肉饭",p:"¥1,000 以下",w:"昭和风格的牛肉饭老店，家常味道不像连锁店。食券机点餐，只收现金，出餐快。"},
-"Gohan-dokoro Adachi":{k:"定食",p:"¥1,000 至 2,000",w:"饭量超大，老板夫妇像说相声一样，店里总是笑声不断。"},
 "Fuku no Ken":{k:"豚骨拉面",p:"¥630 起",w:"便宜实在的豚骨拉面，深受附近上班族欢迎。"},
 "Marugo":{k:"炸猪排",p:"约¥2,400",w:"1975年创业的秋叶原炸猪排名店，入选米其林必比登。值得奢侈一次，通常要排队。"},
 "Tomorrow":{k:"复古咖啡馆（喫茶店）",p:"约¥660",w:"6:30开门。综合早餐套餐（厚片吐司、炒蛋、火腿、沙拉、汤）最受本地人欢迎。有英文菜单。"},
 "Yoshikami":{k:"日式洋食",p:"¥1,200 至 1,400",w:"1951年开业的街坊洋食店，招牌牛肉烩饭和蛋包饭。11:30才开门，适合待得比较久时。"},
-"Tonki":{k:"炸猪排",p:"约¥2,000",w:"本地人最爱：超薄酥脆面衣，吧台座位，白饭和高丽菜免费续。午餐到14:15，不接受预约。"},
+"Tonki":{k:"炸猪排",p:"约¥2,000",w:"本地人最爱：超薄酥脆面衣，吧台座位，白饭和高丽菜免费续。早点去：午餐最后点餐约14:00，不接受预约。"},
 "Sugamo Tokiwa Shokudo":{k:"大众食堂定食",p:"¥1,000 至 2,000",w:"离车站1分钟。鱼和肉类定食，白饭可免费续一次。11月正是炸牡蛎季节。"},
-"Ichimaru Soba":{k:"立食荞麦面",p:"¥600 以下",w:"5:30起全天营业，最便宜最快的本地选择。"},
-"Ora ga Soba":{k:"荞麦面和咖喱",p:"约¥1,000",w:"八重洲地下街的上班族常去店，平日营业到约22:30。"},
+"Ichimaru Soba":{k:"立食荞麦面",p:"¥600 以下",w:"天亮前开门，15:00关门，所以只适合午餐。最便宜最快的本地选择。"},
 "Himono Yaro":{k:"烤鱼干",p:"¥1,000 至 2,000",w:"烤鱼干配白饭，营业到很晚，是下班族常去的地方。"},
 "Kamatake Udon":{k:"大阪风乌冬",p:"¥1,000 至 1,500",w:"来自大阪难波名店的Q弹乌冬，比拉面街排队更划算。"},
 "Umanchu Shubo":{k:"冲绳料理",p:"约¥1,000",w:"冲绳面和红烧五花肉饭，氛围轻松，离车站近。"},
-"Kosaku Yamanakako":{k:"馎饦（ほうとう）",p:"中等价位",w:"铁锅南瓜馎饦，本地人和游客都爱。11:00至21:00营业。从旭日丘出发前先查步行时间。"},
+"Kosaku Yamanakako":{k:"馎饦（ほうとう）",p:"中等价位",w:"铁锅南瓜馎饦，本地人和游客都爱。11:00至20:00营业。从旭日丘出发前先查步行时间。"},
 "Kikuya Shokudo":{k:"老式食堂",p:"平价",w:"经营多年的朴实食堂，本地人和游客都会光顾。"},
 "Taiho":{k:"盐味或味噌馎饦",p:"平价",w:"本地人口中的隐藏名店，招牌是盐味馎饦。离湖边稍远，可能要搭出租车。"},
 "Shigekin":{k:"立饮酒吧（鱼料理）",p:"每道¥360",w:"南口步行4分钟的本地立饮店。生鱼片和煮鱼，每道¥360，也有少量座位。"},
@@ -634,17 +630,54 @@ const EAT_ZH={
 "Use Mobile Order":{k:"园内贴士",p:"园区价格",w:"在东京迪士尼度假区 App 点餐并按时取餐，可省20至40分钟排队。快餐类咖喱饭最划算。"},
 "Konbini run":{k:"饭团、三明治",p:"¥600 以下",w:"07:30出发前在新小岩车站便利店买早餐。"},
 "Senryo":{k:"昭和居酒屋午餐",p:"¥680",w:"昭和年代开业的家族居酒屋，离车站4分钟。必点串炸加可乐饼套餐，午间挤满上班族。"},
-"Kaihin Shokudo Takeda":{k:"鱼类定食",p:"约¥1,000",w:"离车站3分钟。味噌煮鲭鱼套餐配大碗猪肉味噌汤。午餐11:30至15:00。"},
+"Kaihin Shokudo Takeda":{k:"鱼类定食",p:"约¥1,000",w:"离车站3分钟。味噌煮鲭鱼套餐配大碗猪肉味噌汤。全店可吸烟。"},
 "Nakayoshi":{k:"土锅饭定食",p:"¥1,000 至 2,000",w:"现煮土锅饭配简单定食。11:00至22:30营业。"},
 "Numazuko Shinjuku Honten":{k:"回转寿司",p:"¥2,000 至 3,000",w:"本地人的平价寿司，往新宿三丁目方向，离 Square Enix 咖啡厅很近。11:00至23:00。"},
 "Ban’nai Kabukicho":{k:"喜多方拉面",p:"约¥1,000",w:"粗而有嚼劲的面条，叉烧满满，藏在歌舞伎町小巷里。看完哥斯拉正好来一碗。"},
-"Tatsuya":{k:"盖饭",p:"约¥500",w:"昭和风小吧台：牛肉饭、亲子饭、猪排饭大约一个硬币的价格。"},
+"Tatsuya":{k:"盖饭",p:"约¥500",w:"JR 东南口楼梯下的昭和风小吧台：牛肉饭、亲子饭、猪排饭大约一个硬币的价格。只收现金。"},
 "Tokyo Mentsudan":{k:"赞岐乌冬",p:"¥310 起",w:"自助式乌冬，香川价格。便宜快捷，游客也多，午餐时段较忙。"},
-"Yoshoku Kissa Koyama":{k:"复古洋食咖啡馆",p:"平价",w:"车站大楼里的昭和复古咖啡馆，去机场前安静吃一顿。请确认开门时间。"},
 "Kitchen Dai":{k:"自选三菜定食",p:"¥1,000 至 1,500",w:"自选3道菜，大碗白饭，附猪肉味噌汤。周一至周六11:00至20:00。住附近哪天都适合。"}
 };
 const NC="未确认，请查 Google Maps";
-const EATHRS_ZH={"Echigoya Heiji":NC,"Gyudon Sambo":NC,"Gohan-dokoro Adachi":NC,"Fuku no Ken":NC,"Marugo":NC+"（午餐和晚餐时段）","Tomorrow":"6:30起","Yoshikami":"11:30至22:00（21:30最后点餐）","Tonki":"午餐到14:15；晚餐时间未确认","Sugamo Tokiwa Shokudo":"很早开门；关门时间未确认","Ichimaru Soba":"5:30起全天营业","Ora ga Soba":"平日11:00至22:30（22:00最后点餐）","Himono Yaro":"平日11:00至23:00（22:30最后点餐）","Kamatake Udon":NC,"Umanchu Shubo":NC,"Kosaku Yamanakako":"11:00至21:00","Kikuya Shokudo":NC,"Taiho":NC,"Shigekin":"晚上营业；具体时间未确认","Nikuya Shokudo Takeuchi":NC,"Chuka Gojuban":NC,"Yakitori Obako":"晚上营业；具体时间未确认","Use Mobile Order":"园区9:00至21:00","Konbini run":"24小时营业","Senryo":"平日午餐；具体时间未确认","Kaihin Shokudo Takeda":"11:30至15:00、17:00至23:00（周一至周六）","Nakayoshi":"11:00至22:30","Numazuko Shinjuku Honten":"11:00至23:00","Ban’nai Kabukicho":NC,"Tatsuya":NC,"Tokyo Mentsudan":NC,"Yoshoku Kissa Koyama":NC,"Kitchen Dai":"11:00至20:00，周一至周六"};
+const EATHRS_ZH={
+"Echigoya Heiji":"11:00至23:00（最后点餐≈22:00至22:30）。没有固定休息日",
+"Gyudon Sambo":"周一、三、五≈11:30至20:00；周二、六、日≈11:30至18:00。周四休息。卖完提早关门",
+"Fuku no Ken":"每天11:00至23:00（最后点餐≈22:30）",
+"Marugo":"午餐≈11:30至15:00（最后点餐14:00），晚餐17:00至21:00（最后点餐20:00）。周一休息；有资料说周二也休",
+"Tomorrow":"每天6:30至20:00（早餐套餐到11:30）",
+"Yoshikami":"11:30至21:30（最后点餐21:00）。周四休息",
+"Tonki":"午餐≈11:30或11:45开门，最后点餐≈13:55至14:30（资料不一）；晚餐≈17:00至21:30（最后点餐21:00）。周四及每月第3个周三休息",
+"Sugamo Tokiwa Shokudo":"10:00至22:00（最后点餐21:30）。休息日不明，多数资料说无休：请查 Google Maps",
+"Ichimaru Soba":"每天≈4:30至15:00",
+"Himono Yaro":"平日11:00至23:00（最后点餐22:30）；周末至22:30",
+"Kamatake Udon":"每天11:00至23:00（最后点餐22:00）。在 Gransta 八重北，检票口外",
+"Umanchu Shubo":"每天11:00至23:00（餐点最后点餐22:00）",
+"Kosaku Yamanakako":"每天11:00至20:00（最后点餐19:30）",
+"Kikuya Shokudo":"11:00至15:00。周二休息",
+"Taiho":"午餐11:30至14:00，晚餐17:30至≈21:00。周一休息；有资料说周二也休",
+"Shigekin":"15:00开门，至≈21:00或22:00（资料不一）。周日休息",
+"Nikuya Shokudo Takeuchi":"每天≈11:00至21:00或21:30。请在20:30前到",
+"Chuka Gojuban":"平日11:00至14:00、16:00至19:00（最后点餐18:45）。周末及节假日休息；有资料说周三休",
+"Yakitori Obako":"17:00至22:00（最后点餐21:30）。周四及每月第3个周三休息（11月11日是第2个）",
+"Use Mobile Order":"11月12日园区9:00至21:00",
+"Konbini run":"24小时营业",
+"Senryo":"晚餐17:00至≈23:40（最后点餐23:00）。午餐≈11:30至14:00仅见于一份资料：未确认，请查 Google Maps。周日休息",
+"Kaihin Shokudo Takeda":"午餐11:30至15:00，晚餐17:00至23:00（最后点餐22:30），周一至周六",
+"Nakayoshi":"每天11:00至22:30（最后点餐22:00）",
+"Numazuko Shinjuku Honten":"每天≈11:30至22:30（最后点餐22:00）",
+"Ban’nai Kabukicho":"每天11:00至23:00（最后点餐22:45）",
+"Tatsuya":"平日10:00至21:00；周末至20:00",
+"Tokyo Mentsudan":"周五11:00至16:30、18:00至23:00（最后点餐22:30）。卖完提早关门",
+"Kitchen Dai":"11:00至20:00，周一至周六。周日休息"
+};
+/* Heads-up shown under the hours when a place does not fit its slot: [EN, ZH] */
+const EATWARN={
+"Marugo":["Shut on Monday 9 Nov. Try Wednesday instead: after the Fuji bus, Akihabara is on your yellow line home (last order 20:00).","11月9日周一不营业。可改到周三：富士山巴士回来后，秋叶原就在回酒店的黄色线路上（最后点餐20:00）。"],
+"Taiho":["Lunch ends 14:00, so after the 13:00 KABA ride it is tight. Kosaku is the safer pick.","午餐14:00结束，13:00坐完 KABA 再去很赶。小作比较稳妥。"],
+"Chuka Gojuban":["Last order 18:45, so it only works if the bus is on time and you go straight from the station.","18:45最后点餐，只有巴士准时、下车直接过去才来得及。"],
+"Senryo":["Lunch is not confirmed. Kaihin Shokudo Takeda or Nakayoshi are safe lunch picks.","午餐未确认。海浜食堂たけだ或なかよし是稳妥的午餐选择。"],
+"Kitchen Dai":["Opens 11:00, after your 10:30 check-out on Saturday, so use it on an earlier day.","11:00才开门，周六10:30已退房，请在前几天去。"]
+};
 
 const HOURS_ZH={"Land at Haneda Terminal 3":"机场24小时开放","Check in at Cypress Inn Tokyo":"入住时间以预订为准","Mandarake Complex":"12:00至20:00，每天营业","Super Potato":"平日11:00至20:00（周末10:00至20:00）","HEY (Hirose Entertainment Yard)":"≈10:00至23:00","GiGO Akihabara":"≈10:00至23:30","Kaminarimon (雷門)":"24小时开放","Sensō-ji (浅草寺)":"寺院范围24小时；本堂6:30至17:00（10月至3月）","Nakamise Shopping Street":"≈9:30至19:00（各店不同）","Komagome Myōgi Shrine (妙義神社)":"白天开放；社务所≈9:00至17:00","Rikugien Garden (六義園), optional":"9:00至17:00，16:30停止入园。¥300","First Avenue Tokyo Station":"≈10:00至20:30（拉面街≈7:30起）","Marunouchi facade at sunset":"站舍随时可看；KITTE屋顶花园≈11:00至23:00","Be at your bus stop":"巴士站全天开放","Lakeside walk and Fuji photos":"全天开放；日落≈16:35","KABA check-in":"柜台8:30开；最后一班16:00","Yamanakako no KABA":"每天6至9班，最后常规班次16:00","Back at Asahigaoka bus stop":"巴士站全天开放","Walk to the gates":"11月12日园区9:00至21:00","Rope drop":"园区9:00至21:00","Toys Wondrous Christmas parade":"每天一次；时间见 App","Electrical Parade Dreamlights":"晚上；时间见 App","Park closes":"21:00","Hachiko + Shibuya Crossing":"24小时开放","Shibuya 109":"≈10:00至21:00","Pokémon Center Shibuya":"10:00至21:00（跟随PARCO营业时间）","MAGNET by SHIBUYA109":"≈10:00至23:00（屋顶）","MEGA Don Quijote Shibuya":"24小时营业","Square Enix Cafe & Shop":"11:00至22:00；咖啡厅最后入场21:20；无休","Kabukicho after dark":"哥斯拉头像随时可看；唐吉诃德歌舞伎町店≈24小时","Breakfast + last shopping":"商店街≈10:00至20:00；咖啡馆较早开","Check out":"退房时间以预订为准","Check in for PR 421":"值机柜台通常在起飞前≈3小时开放","PR 421 departs":"15:25起飞"};
 
@@ -738,38 +771,35 @@ const HOURS={
 "PR 421 departs":"Departs 15:25"
 };
 const EATHRS={
-"Echigoya Heiji":"Not confirmed, check Google Maps",
-"Gyudon Sambo":"Not confirmed, check Google Maps",
-"Gohan-dokoro Adachi":"Not confirmed, check Google Maps",
-"Fuku no Ken":"Not confirmed, check Google Maps",
-"Marugo":"Not confirmed, check Google Maps (lunch and dinner sittings)",
-"Tomorrow":"From 6:30",
-"Yoshikami":"11:30 to 22:00 (last order 21:30)",
-"Tonki":"Lunch until 14:15; dinner hours not confirmed",
-"Sugamo Tokiwa Shokudo":"Opens early in the day; closing not confirmed",
-"Ichimaru Soba":"From 5:30, open through the day",
-"Ora ga Soba":"11:00 to 22:30 weekdays (last order 22:00)",
-"Himono Yaro":"11:00 to 23:00 weekdays (last order 22:30)",
-"Kamatake Udon":"Not confirmed, check Google Maps",
-"Umanchu Shubo":"Not confirmed, check Google Maps",
-"Kosaku Yamanakako":"11:00 to 21:00",
-"Kikuya Shokudo":"Not confirmed, check Google Maps",
-"Taiho":"Not confirmed, check Google Maps",
-"Shigekin":"Evenings; exact hours not confirmed",
-"Nikuya Shokudo Takeuchi":"Not confirmed, check Google Maps",
-"Chuka Gojuban":"Not confirmed, check Google Maps",
-"Yakitori Obako":"Evenings; exact hours not confirmed",
-"Use Mobile Order":"Park hours 9:00 to 21:00",
+"Echigoya Heiji":"11:00 to 23:00 (last order ≈22:00 to 22:30). No fixed closing day",
+"Gyudon Sambo":"Mon, Wed, Fri ≈11:30 to 20:00; Tue, Sat, Sun ≈11:30 to 18:00. Closed Thursdays. Shuts early when food runs out",
+"Fuku no Ken":"11:00 to 23:00 (last order ≈22:30), daily",
+"Marugo":"Lunch ≈11:30 to 15:00 (last order 14:00), dinner 17:00 to 21:00 (last order 20:00). Closed Mondays; some listings say Tuesdays too",
+"Tomorrow":"6:30 to 20:00, daily (morning set until 11:30)",
+"Yoshikami":"11:30 to 21:30 (last order 21:00). Closed Thursdays",
+"Tonki":"Lunch from ≈11:30 or 11:45, last order ≈13:55 to 14:30 (listings differ); dinner ≈17:00 to 21:30 (last order 21:00). Closed Thursdays and the 3rd Wednesday",
+"Sugamo Tokiwa Shokudo":"10:00 to 22:00 (last order 21:30). Closed day unclear, most listings say none: check Google Maps",
+"Ichimaru Soba":"≈4:30 to 15:00, daily",
+"Himono Yaro":"Weekdays 11:00 to 23:00 (last order 22:30); weekends to 22:30",
+"Kamatake Udon":"11:00 to 23:00 (last order 22:00), daily. In Gransta Yaekita, outside the ticket gates",
+"Umanchu Shubo":"11:00 to 23:00 (food last order 22:00), daily",
+"Kosaku Yamanakako":"11:00 to 20:00 (last order 19:30), daily",
+"Kikuya Shokudo":"11:00 to 15:00. Closed Tuesdays",
+"Taiho":"Lunch 11:30 to 14:00, dinner 17:30 to ≈21:00. Closed Mondays; some listings say Tuesdays too",
+"Shigekin":"From 15:00 to ≈21:00 or 22:00 (listings differ). Closed Sundays",
+"Nikuya Shokudo Takeuchi":"≈11:00 to 21:00 or 21:30, daily. Arrive by 20:30",
+"Chuka Gojuban":"Weekdays 11:00 to 14:00 and 16:00 to 19:00 (last order 18:45). Closed weekends and holidays; some listings say Wednesdays",
+"Yakitori Obako":"17:00 to 22:00 (last order 21:30). Closed Thursdays and the 3rd Wednesday (11 Nov is the 2nd)",
+"Use Mobile Order":"Park 9:00 to 21:00 on 12 Nov",
 "Konbini run":"Open 24 hours",
-"Senryo":"Lunch on weekdays; exact hours not confirmed",
-"Kaihin Shokudo Takeda":"11:30 to 15:00 and 17:00 to 23:00 (Mon to Sat)",
-"Nakayoshi":"11:00 to 22:30",
-"Numazuko Shinjuku Honten":"11:00 to 23:00",
-"Ban’nai Kabukicho":"Not confirmed, check Google Maps",
-"Tatsuya":"Not confirmed, check Google Maps",
-"Tokyo Mentsudan":"Not confirmed, check Google Maps",
-"Yoshoku Kissa Koyama":"Not confirmed, check Google Maps",
-"Kitchen Dai":"11:00 to 20:00, Mon to Sat"
+"Senryo":"Dinner 17:00 to ≈23:40 (last order 23:00). Lunch ≈11:30 to 14:00 in one listing only: not confirmed, check Google Maps. Closed Sundays",
+"Kaihin Shokudo Takeda":"Lunch 11:30 to 15:00, dinner 17:00 to 23:00 (last order 22:30), Mon to Sat",
+"Nakayoshi":"11:00 to 22:30 (last order 22:00), daily",
+"Numazuko Shinjuku Honten":"≈11:30 to 22:30 (last order 22:00), daily",
+"Ban’nai Kabukicho":"11:00 to 23:00 (last order 22:45), daily",
+"Tatsuya":"Weekdays 10:00 to 21:00; weekends to 20:00",
+"Tokyo Mentsudan":"Fri 11:00 to 16:30 and 18:00 to 23:00 (last order 22:30). Closes early if sold out",
+"Kitchen Dai":"11:00 to 20:00, Mon to Sat. Closed Sundays"
 };
 /* key: day|from|to  ->  [first, last, note]  (weekday timetable unless noted) */
 const TRAINS={
@@ -1013,7 +1043,7 @@ function foodList(list){
   const hr=ZH()?(EATHRS_ZH[e.name]||e.hrs):e.hrs;
   h+=`<div class="food"><div class="top"><div><div class="nm">${esc(e.name)}</div><div class="jpn">${esc(e.jp)}</div></div><button class="fav" data-fav="${esc(id)}" aria-pressed="${!!favs[id]}" aria-label="☆ ${esc(e.name)}">${favs[id]?"★":"☆"}</button></div>
   <div class="meta">${esc(ZH()?(MEAL_ZH[e.meal]||e.meal):e.meal)}${sep}${esc(z?z.k:e.kind)}${sep}<span class="pr" style="color:var(--ink)">${esc(z?z.p:e.price)}</span></div>
-  <p class="why">${esc(z?z.w:e.why)}</p>${hr?`<div class="hrs"><span>${I("hours")}</span>${esc(hr)}</div>`:""}
+  <p class="why">${esc(z?z.w:e.why)}</p>${hr?`<div class="hrs"><span>${I("hours")}</span>${esc(hr)}</div>`:""}${EATWARN[e.name]?`<div class="hrs warn"><span>⚠</span>${esc(EATWARN[e.name][ZH()?1:0])}</div>`:""}
   <div class="acts"><a href="${maps(e.q)}">${I("map")}</a><button data-show="${esc(e.jp)}" data-sub="${esc(e.name)}">${I("showName")}</button>${e.src?`<span style="color:var(--muted);margin-left:auto;font-size:12px">${I("via")} ${esc(e.src)}</span>`:""}</div></div>`;
  });
  return h||`<p class="sub">${I("noPicks")}</p>`;
