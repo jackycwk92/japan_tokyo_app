@@ -233,6 +233,10 @@ nav.tabs button[aria-selected=true]{color:var(--ink);font-weight:700}
 .ov .bar{width:70%;height:10px;border-radius:5px;margin-top:22px}
 .ov .close{position:absolute;bottom:calc(20px + var(--safe-b));left:50%;transform:translateX(-50%);border:2px solid #111;border-radius:999px;padding:10px 26px;font-size:16px;color:#111}
 .hide{display:none}
+.tdr{display:flex;gap:10px;align-items:flex-start;padding:9px 0;border-bottom:1px solid var(--rule)}
+.tdr:last-of-type{border-bottom:0}.tdr .nm{font-weight:700;font-size:15px;line-height:1.3}.tdr .jpn{font-size:13px;color:var(--muted)}.tdr .meta{font-size:12px;color:var(--muted);margin-top:2px}.tdr .why{font-size:13px;margin:4px 0 0}
+.tdr.off{opacity:.55}.tdg{background:var(--surface);border:1px solid var(--rule);border-radius:14px;padding:2px 13px 10px;margin-bottom:10px}
+.tdlx{padding:10px 13px}.tdlx .xh{font-weight:800;font-size:15px;color:var(--warn)}.tdlx ul{margin:6px 0 2px;padding-left:18px;font-size:14px}.tdlx li{margin:4px 0}
 .foot{font-size:12px;color:var(--muted);margin:24px 0 8px}
 /* current activity: filled dot that blinks, plus a ring rippling outwards (static halo if Reduce Motion is on) */
 .it.now .dot{background:var(--day);border-color:var(--day);box-shadow:0 0 0 4px color-mix(in srgb,var(--day) 35%,transparent)}
@@ -333,9 +337,9 @@ const DAYS = [
  {t:"07:30",k:"move",line:"local",from:["新小岩","Shin-Koiwa"],to:["西船橋","Nishi-Funabashi"],dur:"12 min",fare:null,steps:["Yellow line EASTBOUND towards Chiba / Tsudanuma. Not westbound."]},
  {t:"07:50",k:"move",line:"keiyo",from:["西船橋","Nishi-Funabashi"],to:["舞浜","Maihama"],dur:"10 min",fare:440,steps:["JR Musashino / Keiyo Line, train bound for Tokyo (東京) or Shin-Kiba (新木場).","Trains towards Minami-Funabashi do NOT pass Maihama.","Fallback: Sobu Rapid to Tokyo, then Keiyo Line (long underground walk)."]},
  {t:"08:15",k:"stop",title:"Walk to the gates",note:"5 min. Gates open 9:00; entry sometimes starts early. App and ticket ready.",q:"Tokyo Disneyland"},
- {t:"09:00",k:"stop",fix:1,title:"Rope drop",note:"Most popular ride first, then Premier Access or Standby Pass in the app."},
+ {t:"09:00",k:"stop",fix:1,title:"Rope drop",note:"Your top ride first, then buy paid Premier Access in the app. The free Priority Pass has ended. Ride plan in the Disney tab."},
  {t:"12:00",k:"eat",title:"Lunch in the park",note:"Use Mobile Order in the app to skip queues; see Eat list."},
- {t:"13:00",k:"stop",fix:1,title:"Toys Wondrous Christmas parade",note:"Once a day, about 45 min. Check the app for the exact time; claim a spot 30 to 45 min early."},
+ {t:"12:45",k:"stop",fix:1,title:"Toys Wondrous Christmas parade",note:"Once a day, about 45 min; 12:45 in the published November schedule, check the app. Claim a spot 30 to 45 min early."},
  {t:"19:00",k:"stop",fix:1,title:"Electrical Parade Dreamlights",note:"Christmas version. Use indoor rides when it gets cold. Check the app for times."},
  {t:"21:00",k:"stop",fix:1,title:"Park closes",note:"Leave a little early to avoid the crush."},
  {t:"21:15",k:"move",line:"keiyo",from:["舞浜","Maihama"],to:["西船橋","Nishi-Funabashi"],dur:"10 min",fare:null,steps:["Train bound for Nishi-Funabashi / Musashino Line."]},
@@ -488,6 +492,83 @@ const NEAR = [
  {day:"sat",area:"Shin-Koiwa",name:"Kameido Tenjin",jp:"亀戸天神社",kind:"Shrine",how:"Yellow line 2 stops west to Kameido (亀戸), then ≈15 min walk",why:"Drum bridges over a pond with Skytree behind. The chrysanthemum festival (about 300 pots) runs 25 Oct to 23 Nov 2026, free.",hrs:"Not confirmed, check Google Maps",fit:"Saturday at 09:00 instead of the arcade, back by 10:30 to check out.",q:"亀戸天神社"}
 ];
 
+/* ===== Disney tab: Tokyo Disneyland, Thu 12 Nov 2026. Researched 6 Nov 2026 from official Tokyo Disney Resort snippets and Japanese Disney media
+   (Pricey, Dtimes, Travel Watch, Castel, Queue-Times 2025 averages, note.com Nov schedule). w = average posted wait in 2025, minutes. ===== */
+const TDL_LANDS=[["wb","World Bazaar","世界市集"],["adv","Adventureland","探险乐园"],["wes","Westernland","西部乐园"],["cc","Critter Country","动物天地"],["fan","Fantasyland","梦幻乐园"],["toon","Toontown","卡通城"],["tom","Tomorrowland","明日乐园"]];
+/* n EN, jp, l land, io in/out/mix, h min height cm, st ok/paused/closed, dpa yen (paid Premier Access, 0 = none), w avg wait, eve good after dark */
+const TDL_RIDES=[
+ {n:"Enchanted Tale of Beauty and the Beast",jp:"美女と野獣“魔法のものがたり”",l:"fan",io:"in",h:0,st:"ok",dpa:2500,w:87,tip:"Longest wait in the park. Rope drop it, or use the single rider line (the only one at TDL)."},
+ {n:"The Happy Ride with Baymax",jp:"ベイマックスのハッピーライド",l:"tom",io:"in",h:81,st:"ok",dpa:1500,w:70,tip:"Shortest at opening and in the last hour."},
+ {n:"Monsters, Inc. Ride & Go Seek!",jp:"モンスターズ・インク“ライド＆ゴーシーク！”",l:"tom",io:"in",h:0,st:"ok",dpa:1000,w:60,tip:"Close to the entrance, so an easy first ride."},
+ {n:"Splash Mountain",jp:"スプラッシュ・マウンテン",l:"cc",io:"mix",h:90,st:"ok",dpa:1500,w:57,tip:"You will get wet: ride in the warm middle of the day, not at night."},
+ {n:"Big Thunder Mountain",jp:"ビッグサンダー・マウンテン",l:"wes",io:"out",h:102,st:"ok",dpa:1500,w:54,tip:"Outdoor coaster; great after dark with the lights on."},
+ {n:"Pooh's Hunny Hunt",jp:"プーさんのハニーハント",l:"fan",io:"in",h:0,st:"ok",dpa:1500,w:50,tip:"Good rope-drop pick."},
+ {n:"Haunted Mansion “Holiday Nightmare”",jp:"ホーンテッドマンション“ホリデーナイトメアー”",l:"fan",io:"in",h:0,st:"ok",dpa:1000,w:37,tip:"Christmas overlay until 7 Jan. Busiest just after a parade ends."},
+ {n:"Peter Pan's Flight",jp:"ピーターパン空の旅",l:"fan",io:"in",h:0,st:"ok",dpa:0,w:29,eve:1,tip:"Quietest after 18:00."},
+ {n:"Dumbo The Flying Elephant",jp:"空飛ぶダンボ",l:"fan",io:"out",h:0,st:"ok",dpa:0,w:27,eve:1,tip:"Waits drop after sunset."},
+ {n:"Roger Rabbit's Car Toon Spin",jp:"ロジャーラビットのカートゥーンスピン",l:"toon",io:"in",h:0,st:"ok",dpa:0,w:21},
+ {n:"Western River Railroad",jp:"ウエスタンリバー鉄道",l:"adv",io:"out",h:0,st:"ok",dpa:0,w:17},
+ {n:"Snow White's Adventures",jp:"白雪姫と七人のこびと",l:"fan",io:"in",h:0,st:"ok",dpa:0,w:16},
+ {n:"Gadget's Go Coaster",jp:"ガジェットのゴーコースター",l:"toon",io:"out",h:90,st:"ok",dpa:0,w:15},
+ {n:"Jungle Cruise: Wildlife Expeditions",jp:"ジャングルクルーズ：ワイルドライフ・エクスペディション",l:"adv",io:"out",h:0,st:"ok",dpa:0,w:15,eve:1,tip:"Night version after dark."},
+ {n:"Beaver Brothers Explorer Canoes",jp:"ビーバーブラザーズのカヌー探険",l:"cc",io:"out",h:0,st:"ok",dpa:0,w:14,tip:"Daytime only; you paddle yourself."},
+ {n:"Country Bear Theater",jp:"カントリーベア・シアター",l:"wes",io:"in",h:0,st:"ok",dpa:0,w:14,tip:"Christmas show “Jingle Bell Jamboree” this season."},
+ {n:"Pirates of the Caribbean",jp:"カリブの海賊",l:"adv",io:"in",h:0,st:"ok",dpa:0,w:13,eve:1,tip:"Good in the evening or in rain."},
+ {n:"“it's a small world”",jp:"イッツ・ア・スモールワールド",l:"fan",io:"in",h:0,st:"ok",dpa:0,w:12,eve:1},
+ {n:"Star Tours: The Adventures Continue",jp:"スター・ツアーズ：ザ・アドベンチャーズ・コンティニュー",l:"tom",io:"in",h:102,st:"ok",dpa:0,w:12,eve:1},
+ {n:"Pinocchio's Daring Journey",jp:"ピノキオの冒険旅行",l:"fan",io:"in",h:0,st:"ok",dpa:0,w:11},
+ {n:"Castle Carrousel",jp:"キャッスルカルーセル",l:"fan",io:"out",h:0,st:"ok",dpa:0,w:10},
+ {n:"Mark Twain Riverboat",jp:"蒸気船マークトウェイン号",l:"wes",io:"out",h:0,st:"ok",dpa:0,w:9},
+ {n:"Minnie's House",jp:"ミニーの家",l:"toon",io:"in",h:0,st:"ok",dpa:0,w:9},
+ {n:"The Enchanted Tiki Room",jp:"魅惑のチキルーム",l:"adv",io:"in",h:0,st:"ok",dpa:0,w:9},
+ {n:"Alice's Tea Party",jp:"アリスのティーパーティー",l:"fan",io:"out",h:0,st:"ok",dpa:0,w:8},
+ {n:"Westernland Shootin' Gallery",jp:"ウエスタンランド・シューティングギャラリー",l:"wes",io:"in",h:0,st:"ok",dpa:0,w:8,tip:"Extra fee per play."},
+ {n:"Goofy's Paint 'n' Play House",jp:"グーフィーのペイント＆プレイハウス",l:"toon",io:"in",h:0,st:"ok",dpa:0,w:7},
+ {n:"Mickey's PhilharMagic",jp:"ミッキーのフィルハーマジック",l:"fan",io:"in",h:0,st:"ok",dpa:0,w:7,eve:1},
+ {n:"Omnibus",jp:"オムニバス",l:"wb",io:"out",h:0,st:"ok",dpa:0,w:7},
+ {n:"Chip 'n Dale's Treehouse",jp:"チップとデールのツリーハウス",l:"toon",io:"out",h:0,st:"ok",dpa:0,w:5},
+ {n:"Donald's Boat",jp:"ドナルドのボート",l:"toon",io:"out",h:0,st:"ok",dpa:0,w:5},
+ {n:"Tom Sawyer Island Rafts",jp:"トムソーヤ島いかだ",l:"wes",io:"out",h:0,st:"ok",dpa:0,w:5,tip:"Daytime only."},
+ {n:"Toon Park",jp:"トゥーンパーク",l:"toon",io:"out",h:0,st:"ok",dpa:0,w:0},
+ {n:"Penny Arcade",jp:"ペニーアーケード",l:"wb",io:"in",h:0,st:"ok",dpa:0,w:0},
+ {n:"Stitch Encounter",jp:"スティッチ・エンカウンター",l:"tom",io:"in",h:0,st:"paused",dpa:0,w:0,tip:"Paused 2 to 30 Nov."},
+ {n:"Cinderella's Fairy Tale Hall",jp:"シンデレラのフェアリーテイル・ホール",l:"fan",io:"in",h:0,st:"paused",dpa:0,w:0,tip:"Paused since 1 Oct, no end date."},
+ {n:"Swiss Family Treehouse",jp:"スイスファミリー・ツリーハウス",l:"adv",io:"out",h:0,st:"paused",dpa:0,w:0,tip:"Paused since 2022."},
+ {n:"Space Mountain",jp:"スペース・マウンテン",l:"tom",io:"in",h:0,st:"closed",dpa:0,w:0,tip:"Closed for rebuild; reopens in 2027."}
+];
+const TDL_SHOWS=[
+ {n:"Toys Wondrous Christmas!",jp:"トイズ・ワンダラス・クリスマス！",ty:"parade",time:"12:45",dur:45,where:"Fantasyland to Westernland, Plaza, Tomorrowland, ends at Toontown",cost:"Free; paid seating ≈¥3,500 (Premier Access)",tip:"Christmas daytime parade with 3 stops where floats halt for a dance: Westernland and Fantasyland, in front of the castle, Tomorrowland and Toontown. Watch the 1st stop, then walk ahead to the 3rd to see it twice."},
+ {n:"Electrical Parade Dreamlights, Christmas version",jp:"エレクトリカルパレード・ドリームライツ",ty:"night",time:"19:00",dur:45,where:"Same route; reaches the castle about 10 min in, Toontown about 20 min in",cost:"Free; paid area in front of the castle ≈¥2,500",tip:"Christmas music and Santa outfits on the usual 21 floats. Front row: sit 1 to 1.5 h before; 30 min is enough a few rows back. Cancelled in rain."},
+ {n:"Starbright Christmas (fireworks)",jp:"スターブライト・クリスマス",ty:"fire",time:"20:30",dur:5,where:"Over the park; best near Splash Mountain, the castle, or the entrance for a quick exit",cost:"Free",tip:"Watch from the entrance area, then walk straight to Maihama for the 21:23 train. Usually goes ahead in light rain, not in strong wind."},
+ {n:"Disney Harmony in Color",jp:"ディズニー・ハーモニー・イン・カラー",ty:"parade",time:"15:25",dur:45,where:"Parade route",cost:"Free; paid seating available, price not confirmed",tip:"The regular daytime parade. Cancelled in rain."},
+ {n:"Mickey's Magical Music World",jp:"ミッキーのマジカルミュージックワールド",ty:"stage",time:"10:50, 12:15, 13:40, 15:45, 17:10",dur:25,where:"Fantasyland Forest Theatre (indoors)",cost:"Free entry request (lottery) in the app, or Premier Access",tip:"Indoors and runs in rain. Enter the lottery in the app right after you enter the park."},
+ {n:"The D-Groovationz4 Live",jp:"D-Groovationz4 Live",ty:"stage",time:"12:10, 13:35, 15:00, 17:05, 18:30",dur:25,where:"Showbase, Tomorrowland",cost:"Free entry request (lottery), or Premier Access ≈¥2,500",tip:"New show since 30 Sep 2026. Indoors."},
+ {n:"Jamboree Mickey! Let's Dance!",jp:"ジャンボリミッキー！レッツ・ダンス！",ty:"stage",time:"11:30, 12:45, 14:00, 15:50, 17:05",dur:15,where:"Venue not confirmed: check the app",cost:"Free",tip:"Short dance-along show. Cancelled in rain."},
+ {n:"Country Bear Theater: Jingle Bell Jamboree",jp:"ジングルベル・ジャンボリー",ty:"stage",time:"Through the day",dur:0,where:"Country Bear Theater, Westernland",cost:"Free, walk in",tip:"Christmas version of the bear show; warm and indoors."}
+];
+/* food: n EN name, jp, l land, where, p price, x Christmas item */
+const TDL_FOOD=[
+ {n:"Jolly Food Plaza snacks",jp:"ジョリーフード・プラザ",l:"wb",where:"Booths and wagons in front of the castle",p:"¥600 to ¥900",x:1,d:"New Christmas snack stalls: shepherd’s pie ¥900, stollen-style cookie ¥700, cheese cream pretzel ¥600, chocolate doughnut ¥600."},
+ {n:"Christmas hot dog set",jp:"リフレッシュメントコーナー スペシャルセット",l:"wb",where:"Refreshment Corner",p:"¥1,340 (single ¥800)",x:1,d:"Mobile Order. Lunch-case souvenir +¥1,500."},
+ {n:"Strawberry milk",jp:"スペシャルドリンク（苺ミルク）",l:"wb",where:"Refreshment Corner, Camp Woodchuck, Good Time Café",p:"¥750",x:1,d:"Christmas drink."},
+ {n:"Christmas sundae",jp:"スペシャルサンデー",l:"wb",where:"Ice Cream Cones",p:"¥900",x:1,d:"Chocolate soft serve with churros."},
+ {n:"Hot yuzu matcha",jp:"ホットゆず抹茶ドリンク",l:"adv",where:"The Gazebo, Grandma Sara’s, Troubadour Tavern",p:"¥750",x:1,d:"Warm drink with whipped cream."},
+ {n:"Mickey bun",jp:"ミッキーマウスまん",l:"adv",where:"Boiler Room Bites",p:"Price not confirmed",x:0,d:"Mickey-shaped meat bun. Mobile Order."},
+ {n:"Holiday party bucket",jp:"ホリデーパーティーバケット",l:"wes",where:"Camp Woodchuck Kitchen",p:"¥2,800",x:1,d:"New: smoked chicken leg, tenders and fries to share."},
+ {n:"Smoked turkey leg",jp:"スモークターキーレッグ",l:"wes",where:"Cowboy Cookhouse, Camp Woodchuck Kitchen",p:"¥1,200",x:0,d:"The classic TDL snack."},
+ {n:"Hearty pork soup with jambalaya",jp:"ハーティーポークスープ ジャンバラヤ入り",l:"wes",where:"Plaza Pavilion Restaurant",p:"¥800",x:1,d:"Winter warmer for the cold evening."},
+ {n:"Christmas cake cups",jp:"チョコレートケーキ／ストロベリーケーキカップ",l:"wes",where:"Hungry Bear Restaurant and others",p:"¥550 (with souvenir cup ¥1,450)",x:1,d:"Chocolate nut or strawberry."},
+ {n:"Omurice set",jp:"グランマ・サラのキッチン オムライス",l:"cc",where:"Grandma Sara’s Kitchen",p:"Price not confirmed",x:1,d:"Seafood or beef stew omurice in a cosy indoor room. Melamine-plate souvenir +¥1,500."},
+ {n:"Popcorn: soy sauce butter or honey",jp:"ポップコーン",l:"fan",where:"Wagons by It’s a Small World (soy sauce butter) and Pooh’s Hunny Hunt (honey)",p:"≈¥400",x:0,d:"Christmas Lilyn Lin Lin bucket ¥3,800 (¥4,000 filled) at some wagons."},
+ {n:"Popcorn: milk chocolate or corn potage",jp:"ポップコーン",l:"toon",where:"Pop-a-Lot (milk chocolate), Toon Pop (corn potage)",p:"≈¥400",x:0,d:"Two of the more unusual flavours."},
+ {n:"Little Green Men bun",jp:"リトルグリーンまん",l:"tom",where:"Pan Galactic Pizza Port, Plazma Ray’s Diner",p:"¥550",x:0,d:"Alien-shaped steamed buns."},
+ {n:"Mickey churro",jp:"ミッキーチュロス",l:"tom",where:"Tomorrowland Terrace",p:"¥500",x:0,d:"Cinnamon churro."},
+ {n:"Red bean coffee",jp:"あんコーヒー",l:"tom",where:"Tomorrowland Terrace",p:"¥750",x:1,d:"Coffee with red bean paste and whipped cream."},
+ {n:"Chocolate churro",jp:"チョコレートチュロス",l:"adv",where:"Parkside Wagon and others",p:"¥600",x:1,d:"Christmas churro."}
+];
+/* warm indoor places to sit on a cold evening, by land */
+const TDL_WARM={wb:["Center Street Coffeehouse","Eastside Cafe (table service)","Restaurant Hokusai (Japanese)"],adv:["Blue Bayou Restaurant (table service)"],wes:["Hungry Bear Restaurant (curry)","Plaza Pavilion Restaurant"],cc:["Grandma Sara’s Kitchen"],tom:["Tomorrowland Terrace","Plazma Ray’s Diner"]};
+
 </script>
 <script>
 /* ===== Chinese (Simplified) translations. English data stays the source; these overlay it when 中文 is selected. ===== */
@@ -544,6 +625,38 @@ const NEAR_ZH={
 "Golden Gai":{k:"迷你酒吧街",how:"从歌舞伎町步行≈5分钟",w:"窄巷里约200家小酒吧，很多只坐得下5、6人。有些欢迎游客，有些只招待熟客。",h:"多数≈19:00或20:00开门；很多收入座费",f:"晚餐后喝一杯。从新宿回酒店的末班车是00:08。"},
 "Kameido Tenjin":{k:"神社",how:"黄色线路往西坐2站到龟户（亀戸），再步行≈15分钟",w:"池上的太鼓桥，背后是晴空塔。菊花节（约300盆）2026年10月25日至11月23日，免费。",h:"未确认，请查 Google Maps",f:"周六9:00去（代替逛商店街），10:30前回来退房。"}
 };
+/* Chinese layer for the Disney tab, keyed by the English name */
+const TDL_ZH={
+rides:{"Enchanted Tale of Beauty and the Beast":"全园排队最久。开园冲这个，或走单人通道（TDL 唯一一个）。","The Happy Ride with Baymax":"开园和最后一小时人最少。","Monsters, Inc. Ride & Go Seek!":"离入口近，适合当第一个。","Splash Mountain":"会被淋湿：中午暖和时玩，不要晚上玩。","Big Thunder Mountain":"户外过山车；天黑亮灯后很好玩。","Pooh's Hunny Hunt":"适合开园冲。","Haunted Mansion “Holiday Nightmare”":"圣诞版至1月7日。游行刚结束时最挤。","Peter Pan's Flight":"18:00后最空。","Dumbo The Flying Elephant":"日落后排队变短。","Jungle Cruise: Wildlife Expeditions":"天黑后是夜间版。","Beaver Brothers Explorer Canoes":"只在白天；要自己划桨。","Country Bear Theater":"本季是圣诞版「Jingle Bell Jamboree」。","Pirates of the Caribbean":"适合晚上或下雨时。","Westernland Shootin' Gallery":"每次另外收费。","Tom Sawyer Island Rafts":"只在白天。","Stitch Encounter":"11月2日至30日暂停。","Cinderella's Fairy Tale Hall":"10月1日起暂停，未定恢复日期。","Swiss Family Treehouse":"2022年起暂停。","Space Mountain":"重建中，2027年重开。"},
+shows:{
+"Toys Wondrous Christmas!":{ty:"圣诞日间游行",where:"梦幻乐园出发，经西部乐园、广场、明日乐园，到卡通城结束",cost:"免费；付费观赏区≈¥3,500（尊享卡）",tip:"游行有3个停留点，花车停下表演：西部乐园与梦幻乐园之间、城堡前、明日乐园与卡通城之间。看完第1站，再走到第3站可以看两次。"},
+"Electrical Parade Dreamlights, Christmas version":{ty:"夜间游行（圣诞版）",where:"同一路线；约10分钟到城堡，约20分钟到卡通城",cost:"免费；城堡前付费区≈¥2,500",tip:"21辆花车加入圣诞音乐和圣诞老人装扮。想坐第一排要提前1至1.5小时；后几排提前30分钟就够。下雨取消。"},
+"Starbright Christmas (fireworks)":{ty:"烟花",where:"在园区上空；最佳位置是飞溅山附近、城堡前，或入口处方便离开",cost:"免费",tip:"在入口附近看，看完直接走去舞滨搭21:23的车。小雨通常照常，大风会取消。"},
+"Disney Harmony in Color":{ty:"日间游行",where:"游行路线",cost:"免费；有付费观赏区，价格未确认",tip:"常规日间游行。下雨取消。"},
+"Mickey's Magical Music World":{ty:"室内舞台表演",where:"梦幻乐园森林剧场（室内）",cost:"App 免费抽选入场，或用尊享卡",tip:"室内，下雨照常。入园后马上在 App 抽选。"},
+"The D-Groovationz4 Live":{ty:"室内舞台表演",where:"明日乐园 Showbase 剧场",cost:"App 免费抽选，或尊享卡≈¥2,500",tip:"2026年9月30日起的新表演。室内。"},
+"Jamboree Mickey! Let's Dance!":{ty:"舞台表演",where:"地点未确认：请看 App",cost:"免费",tip:"短短的跟跳舞蹈表演。下雨取消。"},
+"Country Bear Theater: Jingle Bell Jamboree":{ty:"室内表演",where:"西部乐园 乡村熊剧场",cost:"免费，直接入场",tip:"熊熊乐队的圣诞版；室内温暖。",time:"全天"}},
+food:{
+"Jolly Food Plaza snacks":{n:"欢乐美食广场小吃",where:"城堡前的摊位和餐车",p:"¥600 至 ¥900",d:"新的圣诞小吃摊：牧羊人派¥900、史多伦风饼干¥700、芝士奶油椒盐卷饼¥600、巧克力甜甜圈¥600。"},
+"Christmas hot dog set":{n:"圣诞热狗套餐",where:"Refreshment Corner",p:"¥1,340（单点¥800）",d:"可用手机点餐。午餐盒纪念品加¥1,500。"},
+"Strawberry milk":{n:"草莓牛奶",where:"Refreshment Corner、Camp Woodchuck、Good Time Café",p:"¥750",d:"圣诞饮品。"},
+"Christmas sundae":{n:"圣诞圣代",where:"Ice Cream Cones",p:"¥900",d:"巧克力软冰淇淋配吉拿棒。"},
+"Hot yuzu matcha":{n:"热柚子抹茶",where:"The Gazebo、Grandma Sara’s、Troubadour Tavern",p:"¥750",d:"加鲜奶油的热饮。"},
+"Mickey bun":{n:"米奇包子",where:"Boiler Room Bites",p:"价格未确认",d:"米奇造型肉包。可用手机点餐。"},
+"Holiday party bucket":{n:"节日派对桶",where:"Camp Woodchuck Kitchen",p:"¥2,800",d:"新品：烟熏鸡腿、鸡柳和薯条，适合分享。"},
+"Smoked turkey leg":{n:"烟熏火鸡腿",where:"Cowboy Cookhouse、Camp Woodchuck Kitchen",p:"¥1,200",d:"TDL 经典小吃。"},
+"Hearty pork soup with jambalaya":{n:"什锦饭猪肉汤",where:"Plaza Pavilion Restaurant",p:"¥800",d:"冬季暖身汤，适合冷的晚上。"},
+"Christmas cake cups":{n:"圣诞蛋糕杯",where:"Hungry Bear Restaurant 等",p:"¥550（连纪念杯¥1,450）",d:"巧克力坚果或草莓口味。"},
+"Omurice set":{n:"蛋包饭套餐",where:"Grandma Sara’s Kitchen",p:"价格未确认",d:"海鲜或炖牛肉蛋包饭，店内温暖舒适。纪念盘加¥1,500。"},
+"Popcorn: soy sauce butter or honey":{n:"爆米花：酱油黄油或蜂蜜",where:"小小世界旁的餐车（酱油黄油）、小熊维尼猎蜜记旁（蜂蜜）",p:"≈¥400",d:"部分餐车有圣诞 Lilyn Lin Lin 爆米花桶¥3,800（装满¥4,000）。"},
+"Popcorn: milk chocolate or corn potage":{n:"爆米花：牛奶巧克力或玉米浓汤",where:"Pop-a-Lot（牛奶巧克力）、Toon Pop（玉米浓汤）",p:"≈¥400",d:"比较特别的两种口味。"},
+"Little Green Men bun":{n:"三眼怪包子",where:"Pan Galactic Pizza Port、Plazma Ray’s Diner",p:"¥550",d:"三眼怪造型的包子。"},
+"Mickey churro":{n:"米奇吉拿棒",where:"Tomorrowland Terrace",p:"¥500",d:"肉桂吉拿棒。"},
+"Red bean coffee":{n:"红豆咖啡",where:"Tomorrowland Terrace",p:"¥750",d:"加红豆馅和鲜奶油的咖啡。"},
+"Chocolate churro":{n:"巧克力吉拿棒",where:"Parkside Wagon 等",p:"¥600",d:"圣诞吉拿棒。"}},
+warm:{"Center Street Coffeehouse":"Center Street Coffeehouse","Eastside Cafe (table service)":"Eastside Cafe（餐桌服务）","Restaurant Hokusai (Japanese)":"北斋餐厅（日式）","Blue Bayou Restaurant (table service)":"Blue Bayou Restaurant（餐桌服务）","Hungry Bear Restaurant (curry)":"Hungry Bear Restaurant（咖喱）","Plaza Pavilion Restaurant":"Plaza Pavilion Restaurant","Grandma Sara’s Kitchen":"Grandma Sara’s Kitchen","Tomorrowland Terrace":"Tomorrowland Terrace","Plazma Ray’s Diner":"Plazma Ray’s Diner"}
+};
 const PHRASES_ZH=["这班车去新小岩吗？","几号站台？","在哪里换乘？","巴士站在哪里？","这班车对吗？","两位。","有什么推荐？","请结账。","可以刷卡吗？","请帮我办免税。","请帮帮我。"];
 const BOOKINGS_ZH={kaba:"KABA 水陆两用巴士，11月11日周三13:00（Fujiyama Connect）",bus1:"富士急巴士 东京09:20至山中湖旭日丘（手机车票）",bus2:"富士急巴士 旭日丘15:20至东京（手机车票）",tdl:"东京迪士尼乐园一日护照，11月12日周四",sqex:"Square Enix 咖啡厅新宿时段，11月13日周五（可选）",suica:"在羽田买 Welcome Suica，或用 Apple Wallet 的 Suica",kl:"预约11月15日周日01:15吉隆坡机场接机"};
 
@@ -596,9 +709,9 @@ thu:{dow:"周四",date:"11月12日",full:"11月12日 星期四",title:"东京迪
  items:[{s:["黄色线路，往千叶 / 津田沼方向（东行），不是西行。"]},
  {s:["JR 武藏野线 / 京叶线，搭往东京（東京）或新木场（新木場）的列车。","往南船桥（南船橋）的列车不经过舞滨。","备选：搭总武快速线到东京站，再转京叶线（地下通道很长）。"]},
  {title:"步行到入口",note:"约5分钟。9:00开园，有时会提早入园。准备好 App 和门票。"},
- {title:"开园冲刺",note:"先冲最热门的设施，之后用 App 的尊享卡或预约等候卡。"},
+ {title:"开园冲刺",note:"先冲你最想玩的设施，之后在 App 购买付费尊享卡。免费预约卡已取消。游玩计划见「迪士尼」页。"},
  {title:"园内午餐",note:"用 App 的移动点餐避开排队，见美食列表。"},
- {title:"Toys Wondrous Christmas 圣诞游行",note:"每天一次，约45分钟。在 App 查看具体时间，提前30至45分钟占位。"},
+ {title:"Toys Wondrous Christmas 圣诞游行",note:"每天一次，约45分钟；11月公布的时间为12:45，请看 App。提前30至45分钟占位。"},
  {title:"夜间电子花车游行",note:"圣诞特别版。冷的时候去室内设施。时间以 App 为准。"},
  {title:"闭园",note:"稍早离开，避开人潮。"},
  {s:["搭往西船桥 / 武藏野线方向的列车。"]},
@@ -1204,8 +1317,50 @@ function renderNear(){
  <p class="foot">${I("nearFoot")}</p>`;
 }
 
+let tdlWant=store.get("tdlWant",{});
 function renderTdl(){
- $("#v-tdl").innerHTML=`<h3 class="sec">${I("tdlTitle")}</h3><p class="sub">${I("tdlSoon")}</p>`;
+ const Z=ZH(), LN=Object.fromEntries(TDL_LANDS.map(x=>[x[0],Z?x[2]:x[1]]));
+ const openL=[...document.querySelectorAll("#v-tdl details[open][data-l]")].map(e=>e.dataset.l);
+ const tags=r=>[LN[r.l],I(r.io==="in"?"tIn":r.io==="mix"?"tMix":"tOut"),r.h?I("tMinH").replace("{n}",r.h):"",r.dpa?I("tDpa").replace("{p}",yen(r.dpa)):"",r.w?I("tAvg").replace("{n}",r.w):""].filter(Boolean).join(" · ");
+ const tipOf=r=>Z?(TDL_ZH.rides[r.n]||""):(r.tip||"");
+ const row=(r,star)=>`<div class="tdr${r.st!=="ok"?" off":""}">${star&&r.st==="ok"?`<button class="fav" data-tw="${esc(r.n)}" aria-pressed="${!!tdlWant[r.n]}" aria-label="☆ ${esc(r.n)}">${tdlWant[r.n]?"★":"☆"}</button>`:""}<div><div class="nm">${esc(r.n)}${r.st!=="ok"?` <span class="fxtag">${I(r.st==="paused"?"tPaused":"tClosed")}</span>`:""}</div><div class="jpn">${esc(r.jp)}</div><div class="meta">${esc(tags(r))}</div>${tipOf(r)?`<p class="why">${esc(tipOf(r))}</p>`:""}</div></div>`;
+ let h=`<h3 class="sec">${I("tdlTitle")}</h3><p class="sub">${I("tdlIntro")}</p>`;
+ // 2. not running on 12 Nov
+ h+=`<div class="blk tdlx"><div class="xh">⚠ ${I("tdlClosed")}</div><ul>${TDL_RIDES.filter(r=>r.st!=="ok").map(r=>`<li><b>${esc(r.n)}</b>: ${esc(tipOf(r))}</li>`).join("")}<li>${I("tdlPP")}</li></ul></div>`;
+ // 1. ride plan from starred rides
+ const W=TDL_RIDES.filter(r=>r.st==="ok"&&tdlWant[r.n]).sort((a,b)=>b.w-a.w);
+ h+=`<h3 class="sec">${I("tdlPlan")}</h3><p class="sub">${I("tdlPlanSub")}</p>`;
+ if(!W.length) h+=`<p class="sub"><b>${I("tdlPlanEmpty")}</b></p>`;
+ else{
+  const rope=W.slice(0,1), rest=W.slice(1), dpa=rest.filter(r=>r.dpa), free=rest.filter(r=>!r.dpa);
+  const day=free.filter(r=>!r.eve), eve=free.filter(r=>r.eve);
+  const grp=(t,L,extra)=>L.length?`<div class="tdg"><div class="area">${t}</div>${L.map(r=>row(r,true)).join("")}${extra||""}</div>`:"";
+  const cost=dpa.reduce((a,r)=>a+r.dpa,0);
+  h+=grp(I("gRope"),rope)+grp(I("gDpa"),dpa,`<p class="sub" style="margin:6px 0 0">${I("dpaRule").replace("{p}",yen(cost))}</p>`)+grp(I("gDay"),day)+grp(I("gEve"),eve);
+ }
+ // 4. shows and parades
+ h+=`<h3 class="sec">${I("tdlShows")}</h3><p class="sub">${I("tdlShowsSub")}</p>`;
+ h+=TDL_SHOWS.map(x=>{const z=Z?TDL_ZH.shows[x.n]:null, tm=z&&z.time||x.time, many=/[,，]/.test(tm)||tm.length>5;return `<div class="food"><div class="top"><div><div class="nm">${esc(x.n)}</div><div class="jpn">${esc(x.jp)}</div></div>${many?"":`<span class="pr">${esc(tm)}</span>`}</div>
+  <div class="meta">${esc(z?z.ty:I("ty_"+x.ty))}${x.dur?` · ${x.dur} ${I("min")}`:""}</div><p class="why">${esc(z?z.tip:x.tip)}</p>
+  ${many?`<div class="hrs"><span>${I("tTimes")}</span>${esc(tm)}</div>`:""}<div class="hrs"><span>${I("tWhere")}</span>${esc(z?z.where:x.where)}</div><div class="hrs"><span>${I("tCost")}</span>${esc(z?z.cost:x.cost)}</div></div>`}).join("");
+ h+=`<ul class="tips" style="margin-top:8px"><li>${I("tdlView")}</li></ul>`;
+ // 5. food
+ h+=`<h3 class="sec">${I("tdlFood")}</h3><p class="sub">${I("tdlFoodSub")}</p>`;
+ const foodCard=f=>{const z=Z?TDL_ZH.food[f.n]:null;return `<div class="food"><div class="top"><div><div class="nm">${esc(z?z.n:f.n)}</div><div class="jpn">${esc(f.jp)}</div></div><span class="pr">${esc(z?z.p:f.p)}</span></div>
+  <div class="meta">${f.x?`<span class="tag" style="background:#C62828">${I("tXmas")}</span>`:`<span class="tag" style="background:#5B6875">${I("tClassic")}</span>`}${esc(z?z.where:f.where)}</div><p class="why">${esc(z?z.d:f.d)}</p></div>`};
+ let lastL="";TDL_FOOD.slice().sort((a,b)=>TDL_LANDS.findIndex(x=>x[0]===a.l)-TDL_LANDS.findIndex(x=>x[0]===b.l)).forEach(f=>{if(f.l!==lastL){lastL=f.l;h+=`<div class="area">${esc(LN[f.l])}</div>`}h+=foodCard(f)});
+ h+=`<div class="blk" style="padding:10px 13px;margin-top:10px"><div style="font-size:14px"><b>${I("tdlMO")}</b></div><p class="why" style="margin-top:4px">${I("tdlMOtxt")}</p><p class="why">${I("tdlPS")}</p></div>`;
+ // 6. by area
+ h+=`<h3 class="sec">${I("tdlArea")}</h3><p class="sub">${I("tdlAreaSub")}</p>`;
+ TDL_LANDS.forEach(([id])=>{const R=TDL_RIDES.filter(r=>r.l===id), F=TDL_FOOD.filter(f=>f.l===id), Wm=TDL_WARM[id]||[];
+  const nIn=R.filter(r=>r.st==="ok"&&r.io!=="out").length;
+  h+=`<details class="xtra" data-l="${id}"${openL.includes(id)?" open":""}><summary>${esc(LN[id])} <span class="cln">${R.filter(r=>r.st==="ok").length}</span></summary>
+   ${R.map(r=>row(r,true)).join("")}
+   ${F.length?`<div class="area">${I("foodHere")}</div><ul>${F.map(f=>`<li>${esc(Z?TDL_ZH.food[f.n].n:f.n)}, ${esc(Z?TDL_ZH.food[f.n].p:f.p)}</li>`).join("")}</ul>`:""}
+   ${Wm.length?`<div class="area">${I("warm")}</div><ul>${Wm.map(w=>`<li>${esc(Z?TDL_ZH.warm[w]:w)}</li>`).join("")}</ul>`:""}
+   ${nIn?`<p class="sub" style="margin:0 0 10px">${I("inCount").replace("{n}",nIn)}</p>`:""}</details>`;});
+ h+=`<p class="foot">${I("tdlFoot")}</p>`;
+ $("#v-tdl").innerHTML=h;
 }
 
 function renderInfoEn(){
@@ -1308,11 +1463,39 @@ function renderInfoZh(){
 function renderInfo(){ if(ZH()) renderInfoZh(); else renderInfoEn(); }
 
 /* ===== Added: leave-by / last-train alerts, night-before checklists, rain plans, live weather when self-hosted ===== */
-Object.assign(I18N.en,{tdl:"Disney",tdlTitle:"Tokyo Disneyland, Thu 12 Nov",tdlSoon:"Park guide coming soon.",wxRefresh:"Refresh",wxUpdating:"Updating…",wxFailed:"No connection, try again",hwTokyo:"Hourly, Tokyo",hwYama:"Hourly, Lake Yamanaka",hwSnap:"Hourly forecast as of 6 Nov 2026 (Open-Meteo). Recheck 48 hours before.",w_clear:"Clear",w_mclear:"Mostly clear",w_pcloudy:"Partly cloudy",w_cloudy:"Cloudy",w_fog:"Fog",w_drizzle:"Drizzle",w_rain:"Rain",w_hrain:"Heavy rain",w_snow:"Snow",w_showers:"Showers",w_thunder:"Thunderstorm",nextTrain:"Next train",thenT:"then",scheduled:"Scheduled",waitN:"About {n} wait on the platform",noMore:"No more trains on the timetable tonight: take a taxi",noTT:"Timetable not built in for this line: check the platform board",atStation:"I’m at {s} now",arriveAt:"Arrive {s}",hereNow:"I’m here now",fixedT:"Fixed time",reset:"Reset",lateBy:"Running {n} late from {x}",aheadBy:"Running {n} ahead from {x}",onTime:"Back on schedule from {x}",
+Object.assign(I18N.en,{tdl:"Disney",tdlTitle:"Tokyo Disneyland, Thu 12 Nov",
+tdlIntro:"9:00 to 21:00, day 2 of Disney Christmas. Times here are the published November schedule: use the Tokyo Disney Resort app on the day for live waits, show times and Premier Access.",
+tdlClosed:"Not running on 12 Nov",tdlPP:"The free Priority Pass ended on 31 Aug 2026. Skipping the queue now means paid Premier Access.",
+tdlPlan:"Your ride plan",tdlPlanSub:"Tap ☆ on the rides you want (By area, below). The plan orders them by typical wait.",tdlPlanEmpty:"No rides picked yet: open an area below and tap ☆.",
+gRope:"09:00 rope drop: walk straight here",gDpa:"Buy Premier Access in the app, longest waits first",gDay:"Daytime",gEve:"After dark, from about 17:00",
+dpaRule:"Buy only after you enter. The next one opens 60 min after buying, or when your time slot starts. Same price for every age. Total for these: {p} per person.",
+tIn:"Indoors",tOut:"Outdoors",tMix:"Mostly indoors",tMinH:"Min {n} cm",tDpa:"Premier Access {p}",tAvg:"≈{n} min avg wait (2025)",tPaused:"Paused",tClosed:"Closed",
+tdlShows:"Shows and parades",tdlShowsSub:"Published November times; the official 12 Nov schedule is in the app.",tWhere:"Where",tTimes:"Times",tCost:"Cost",
+ty_parade:"Daytime parade",ty_night:"Night parade",ty_fire:"Fireworks",ty_stage:"Show",
+tdlView:"Parade waiting rules: one person may hold a spot; spread a sheet only after the announcement about 1 h before; sit on the ground and keep phones below head height. Parades are cancelled in rain heavy enough for an umbrella.",
+tdlFood:"Christmas food and snacks",tdlFoodSub:"Christmas menus run 1 Nov to 25 Dec. Prices are from Japanese media quoting the official releases; check the app.",tXmas:"Christmas",tClassic:"Classic",
+tdlMO:"Mobile Order and table bookings",tdlMOtxt:"Order in the app once inside the park, pick a time slot, then tap “店舗に到着しました” at the shop to pay. Order lunch straight after entering: 12:00 to 13:00 slots fill first. Works at Refreshment Corner, Café Orleans, Boiler Room Bites, Cowboy Cookhouse, Camp Woodchuck, Hungry Bear, Grandma Sara’s, Tomorrowland Terrace, Plazma Ray’s and Big Pop, among others.",
+tdlPS:"Table-service restaurants (Blue Bayou, Eastside Cafe, Hokusai) take Priority Seating: online from 09:00 on the day, at the restaurant from 10:00.",
+tdlArea:"By area",tdlAreaSub:"Tap ☆ to add a ride to your plan. Height limits are minimums.",foodHere:"Eat here",warm:"Warm up indoors",inCount:"{n} indoor attractions here: handy when it gets cold.",
+tdlFoot:"Researched 6 Nov 2026 from official Tokyo Disney Resort pages and Japanese Disney media (Pricey, Dtimes, Travel Watch, Castel). Average waits are Queue-Times figures for 2025; a November weekday is often quieter. Picks are saved on this phone only.",wxRefresh:"Refresh",wxUpdating:"Updating…",wxFailed:"No connection, try again",hwTokyo:"Hourly, Tokyo",hwYama:"Hourly, Lake Yamanaka",hwSnap:"Hourly forecast as of 6 Nov 2026 (Open-Meteo). Recheck 48 hours before.",w_clear:"Clear",w_mclear:"Mostly clear",w_pcloudy:"Partly cloudy",w_cloudy:"Cloudy",w_fog:"Fog",w_drizzle:"Drizzle",w_rain:"Rain",w_hrain:"Heavy rain",w_snow:"Snow",w_showers:"Showers",w_thunder:"Thunderstorm",nextTrain:"Next train",thenT:"then",scheduled:"Scheduled",waitN:"About {n} wait on the platform",noMore:"No more trains on the timetable tonight: take a taxi",noTT:"Timetable not built in for this line: check the platform board",atStation:"I’m at {s} now",arriveAt:"Arrive {s}",hereNow:"I’m here now",fixedT:"Fixed time",reset:"Reset",lateBy:"Running {n} late from {x}",aheadBy:"Running {n} ahead from {x}",onTime:"Back on schedule from {x}",
 shiftNote:"Later times have moved to match. Fixed times (buses, KABA, parades, flight) stay put.",
 wClosed:"Closed by then ({t}): skip it or move it to another day",wClosesIn:"Closes {t}: only {n} left",wLoGone:"Last orders {t}: too late, pick another place",wLoIn:"Last orders {t}: {n} left",
 wEntGone:"Last entry {t}: too late, skip it",wEntIn:"Last entry {t}: {n} to get in",wClash:"Runs into the fixed {t}: cut it short or skip it"});
-Object.assign(I18N.zh,{tdl:"迪士尼",tdlTitle:"东京迪士尼乐园，11月12日周四",tdlSoon:"园区指南即将推出。",wxRefresh:"刷新",wxUpdating:"更新中…",wxFailed:"没有网络，请再试",hwTokyo:"逐小时，东京",hwYama:"逐小时，山中湖",hwSnap:"逐小时预报截至2026年11月6日（Open-Meteo）。出发前48小时再确认。",w_clear:"晴",w_mclear:"大致晴",w_pcloudy:"多云",w_cloudy:"阴",w_fog:"雾",w_drizzle:"毛毛雨",w_rain:"雨",w_hrain:"大雨",w_snow:"雪",w_showers:"阵雨",w_thunder:"雷雨",nextTrain:"下一班",thenT:"之后",scheduled:"时刻表",waitN:"站台约等{n}",noMore:"今晚时刻表上已没有车：请搭出租车",noTT:"此线路未内置时刻表：请看站台显示屏",atStation:"我到{s}了",arriveAt:"预计到达{s}",hereNow:"我到了",fixedT:"固定时间",reset:"重置",lateBy:"从「{x}」起比计划晚{n}",aheadBy:"从「{x}」起比计划早{n}",onTime:"从「{x}」起回到原定时间",
+Object.assign(I18N.zh,{tdl:"迪士尼",tdlTitle:"东京迪士尼乐园，11月12日周四",
+tdlIntro:"9:00至21:00，迪士尼圣诞活动第2天。这里的时间是11月公布的时刻：当天请用东京迪士尼度假区 App 查看实时排队、表演时间和尊享卡。",
+tdlClosed:"11月12日不开放",tdlPP:"免费预约卡已于2026年8月31日结束。现在想跳过排队只能买付费尊享卡。",
+tdlPlan:"你的游玩计划",tdlPlanSub:"在下方「按区域」点 ☆ 选你想玩的设施，计划会按一般排队时间排序。",tdlPlanEmpty:"还没选设施：打开下方区域点 ☆。",
+gRope:"9:00开园：直接走到这里",gDpa:"在 App 买尊享卡，排队最久的先买",gDay:"白天",gEve:"天黑后，约17:00起",
+dpaRule:"入园后才能买。买后60分钟或你的时段开始后可再买下一张。各年龄同价。以上合计每人{p}。",
+tIn:"室内",tOut:"户外",tMix:"大部分室内",tMinH:"身高≥{n}厘米",tDpa:"尊享卡{p}",tAvg:"2025年平均排队≈{n}分钟",tPaused:"暂停",tClosed:"关闭",
+tdlShows:"表演和游行",tdlShowsSub:"11月公布的时间；11月12日的官方时间以 App 为准。",tWhere:"地点",tTimes:"时间",tCost:"费用",
+ty_parade:"日间游行",ty_night:"夜间游行",ty_fire:"烟花",ty_stage:"表演",
+tdlView:"占位规则：一人可占位；约1小时前广播后才能铺开野餐垫；坐在地上，手机不要举过头。雨大到要撑伞时游行会取消。",
+tdlFood:"圣诞美食和小吃",tdlFoodSub:"圣诞菜单11月1日至12月25日。价格来自引用官方消息的日本媒体，请以 App 为准。",tXmas:"圣诞",tClassic:"经典",
+tdlMO:"手机点餐和餐厅预约",tdlMOtxt:"入园后在 App 点餐，选取餐时段，到店后按「店舗に到着しました」付款。入园后马上点午餐：12:00至13:00的时段最先满。Refreshment Corner、Café Orleans、Boiler Room Bites、Cowboy Cookhouse、Camp Woodchuck、Hungry Bear、Grandma Sara’s、Tomorrowland Terrace、Plazma Ray’s、Big Pop 等都可用。",
+tdlPS:"餐桌服务餐厅（Blue Bayou、Eastside Cafe、北斋）可预约优先入座：当天9:00起网上预约，10:00起可在餐厅现场预约。",
+tdlArea:"按区域",tdlAreaSub:"点 ☆ 加入游玩计划。身高为最低要求。",foodHere:"这里吃",warm:"室内取暖",inCount:"这里有{n}个室内设施：天冷时很方便。",
+tdlFoot:"资料于2026年11月6日整理，来源为东京迪士尼度假区官网和日本迪士尼媒体（Pricey、Dtimes、Travel Watch、Castel）。平均排队时间为 Queue-Times 2025年数据；11月平日通常较空。选择只保存在这部手机上。",wxRefresh:"刷新",wxUpdating:"更新中…",wxFailed:"没有网络，请再试",hwTokyo:"逐小时，东京",hwYama:"逐小时，山中湖",hwSnap:"逐小时预报截至2026年11月6日（Open-Meteo）。出发前48小时再确认。",w_clear:"晴",w_mclear:"大致晴",w_pcloudy:"多云",w_cloudy:"阴",w_fog:"雾",w_drizzle:"毛毛雨",w_rain:"雨",w_hrain:"大雨",w_snow:"雪",w_showers:"阵雨",w_thunder:"雷雨",nextTrain:"下一班",thenT:"之后",scheduled:"时刻表",waitN:"站台约等{n}",noMore:"今晚时刻表上已没有车：请搭出租车",noTT:"此线路未内置时刻表：请看站台显示屏",atStation:"我到{s}了",arriveAt:"预计到达{s}",hereNow:"我到了",fixedT:"固定时间",reset:"重置",lateBy:"从「{x}」起比计划晚{n}",aheadBy:"从「{x}」起比计划早{n}",onTime:"从「{x}」起回到原定时间",
 shiftNote:"之后的时间已跟着调整。固定时间（巴士、KABA、游行、航班）不变。",
 wClosed:"那时已关门（{t}）：跳过或改到其他日子",wClosesIn:"{t}关门：只剩{n}",wLoGone:"最后点餐{t}：来不及了，换一家",wLoIn:"最后点餐{t}：还剩{n}",
 wEntGone:"最后入场{t}：来不及了，跳过吧",wEntIn:"最后入场{t}：还有{n}可以进场",wClash:"会撞到固定的{t}：缩短或跳过"});
@@ -1427,6 +1610,7 @@ document.addEventListener("click",e=>{
  if(t.dataset.done){done[t.dataset.done]=!done[t.dataset.done];store.set("done",done);renderDay();return}
  if(t.dataset.fav){favs[t.dataset.fav]=!favs[t.dataset.fav];store.set("favs",favs);renderDay();renderEat();renderNear();return}
  if(t.dataset.f){eatFilter=t.dataset.f;renderEat();return}
+ if(t.dataset.tw){tdlWant[t.dataset.tw]=!tdlWant[t.dataset.tw];store.set("tdlWant",tdlWant);renderTdl();return}
  if(t.dataset.nf){nearFilter=t.dataset.nf;renderNear();return}
  if(t.dataset.bk){booked[t.dataset.bk]=!booked[t.dataset.bk];store.set("booked",booked);renderInfo();return}
  if(t.dataset.jump){document.getElementById("eat-here").scrollIntoView({behavior:"smooth"});return}
