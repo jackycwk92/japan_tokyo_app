@@ -74,6 +74,12 @@ header{position:sticky;top:env(safe-area-inset-top,0px);z-index:20;background:va
 .acts a,.acts button{color:var(--ink);text-decoration:underline;text-underline-offset:3px;text-decoration-color:var(--rule);text-decoration-thickness:2px}
 .it.eat .card{background:transparent;border-style:dashed}
 .eattag{font-size:12px;font-weight:700;color:var(--warn)}
+.time s.was,.mhead s.was{display:block;font-size:12px;font-weight:600;color:var(--muted)}
+.mhead s.was{display:inline;margin-left:6px}
+.fxtag{display:inline-block;font-size:11px;font-weight:700;color:var(--muted);border:1px solid var(--rule);border-radius:4px;padding:0 5px;margin-left:6px;vertical-align:2px}
+.shiftbar{display:flex;gap:10px;align-items:center;justify-content:space-between;margin:12px 0 0;padding:10px 12px;border-radius:14px;background:color-mix(in srgb,var(--warn) 14%,var(--surface));border:1px solid color-mix(in srgb,var(--warn) 40%,var(--rule))}
+.shiftbar span{font-size:14px}.shiftbar small{display:block;font-size:12px;color:var(--muted);margin-top:2px}
+.shiftbar button{flex:0 0 auto;border:1px solid var(--ink);border-radius:999px;padding:5px 12px;font-size:13px;font-weight:700}
 
 /* signature: station sign plates */
 .move{background:var(--surface);border:1px solid var(--rule);border-radius:14px;overflow:hidden}
@@ -299,13 +305,13 @@ const DAYS = [
  wx:"Lake Yamanaka is at about 1,000 m: about 9°C / 3°C, much colder than Tokyo. Fuji is often clearest in the morning, but this forecast shows cloud clearing in the afternoon.",
  items:[
  {t:"08:10",k:"move",line:"rapid",from:["新小岩","Shin-Koiwa"],to:["東京","Tokyo"],dur:"15 min",fare:209,steps:["Blue line towards Tokyo.","Platforms are deep underground: allow 15 min to reach the bus stop."]},
- {t:"09:00",k:"stop",title:"Be at your bus stop",note:"Check your mobile ticket: Yaesu South Exit (八重洲南口) or Tekko Building, Yaesu North (鉄鋼ビル). Routes differ and cannot be swapped.",q:"Tokyo Station Yaesu South Exit bus terminal"},
+ {t:"09:00",k:"stop",fix:1,title:"Be at your bus stop",note:"Check your mobile ticket: Yaesu South Exit (八重洲南口) or Tekko Building, Yaesu North (鉄鋼ビル). Routes differ and cannot be swapped.",q:"Tokyo Station Yaesu South Exit bus terminal"},
  {t:"09:20",k:"move",line:"bus",from:["東京駅","Tokyo Stn"],to:["山中湖旭日丘","Yamanakako Asahigaoka"],dur:"2 h 35 min",fare:2700,steps:["Fujikyu highway bus, reserved seat, mobile ticket required. Suica not accepted.","Arrives about 11:55."]},
  {t:"12:00",k:"stop",title:"Lakeside walk and Fuji photos",note:"Use the clearer midday light first. Stroll the shore near Asahigaoka.",q:"Yamanakako Asahigaoka"},
- {t:"12:40",k:"stop",title:"KABA check-in",note:"Asahigaoka Bus Terminal 「森の駅」. Arrive 15 min early for the pre-show video.",q:"Yamanakako Asahigaoka Bus Terminal"},
- {t:"13:00",k:"stop",title:"Yamanakako no KABA",note:"Amphibious bus splashes into the lake, about 30 min. ¥2,800."},
+ {t:"12:40",k:"stop",fix:1,title:"KABA check-in",note:"Asahigaoka Bus Terminal 「森の駅」. Arrive 15 min early for the pre-show video.",q:"Yamanakako Asahigaoka Bus Terminal"},
+ {t:"13:00",k:"stop",fix:1,title:"Yamanakako no KABA",note:"Amphibious bus splashes into the lake, about 30 min. ¥2,800."},
  {t:"13:40",k:"eat",title:"Hōtō lunch",note:"Moved after KABA so there is no rush. Kosaku is open all day; see Eat list. Check walking time in Google Maps before you go."},
- {t:"15:05",k:"stop",title:"Back at Asahigaoka bus stop",note:"Return bus leaves 15:20."},
+ {t:"15:05",k:"stop",fix:1,title:"Back at Asahigaoka bus stop",note:"Return bus leaves 15:20."},
  {t:"15:20",k:"move",line:"bus",from:["山中湖旭日丘","Yamanakako Asahigaoka"],to:["東京駅","Tokyo Stn"],dur:"2 h 37 min",fare:2700,steps:["Scheduled arrival 17:57. Traffic can add delays.","Backup: 18:50 bus arrives 21:27 (subject to seats).","Optional: book boarding at Oshino Hakkai (忍野八海 大橋) at 15:33 and take a local bus or taxi there after lunch."]},
  {t:"18:15",k:"move",line:"rapid",from:["東京","Tokyo"],to:["新小岩","Shin-Koiwa"],dur:"15 min",fare:209,steps:["Blue line towards Chiba."]},
  {t:"19:00",k:"eat",title:"Dinner near Shin-Koiwa",note:"Your home turf has excellent cheap local spots; see Eat list."}
@@ -317,11 +323,11 @@ const DAYS = [
  {t:"07:30",k:"move",line:"local",from:["新小岩","Shin-Koiwa"],to:["西船橋","Nishi-Funabashi"],dur:"12 min",fare:null,steps:["Yellow line EASTBOUND towards Chiba / Tsudanuma. Not westbound."]},
  {t:"07:50",k:"move",line:"keiyo",from:["西船橋","Nishi-Funabashi"],to:["舞浜","Maihama"],dur:"10 min",fare:440,steps:["JR Musashino / Keiyo Line, train bound for Tokyo (東京) or Shin-Kiba (新木場).","Trains towards Minami-Funabashi do NOT pass Maihama.","Fallback: Sobu Rapid to Tokyo, then Keiyo Line (long underground walk)."]},
  {t:"08:15",k:"stop",title:"Walk to the gates",note:"5 min. Gates open 9:00; entry sometimes starts early. App and ticket ready.",q:"Tokyo Disneyland"},
- {t:"09:00",k:"stop",title:"Rope drop",note:"Most popular ride first, then Premier Access or Standby Pass in the app."},
+ {t:"09:00",k:"stop",fix:1,title:"Rope drop",note:"Most popular ride first, then Premier Access or Standby Pass in the app."},
  {t:"12:00",k:"eat",title:"Lunch in the park",note:"Use Mobile Order in the app to skip queues; see Eat list."},
- {t:"13:00",k:"stop",title:"Toys Wondrous Christmas parade",note:"Once a day, about 45 min. Check the app for the exact time; claim a spot 30 to 45 min early."},
- {t:"19:00",k:"stop",title:"Electrical Parade Dreamlights",note:"Christmas version. Use indoor rides when it gets cold. Check the app for times."},
- {t:"21:00",k:"stop",title:"Park closes",note:"Leave a little early to avoid the crush."},
+ {t:"13:00",k:"stop",fix:1,title:"Toys Wondrous Christmas parade",note:"Once a day, about 45 min. Check the app for the exact time; claim a spot 30 to 45 min early."},
+ {t:"19:00",k:"stop",fix:1,title:"Electrical Parade Dreamlights",note:"Christmas version. Use indoor rides when it gets cold. Check the app for times."},
+ {t:"21:00",k:"stop",fix:1,title:"Park closes",note:"Leave a little early to avoid the crush."},
  {t:"21:15",k:"move",line:"keiyo",from:["舞浜","Maihama"],to:["西船橋","Nishi-Funabashi"],dur:"10 min",fare:null,steps:["Train bound for Nishi-Funabashi / Musashino Line."]},
  {t:"21:30",k:"move",line:"local",from:["西船橋","Nishi-Funabashi"],to:["新小岩","Shin-Koiwa"],dur:"12 min",fare:440,steps:["Yellow line westbound towards Tokyo / Mitaka."]}
  ],
@@ -351,9 +357,9 @@ const DAYS = [
  {t:"10:30",k:"stop",title:"Check out",note:"Passport, phone, Suica in your carry-on."},
  {t:"10:45",k:"move",line:"rapid",from:["新小岩","Shin-Koiwa"],to:["品川","Shinagawa"],dur:"25 min",fare:341,steps:["Blue line towards Tokyo / Shinagawa (Yokosuka Line)."]},
  {t:"11:15",k:"move",line:"keikyu",from:["品川","Shinagawa"],to:["羽田空港第3ターミナル","Haneda T3"],dur:"20 min",fare:327,steps:["Keikyu train bound for Haneda Airport (羽田空港). Check the board."]},
- {t:"12:00",k:"stop",title:"Check in for PR 421",note:"Check bags through to Kuala Lumpur and get both boarding passes (PR 421 and PR 529)."},
+ {t:"12:00",k:"stop",fix:1,title:"Check in for PR 421",note:"Check bags through to Kuala Lumpur and get both boarding passes (PR 421 and PR 529)."},
  {t:"12:30",k:"eat",title:"Last meal at the airport",note:"Spend leftover Suica balance; it is not refundable."},
- {t:"15:25",k:"stop",title:"PR 421 departs",note:"Arrange your KLIA pickup for 01:15 Sunday."}
+ {t:"15:25",k:"stop",fix:1,title:"PR 421 departs",note:"Arrange your KLIA pickup for 01:15 Sunday."}
  ],
  tips:[]}
 ];
@@ -915,8 +921,10 @@ const maps=q=>"https://www.google.com/maps/search/?api=1&query="+encodeURICompon
 const dir=(o,d)=>"https://www.google.com/maps/dir/?api=1&origin="+encodeURIComponent(o+" Station")+"&destination="+encodeURIComponent(d+" Station")+"&travelmode=transit";
 const yen=n=>"¥"+n.toLocaleString("en-US");
 
+/* Preview hook: add ?at=2026-11-09T15:00 (Japan time) to the URL to simulate a moment on the trip. */
+const SIM=(()=>{try{const a=new URLSearchParams(location.search).get("at");if(a&&/^\d{4}-\d\d-\d\dT\d\d:\d\d$/.test(a)){const t=new Date(a+":00+09:00").getTime();if(!isNaN(t))return t-Date.now()}}catch(e){}return null})();
 function jstNow(){
- const p=new Intl.DateTimeFormat("en-CA",{timeZone:"Asia/Tokyo",year:"numeric",month:"2-digit",day:"2-digit",hour:"2-digit",minute:"2-digit",hourCycle:"h23"}).formatToParts(new Date());
+ const p=new Intl.DateTimeFormat("en-CA",{timeZone:"Asia/Tokyo",year:"numeric",month:"2-digit",day:"2-digit",hour:"2-digit",minute:"2-digit",hourCycle:"h23"}).formatToParts(new Date(Date.now()+(SIM||0)));
  const g=t=>p.find(x=>x.type===t).value;
  return {date:g("year")+"-"+g("month")+"-"+g("day"),min:+g("hour")*60+ +g("minute"),hm:g("hour")+":"+g("minute")};
 }
@@ -959,9 +967,38 @@ function renderStrip(){
 
 function plate(st,lc){const long=st[0].length>6;return `<button class="plate${long?" long":""}" style="--lc:${lc}" data-show="${esc(st[0])}" data-sub="${esc(st[1])}" data-col="${lc}" aria-label="${I("showLarge")}: ${esc(st[1])}"><span class="j">${esc(st[0])}</span><span class="r">${esc(st[1])}</span></button>`}
 
+/* ===== Live shift: "I'm here now" moves the rest of the day by how late (or early) you are.
+   Fixed-time items (fix:1, and any journey with a highway bus) never move and stop the shift. ===== */
+let shifts=store.get("shifts",{}); // {dayId:[{i,delta}]}
+const isFixed=it=>!!(it.fix||(it.k==="journey"&&it.legs.some(l=>l.line==="bus")));
+const hm=m=>{m=((m%1440)+1440)%1440;return String(Math.floor(m/60)).padStart(2,"0")+":"+String(m%60).padStart(2,"0")};
+function effMin(d,i){
+ const it=d.items[i], o=toMin(it.t); if(isFixed(it)) return o;
+ const an=(shifts[d.id]||[]).filter(a=>a.i<=i).sort((a,b)=>b.i-a.i)[0]; if(!an) return o;
+ for(let k=an.i+1;k<=i;k++) if(isFixed(d.items[k])) return o;
+ return o+an.delta;
+}
+/* closing, last order or last entry for stops that can run out of time; keyed by English title */
+const CLOSE={"Mandarake Complex":["20:00","c"],"Super Potato":["20:00","c"],"Dinner":["21:00","lo"],"Nakamise Shopping Street":["19:00","c"],"Komagome Myōgi Shrine (妙義神社)":["17:00","c"],"Rikugien Garden (六義園), optional":["16:30","e"],"First Avenue Tokyo Station":["20:30","c"],"Shibuya 109":["21:00","c"],"Pokémon Center Shibuya":["21:00","c"],"Square Enix Cafe & Shop":["22:00","c"]};
+function shiftWarn(d,i){
+ const it=d.items[i]; if(isFixed(it)) return "";
+ const e=effMin(d,i); if(e===toMin(it.t)) return "";
+ const c=it.k!=="journey"&&CLOSE[it.title];
+ if(c){const cm=toMin(c[0]), left=cm-e, t=c[0];
+  if(left<=0) return I(c[1]==="lo"?"wLoGone":c[1]==="e"?"wEntGone":"wClosed").replace("{t}",t);
+  if(left<60) return I(c[1]==="lo"?"wLoIn":c[1]==="e"?"wEntIn":"wClosesIn").replace("{t}",t).replace("{n}",fmtIn(left));}
+ for(let k=i+1;k<d.items.length;k++) if(isFixed(d.items[k])){ if(e>=toMin(d.items[k].t)) return I("wClash").replace("{t}",d.items[k].t); break; }
+ return "";
+}
+function shiftBar(d){
+ const a=(shifts[d.id]||[]).slice().sort((x,y)=>y.i-x.i)[0]; if(!a) return "";
+ const it=d.items[a.i], n=Math.abs(a.delta);
+ const head=(a.delta===0?I("onTime"):a.delta>0?I("lateBy"):I("aheadBy")).replace("{n}",fmtIn(n)).replace("{x}",itTitle(it));
+ return `<div class="shiftbar"><div><b>${esc(head)}</b><small>${esc(I("shiftNote"))}</small></div><button data-reset="${d.id}">${I("reset")}</button></div>`;
+}
 function nowIndex(d){
  if(d.id!==todayId) return -1;
- let idx=-1; d.items.forEach((it,i)=>{const m=toMin(it.t); if(m!==null&&m<=now.min) idx=i}); return idx;
+ let idx=-1; d.items.forEach((it,i)=>{const m=effMin(d,i); if(m!==null&&m<=now.min) idx=i}); return idx;
 }
 
 const EATNEAR={
@@ -996,14 +1033,21 @@ function renderDay(){
  let h=`<div class="hero"><div class="d">${dz.full}</div><h2>${esc(dz.title)}</h2><div class="wx">${esc(dz.wx)}</div>${fcHtml(d.id)}</div>`+extrasHtml(d);
  if(todayId===d.id){
   const c=d.items[ni];
-  h+=`<div class="next show" aria-live="polite"><small>${c?I("now"):I("firstUp")}</small><strong>${esc(itTitle(c||d.items[0]))}</strong>${nextIt?`<small style="margin-top:4px">${I("nextAt")} ${nextIt.t}: ${esc(itTitle(nextIt))}</small>`:""}</div>`;
+  h+=`<div class="next show" aria-live="polite"><small>${c?I("now"):I("firstUp")}</small><strong>${esc(itTitle(c||d.items[0]))}</strong>${nextIt?`<small style="margin-top:4px">${I("nextAt")} ${hm(effMin(d,ni+1))}: ${esc(itTitle(nextIt))}</small>`:""}</div>`;
  }
- h+=`<div class="tl">`;
- const last=d.items.length-1, lastEnd=toMin(d.items[last].t)+(d.items[last].mins||60);
+ h+=shiftBar(d)+`<div class="tl">`;
+ const last=d.items.length-1, lastEnd=effMin(d,last)+(d.items[last].mins||60);
+ const sh=!!(shifts[d.id]||[]).length;
  d.items.forEach((it,i)=>{
   const key=d.id+":"+i, isDone=!!done[key], isNow=i===ni&&!(i===last&&now.min>lastEnd);
   const cls=["it",it.k==="eat"?"eat":"",isDone?"done":"",isNow?"now":""].join(" ");
   const dotBtn=`<button class="dot" data-done="${key}" aria-label="${I("markDone")}"></button>`;
+  const em=effMin(d,i), moved=em!==toMin(it.t), fx=isFixed(it);
+  const tHtml=moved?`${hm(em)}<s class="was">${it.t}</s>`:it.t;
+  const fxTag=fx&&sh?`<span class="fxtag">${I("fixedT")}</span>`:"";
+  const hereBtn=todayId===d.id&&!fx?`<button data-here="${i}">${I("hereNow")}</button>`:"";
+  const wn=shiftWarn(d,i), wHtml=wn?`<div class="hrs warn"><span>⚠</span>${esc(wn)}</div>`:"";
+  const dl=em-toMin(it.t);
   if(it.k==="journey"){
    const multi=it.legs.length>1, n=it.legs.length-1;
    const fm=m=>ZH()?(m>=60?`${Math.floor(m/60)}小时${m%60}分钟`:`${m}分钟`):(m>=60?`${Math.floor(m/60)} h ${m%60} min`:`${m} min`);
@@ -1012,14 +1056,15 @@ function renderDay(){
      const fst=l.first==="Check"?I("check"):l.first;
      const steps=(ZH()&&l.zh&&l.zh.s)||l.steps;
      return `<div class="leg2">
-     ${multi?`<div class="lh"><span><span class="badge" style="background:${L.c};color:${L.f}">${lineN(l.line)}</span></span><span>${esc(l.t)}, ${esc(durT(l.dur))}</span></div>`:""}
+     ${multi?`<div class="lh"><span><span class="badge" style="background:${L.c};color:${L.f}">${lineN(l.line)}</span></span><span>${esc(dl?hm(toMin(l.t)+dl):l.t)}, ${esc(durT(l.dur))}</span></div>`:""}
      <div class="signs">${plate(l.from,L.c)}<span class="arrow" aria-hidden="true">▶</span>${plate(l.to,L.c)}</div>
      ${l.first?`<div class="ft"><div><small>${l.line==="bus"?I("firstBus"):I("firstTrain")}</small><b>${esc(fst)}</b></div><div><small>${l.line==="bus"?I("lastBus"):I("lastTrain")}</small><b>${esc(l.last)}</b></div></div>${tn?`<div class="tnote">${esc(tn)}</div>`:""}`:""}
      <details class="steps"><summary class="mfoot"><span>${xf?I("howRideX"):I("howRide")}</span><span class="fare">${l.fare?yen(l.fare):(multi?I("inTotal"):"")}</span></summary><ol>${steps.map(x=>`<li>${esc(x)}</li>`).join("")}<li><a href="${dir(l.from[1],l.to[1])}">${I("liveRoute")}</a></li></ol>${xf||""}</details></div>`};
    const xHtml=(x,st,k)=>{const ss=(ZH()&&XFER_ZH[k])||(x&&x.s);return `<div class="xf"><div class="xh"><b>${I("transferAt")} ${esc(ZH()?st[0]:st[1])}</b><span class="xj">${esc(ZH()?st[1]:st[0])}</span>${x?`<span class="xw">${I("walk")}${x.w} ${I("min")}</span>`:""}</div>${ss?`<ol>${ss.map(y=>`<li>${esc(y)}</li>`).join("")}</ol>`:""}</div>`};
    h+=`<div class="${cls}">${dotBtn}<div class="move jny">
-    <div class="mhead"><span><b style="color:var(--ink);font-variant-numeric:tabular-nums">${it.t}</b>&nbsp; ${it.legs.map(l=>`<span class="badge" style="background:${LINES[l.line].c};color:${LINES[l.line].f}">${lineN(l.line)}</span>`).join(" ")}</span><span>≈${fm(it.mins)}</span></div>
+    <div class="mhead"><span><b style="color:var(--ink);font-variant-numeric:tabular-nums">${tHtml}</b>${fxTag}&nbsp; ${it.legs.map(l=>`<span class="badge" style="background:${LINES[l.line].c};color:${LINES[l.line].f}">${lineN(l.line)}</span>`).join(" ")}</span><span>≈${fm(it.mins)}</span></div>
     <div class="jt">${esc(jTitle(it))}<span>${multi?(ZH()?`${n} 次换乘`:`${n} transfer${n>1?"s":""}`):I("direct")}</span></div>
+    ${wHtml?`<div style="padding:0 12px">${wHtml}</div>`:""}${hereBtn?`<div class="acts" style="padding:0 12px 6px;margin-top:2px">${hereBtn}</div>`:""}
     ${it.legs.map((l,i)=>legHtml(l,i<n?xHtml(it.xfer[i],l.to,d.id+"|"+l.to[0]+"|"+it.legs[i+1].to[0]):"")).join("")}
     ${multi?`<div class="mfoot jfoot"><span>${I("totalFare")}</span><span class="fare">${it.fare?yen(it.fare):""}</span></div>`:""}
    </div></div>`;
@@ -1027,11 +1072,11 @@ function renderDay(){
    const hrs=it.hrs?((ZH()&&HOURS_ZH[it.title])||it.hrs):null;
    const td=it.todo?((ZH()&&TODO_ZH[it.title])||it.todo):null;
    h+=`<div class="${cls}">${dotBtn}<div class="card">
-    <div class="row1"><span class="time">${it.t}</span><div>${it.k==="eat"?`<div class="eattag">${I("meal")}</div>`:''}<div class="ttl">${esc(ZT(it,"title"))}</div></div></div>
+    <div class="row1"><span class="time">${tHtml}</span><div>${it.k==="eat"?`<div class="eattag">${I("meal")}</div>`:''}<div class="ttl">${esc(ZT(it,"title"))}${fxTag}</div></div></div>
     <p class="note">${esc(ZT(it,"note"))}</p>
-    ${hrs?`<div class="hrs"><span>${I("hours")}</span>${esc(hrs)}</div>`:""}
+    ${hrs?`<div class="hrs"><span>${I("hours")}</span>${esc(hrs)}</div>`:""}${wHtml}
     ${td?`<details class="todo"><summary>${I("todo")} (${td.length})</summary><ul>${td.map(([t,x])=>`<li><span class="tag" style="background:${TAGS[t][1]}">${ZH()?TAGS_ZH[t]:TAGS[t][0]}</span>${esc(x)}</li>`).join("")}</ul></details>`:""}
-    ${(it.q||it.k==="eat")?`<div class="acts">${it.q?`<a href="${maps(it.q)}">${I("map")}</a>`:""}${it.k==="eat"?`<button data-jump="eat">${I("eatNearby")}</button><a href="${maps(EATNEAR[d.id+"|"+it.t]||it.title)}" target="_blank" rel="noopener">${I("map")}</a>`:""}</div>`:""}
+    ${(it.q||it.k==="eat"||hereBtn)?`<div class="acts">${it.q?`<a href="${maps(it.q)}">${I("map")}</a>`:""}${it.k==="eat"?`<button data-jump="eat">${I("eatNearby")}</button><a href="${maps(EATNEAR[d.id+"|"+it.t]||it.title)}" target="_blank" rel="noopener">${I("map")}</a>`:""}${hereBtn}</div>`:""}
    </div></div>`;
   }
  });
@@ -1192,6 +1237,14 @@ function renderInfoZh(){
 function renderInfo(){ if(ZH()) renderInfoZh(); else renderInfoEn(); }
 
 /* ===== Added: leave-by / last-train alerts, night-before checklists, rain plans, live weather when self-hosted ===== */
+Object.assign(I18N.en,{hereNow:"I’m here now",fixedT:"Fixed time",reset:"Reset",lateBy:"Running {n} late from {x}",aheadBy:"Running {n} ahead from {x}",onTime:"Back on schedule from {x}",
+shiftNote:"Later times have moved to match. Fixed times (buses, KABA, parades, flight) stay put.",
+wClosed:"Closed by then ({t}): skip it or move it to another day",wClosesIn:"Closes {t}: only {n} left",wLoGone:"Last orders {t}: too late, pick another place",wLoIn:"Last orders {t}: {n} left",
+wEntGone:"Last entry {t}: too late, skip it",wEntIn:"Last entry {t}: {n} to get in",wClash:"Runs into the fixed {t}: cut it short or skip it"});
+Object.assign(I18N.zh,{hereNow:"我到了",fixedT:"固定时间",reset:"重置",lateBy:"从「{x}」起比计划晚{n}",aheadBy:"从「{x}」起比计划早{n}",onTime:"从「{x}」起回到原定时间",
+shiftNote:"之后的时间已跟着调整。固定时间（巴士、KABA、游行、航班）不变。",
+wClosed:"那时已关门（{t}）：跳过或改到其他日子",wClosesIn:"{t}关门：只剩{n}",wLoGone:"最后点餐{t}：来不及了，换一家",wLoIn:"最后点餐{t}：还剩{n}",
+wEntGone:"最后入场{t}：来不及了，跳过吧",wEntIn:"最后入场{t}：还有{n}可以进场",wClash:"会撞到固定的{t}：缩短或跳过"});
 Object.assign(I18N.en,{nextDep:"Next departure",leaveNow:"Leave now",inT:"in ",lastHome:"Last train home from",lastGone:"The last train home has left. Take a taxi: show the hotel card in the Info tab.",cl:"Night-before checklist",clMon:"Before you fly",rainPlan:"If it rains",liveUpd:"Live forecast, updated"});
 Object.assign(I18N.zh,{nextDep:"下一班出发",leaveNow:"现在出发",inT:"还有 ",lastHome:"回酒店末班车：",lastGone:"回酒店的末班车已开走。请搭出租车：在「资讯」页出示酒店卡片。",cl:"前一晚检查清单",clMon:"出发前清单",rainPlan:"下雨怎么办",liveUpd:"实时预报，更新于"});
 
@@ -1246,8 +1299,8 @@ function renderAlerts(){
  let h="";
  if(todayId&&cur===todayId){
   const d=DAYS.find(x=>x.id===cur);
-  const nx=d.items.find(it=>it.k==="journey"&&toMin(it.t)>now.min);
-  if(nx){const diff=toMin(nx.t)-now.min; if(diff<=120) h+=`<div class="alert go"><small>${I("nextDep")}</small><strong>${diff<=2?I("leaveNow"):I("inT")+fmtIn(diff)}</strong><span>${nx.t}  ${esc(jTitle(nx))}</span></div>`;}
+  const xi=d.items.findIndex((it,i)=>it.k==="journey"&&effMin(d,i)>now.min), nx=d.items[xi];
+  if(nx){const nt=effMin(d,xi), diff=nt-now.min; if(diff<=120) h+=`<div class="alert go"><small>${I("nextDep")}</small><strong>${diff<=2?I("leaveNow"):I("inT")+fmtIn(diff)}</strong><span>${hm(nt)}  ${esc(jTitle(nx))}</span></div>`;}
  }
  /* last train: evening of today, or after midnight for the previous day */
  let lhId=null, nm=now.min;
@@ -1296,6 +1349,9 @@ document.addEventListener("click",e=>{
  if(t.dataset.cl){const k=t.dataset.cl;checks[k]=!checks[k];store.set("checks",checks);t.setAttribute("aria-checked",!!checks[k]);const id=k.split(":")[0];const c=CHECK[id];const L=c?c.en:[];const n=L.filter((_,i)=>checks[id+":"+i]).length;const el=document.getElementById("cln-"+id);if(el)el.textContent=n+"/"+L.length;return}
  if(t.dataset.lang){lang=t.dataset.lang;store.set("lang",lang);applyStatic();renderAll();tick();return}
  if(t.dataset.v){show(t.dataset.v);window.scrollTo({top:0});return}
+ if(t.dataset.here!==undefined){const d=DAYS.find(x=>x.id===cur), i=+t.dataset.here, delta=now.min-toMin(d.items[i].t);
+  const L=(shifts[d.id]||[]).filter(a=>a.i<i); L.push({i,delta:Math.abs(delta)<3?0:delta}); shifts[d.id]=L; store.set("shifts",shifts); shownNi=nowIndex(d); renderDay(); renderAlerts(); return}
+ if(t.dataset.reset){delete shifts[t.dataset.reset]; store.set("shifts",shifts); renderDay(); renderAlerts(); return}
  if(t.dataset.done){done[t.dataset.done]=!done[t.dataset.done];store.set("done",done);renderDay();return}
  if(t.dataset.fav){favs[t.dataset.fav]=!favs[t.dataset.fav];store.set("favs",favs);renderDay();renderEat();renderNear();return}
  if(t.dataset.f){eatFilter=t.dataset.f;renderEat();return}
@@ -1307,7 +1363,7 @@ document.addEventListener("click",e=>{
 $("#ovClose").onclick=()=>$("#ov").classList.remove("show");
 document.addEventListener("keydown",e=>{if(e.key==="Escape")$("#ov").classList.remove("show")});
 
-function tick(){now=jstNow();$("#clock").textContent=(lang==="zh"?"东京 ":"Tokyo ")+now.hm;}
+function tick(){now=jstNow();$("#clock").textContent=(lang==="zh"?"东京 ":"Tokyo ")+now.hm+(SIM!==null?(lang==="zh"?"（模拟）":" (sim)"):"");}
 if(LIVE_OK)applyLive(store.get("wx",null));applyStatic();tick();renderAll();liveWeather();setInterval(liveWeather,3*3600*1000);
 if(todayId){const n=document.querySelector(".it.now");if(n)setTimeout(()=>n.scrollIntoView({block:"center"}),150)}
 let shownNi=todayId?nowIndex(DAYS.find(x=>x.id===cur)):-1;
